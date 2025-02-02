@@ -162,6 +162,6 @@ This project is licensed under the MIT <a href="https://mit-license.org/" target
 🏡 **HCMC University of Technology and Education**  
 🎓 **Faculty of Internaltional Education**  
 📅 **Capstone Project 2025**\
-<a href="https://en.hcmute.edu.vn/" target="_blank">HCMUTE Website</a>|
+<a href="https://en.hcmute.edu.vn/" target="_blank">HCMUTE Website</a> |
 <a href="https://fie.hcmute.edu.vn/" target="_blank">IE Faculty</a>
 
