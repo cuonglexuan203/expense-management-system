@@ -4,7 +4,7 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.19-blue?logo=flutter)](https://flutter.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![GenAI-Driven Expense Management Banner](/assets/images/banner.jpeg)
+![GenAI-Driven Expense Management Banner](/Assets/Images/banner.jpeg)
 
 An AI-powered expense management platform that combines financial tracking with smart automation using NLP and voice recognition.
 ## 👥 Team
