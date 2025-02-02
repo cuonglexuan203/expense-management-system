@@ -31,7 +31,7 @@ Mr. Nguyen Minh Tien - Instructor, HCMC Univercity of Technology and Education
 
 ## 🌟 Project Overview
 
-**University of Information Technology (UIT)**  
+**HCMC University of Technology and Education (HCMUTE)**  
 **Capstone Project - Software Engineering Program**  
 **Instructor: Mr. Nguyen Minh Tien**
 
