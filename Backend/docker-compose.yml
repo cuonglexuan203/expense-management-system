@@ -1,0 +1,6 @@
+services:
+  ems.api:
+    image: ${DOCKER_REGISTRY-}emsapi
+    build:
+      context: .
+      dockerfile: Microservices/Expense/EMS.API/Dockerfile
