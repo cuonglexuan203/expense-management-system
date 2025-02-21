@@ -15,6 +15,7 @@ namespace EMS.Core.Entities
         public string? Metadata { get; set; }
 
         // Navigations
+        public ChatThread ChatThread { get; set; } = default!;
         public ICollection<Media> Medias { get; set; } = [];
         public Transaction? Transaction { get; set; }
     }

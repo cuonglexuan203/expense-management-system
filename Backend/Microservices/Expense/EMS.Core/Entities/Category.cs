@@ -7,8 +7,7 @@ namespace EMS.Core.Entities
     {
         public Guid UserId { get; set; }
         public string Name { get; set; } = default!;
-        public bool IsDefault { get; set; } = true;
-        public TransactionType Type { get; set; } = TransactionType.Expense;
+        public CategoryType Type { get; set; }
         public string? Description { get; set; }
 
         // Navigations

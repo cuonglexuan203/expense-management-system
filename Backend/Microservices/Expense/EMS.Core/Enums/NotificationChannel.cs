@@ -1,4 +1,4 @@
-﻿namespace EMS.Core.Entities
+﻿namespace EMS.Core.Enums
 {
     public enum NotificationChannel
     {
