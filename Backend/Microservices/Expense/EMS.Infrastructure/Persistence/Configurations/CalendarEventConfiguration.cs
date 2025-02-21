@@ -22,7 +22,6 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .WithOne(e => e.CalendarEvent)
                 .HasForeignKey(e => e.CalendarEventId)
                 .IsRequired(false);
-
         }
     }
 }

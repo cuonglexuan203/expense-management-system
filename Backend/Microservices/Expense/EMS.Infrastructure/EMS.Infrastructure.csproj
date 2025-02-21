@@ -21,7 +21,6 @@
     <Folder Include="BackgroundJobs\" />
     <Folder Include="Common\" />
     <Folder Include="Logging\" />
-    <Folder Include="Persistence\Interceptors\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

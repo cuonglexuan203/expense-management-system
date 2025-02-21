@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EMS.Infrastructure.Identity.Models
 {
-    public class ApplicationUser : IdentityUser<Guid>, IIdentifiable<Guid>, IAuditableEntity
+    public class ApplicationUser : IdentityUser, IIdentifiable<string>, IAuditableEntity
     {
         public string FullName { get; set; } = default!;
         public bool IsActive { get; set; }

@@ -2,7 +2,7 @@
 
 namespace EMS.Infrastructure.Identity.Models
 {
-    public class ApplicationRole : IdentityRole<Guid>
+    public class ApplicationRole : IdentityRole
     {
     }
 }
