@@ -6,7 +6,7 @@ namespace EMS.Application.Common.Exceptions
     {
         public IDictionary<string, string[]> Errors { get; } = default!;
 
-        public ValidationException()
+        public ValidationException() : base("One or more validation failures occurred.")
         {
             Errors = new Dictionary<string, string[]>();
         }

@@ -1,9 +1,12 @@
-﻿using EMS.Infrastructure.Identity.Models;
+﻿using EMS.Application.Common.Interfaces;
+using EMS.Infrastructure.Identity.Models;
 using EMS.Infrastructure.Persistence.DbContext;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace EMS.Infrastructure
 {
@@ -11,28 +14,29 @@ namespace EMS.Infrastructure
     {
         public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            #region Adding DbContext
-            services.AddDbContext<ApplicationDbContext>(ob => ob.UseNpgsql(configuration.GetSection("DatabaseSettings:ConnectionString").Value, options =>
-            {
-                options.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
-                options.EnableRetryOnFailure(3);
-            }));
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
-            {
-                options.Password.RequiredLength = 6;
-                options.Password.RequireDigit = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
+            services.AddSingleton(TimeProvider.System);
+            services.TryAddScoped<ISaveChangesInterceptor, SaveChangesInterceptor>();
 
-                options.SignIn.RequireConfirmedAccount = false;
-            })
+            #region Adding DbContext
+            services
+                .AddDbContext<ApplicationDbContext>((sp, ob) =>
+            {
+                ob.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+
+                ob.UseNpgsql(configuration.GetSection("DatabaseSettings:ConnectionString").Value, options =>
+                {
+                    options.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                    options.EnableRetryOnFailure(3);
+                });
+            });
+
+            services.TryAddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+
+            services
+                .AddIdentityCore<ApplicationUser>()
+                .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-            #endregion
-
-            #region Adding services
-            services.AddSingleton<TimeProvider>();
             #endregion
         }
     }

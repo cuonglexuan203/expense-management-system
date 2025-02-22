@@ -1,4 +1,6 @@
-﻿namespace EMS.API
+﻿using EMS.Core.Constants;
+
+namespace EMS.API
 {
     public static class DependencyInjection
     {
@@ -6,7 +8,7 @@
         {
             services.AddControllers();
             services.AddAuthentication();
-            services.AddAuthorization();
+            services.AddAuthorization(options => options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator));
             services.AddProblemDetails();
         }
     }

@@ -1,4 +1,5 @@
-﻿using EMS.Core.Entities;
+﻿using EMS.Application.Common.Interfaces;
+using EMS.Core.Entities;
 using EMS.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -6,10 +7,11 @@ using System.Reflection;
 
 namespace EMS.Infrastructure.Persistence.DbContext
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+
         }
 
         public DbSet<ActivityLog> ActivityLogs { get; set; }
