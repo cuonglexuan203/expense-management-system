@@ -6,20 +6,17 @@ using EMS.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Logging;
 
 namespace EMS.Infrastructure.Persistence.Interceptors
 {
     public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
-        private readonly ILogger<AuditableEntityInterceptor> _logger;
         private readonly IUser _user;
         private readonly TimeProvider _timeProvider;
 
-        public AuditableEntityInterceptor(ILogger<AuditableEntityInterceptor> logger, IUser user, TimeProvider timeProvider)
+        public AuditableEntityInterceptor(IUser user, TimeProvider timeProvider)
         {
             _timeProvider = timeProvider;
-            _logger = logger;
             _user = user;
         }
 
@@ -50,44 +47,33 @@ namespace EMS.Infrastructure.Persistence.Interceptors
                     continue;
                 }
 
-                // Using this entry state to check further conditions
-                var entryState = entry.State;
+                var utcNow = _timeProvider.GetUtcNow();
 
-                switch (entryState)
+                if (entry.State is EntityState.Added or EntityState.Modified || entry.HasChangedOwnedEntity())
                 {
-                    case EntityState.Added when entry.Entity is ICreated created:
-                        {
-                            created.CreatedAt = _timeProvider.GetUtcNow();
-                            created.CreatedBy = _user.Id;
-                            break;
-                        }
-                    case EntityState.Modified when entry.Entity is IModified modified:
-                        {
-                            modified.ModifiedAt = _timeProvider.GetUtcNow();
-                            modified.ModifiedBy = _user.Id;
-                            break;
-                        }
-                    case EntityState.Deleted when entry.Entity is IDeleted deleted:
-                        {
-                            //entry.State = EntityState.Unchanged;
+                    if (entry.State == EntityState.Added && entry.Entity is ICreated created)
+                    {
+                        created.CreatedAt = utcNow;
+                        created.CreatedBy = _user.Id;
+                    }
 
-                            deleted.IsDeleted = true;
-                            deleted.DeletedAt = _timeProvider.GetUtcNow();
-                            deleted.DeletedBy = _user.Id;
-                            break;
-                        }
+                    if (entry.Entity is IModified modified)
+                    {
+                        modified.ModifiedAt = utcNow;
+                        modified.ModifiedBy = _user.Id;
+                    }
                 }
 
-                // Adding the audit log
-                var auditEntry = GetAuditEntry(entry);
-
-                // Soft deletion
-                if(entry.State == EntityState.Deleted)
+                if (entry.State == EntityState.Deleted && entry.Entity is IDeleted deleted)
                 {
-                    entry.State = EntityState.Unchanged;
+                    deleted.IsDeleted = true;
+                    deleted.DeletedAt = utcNow;
+                    deleted.DeletedBy = _user.Id;
+
+                    entry.State = EntityState.Modified;
                 }
 
-                auditEntries.Add(auditEntry);
+                auditEntries.Add(GetAuditEntry(entry));
             }
 
             foreach (var auditEntry in auditEntries)
