@@ -1,13 +1,27 @@
 
+using EMS.API.Common.Extensions;
+using EMS.Infrastructure.Persistence.DbContext;
+
 namespace EMS.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args)
-                .Build()
-                .Run();
+            try
+            {
+                var host = CreateHostBuilder(args)
+                    .Build();
+                host.MigrateDatabase<ApplicationDbContext>();
+
+                await host.InitializeDatabaseAsync();
+
+                await host.RunAsync();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)

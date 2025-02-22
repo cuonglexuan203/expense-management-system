@@ -1,6 +1,7 @@
 ﻿using EMS.Application.Common.Interfaces;
 using EMS.Infrastructure.Identity.Models;
 using EMS.Infrastructure.Persistence.DbContext;
+using EMS.Infrastructure.Persistence.Interceptors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -15,7 +16,7 @@ namespace EMS.Infrastructure
         public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton(TimeProvider.System);
-            services.TryAddScoped<ISaveChangesInterceptor, SaveChangesInterceptor>();
+            services.TryAddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
 
             #region Adding DbContext
             services
@@ -31,6 +32,7 @@ namespace EMS.Infrastructure
             });
 
             services.TryAddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+            services.TryAddScoped<ApplicationDbContextInitializer>();
 
             services
                 .AddIdentityCore<ApplicationUser>()

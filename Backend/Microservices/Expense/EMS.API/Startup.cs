@@ -1,5 +1,6 @@
 ﻿using EMS.Application;
 using EMS.Infrastructure;
+using Serilog;
 
 namespace EMS.API
 {
@@ -13,23 +14,30 @@ namespace EMS.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+
+            Log.Information("Starting Server...");
+
             #region Adding layers
             services.AddApplicationServices();
             services.AddInfrastructureServices(_configuration);
             services.AddApiServices();
             #endregion
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if(env.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Expense.API v1"));
+                app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "EMS.API v1"));
             }
 
+            app.UseSerilogRequestLogging();
+            app.UseCors("anonymous_policy");
             app.UseExceptionHandler();
             app.UseHttpsRedirection();
             app.UseAuthentication();
