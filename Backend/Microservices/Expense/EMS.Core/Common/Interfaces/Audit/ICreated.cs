@@ -3,6 +3,6 @@
     public interface ICreated
     {
         DateTimeOffset? CreatedAt { get; set; }
-        Guid? CreatedBy { get; set; }
+        string? CreatedBy { get; set; }
     }
 }

@@ -3,6 +3,6 @@
     public interface IModified
     {
         DateTimeOffset? ModifiedAt { get; set; }
-        Guid? ModifiedBy { get; set; }
+        string? ModifiedBy { get; set; }
     }
 }

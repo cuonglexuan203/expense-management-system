@@ -3,10 +3,10 @@ using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class ChatMessage: BaseEntity<int>
+    public class ChatMessage: BaseAuditableEntity<int>
     {
         public int ChatThreadId { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = default!;
         public MessageRole Role { get; set; } = MessageRole.User;
         public string? Content { get; set; }
         public string? DetectedItems { get; set; }

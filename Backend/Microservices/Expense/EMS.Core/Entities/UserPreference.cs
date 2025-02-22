@@ -3,9 +3,9 @@ using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class UserPreference: BaseEntity<int>
+    public class UserPreference: BaseAuditableEntity<int>
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = default!;
         public string Language { get; set; } = default!;
         public Currency Currency { get; set; } = Currency.USD;
         public string? Metadata { get; set; }

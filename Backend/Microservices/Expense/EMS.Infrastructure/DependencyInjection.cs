@@ -11,7 +11,7 @@ namespace EMS.Infrastructure
     {
         public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            #region Add DbContext
+            #region Adding DbContext
             services.AddDbContext<ApplicationDbContext>(ob => ob.UseNpgsql(configuration.GetSection("DatabaseSettings:ConnectionString").Value, options =>
             {
                 options.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
@@ -29,6 +29,10 @@ namespace EMS.Infrastructure
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+            #endregion
+
+            #region Adding services
+            services.AddSingleton<TimeProvider>();
             #endregion
         }
     }

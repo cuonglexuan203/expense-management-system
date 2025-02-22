@@ -3,7 +3,7 @@ using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class Media : BaseEntity<Guid>
+    public class Media : BaseAuditableEntity<Guid>
     {
         public string FileName { get; set; } = default!;
         public string? ContentType { get; set; } // MIME

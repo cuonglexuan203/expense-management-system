@@ -3,9 +3,9 @@ using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class FinancialGoal : BaseEntity<int>
+    public class FinancialGoal : BaseAuditableEntity<int>
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = default!;
         public int WalletId { get; set; }
         public string Title { get; set; } = default!;
         public float TargetAmount { get; set; }

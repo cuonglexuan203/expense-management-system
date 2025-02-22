@@ -12,7 +12,7 @@ namespace EMS.Application.Common.Extensions
          => PaginatedList<T>.CreateAsync(queryable.AsNoTracking(), pageNumber, pageSize);
 
         public static Task<List<T>> ProjectToListAsync<T>(this IQueryable queryable, IConfigurationProvider configurationProvider)
-            where T: class
+            where T : class
         => queryable.ProjectTo<T>(configurationProvider).AsNoTracking().ToListAsync();
     }
 }

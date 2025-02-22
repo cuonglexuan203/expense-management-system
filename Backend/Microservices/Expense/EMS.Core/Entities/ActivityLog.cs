@@ -1,13 +1,11 @@
-﻿using EMS.Core.Common.Interfaces;
-using EMS.Core.Common.Interfaces.Audit;
+﻿using EMS.Core.Entities.Common;
 using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class ActivityLog : IIdentifiable<int>, ICreated
+    public class ActivityLog : BaseEntity<int>
     {
-        public int Id { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = default!;
         public AuditType Type { get; set; }
         public string EntityType { get; set; } = default!;
         public string? OldValues { get; set; }
@@ -16,8 +14,6 @@ namespace EMS.Core.Entities
         public string? AffectedColumns { get; set; }
         public string? IpAddress { get; set; }
         public string? UserAgent { get; set; }
-        public string? Metadata { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
-        public Guid? CreatedBy { get; set; }
     }
 }

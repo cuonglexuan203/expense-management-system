@@ -8,7 +8,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-             ConfigureProperties(builder);
+            ConfigureProperties(builder);
             ConfigureRelationships(builder);
         }
         private void ConfigureProperties(EntityTypeBuilder<Category> builder)

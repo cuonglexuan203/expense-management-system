@@ -3,11 +3,11 @@ using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class Transaction : BaseEntity<int>
+    public class Transaction : BaseAuditableEntity<int>
     {
         public int WalletId { get; set; }
         public int? CategoryId { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = default!;
         public float Amount { get; set; }
         public string? Description { get; set; }
         public TransactionType Type { get; set; }

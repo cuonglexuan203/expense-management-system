@@ -2,9 +2,9 @@
 
 namespace EMS.Core.Entities
 {
-    public class Wallet : BaseEntity<int>
+    public class Wallet : BaseAuditableEntity<int>
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = default!;
         public string Name { get; set; } = default!;
         public float Balance { get; set; }
         public string? Description { get; set; }

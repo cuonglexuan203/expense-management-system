@@ -3,9 +3,9 @@ using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class Category: BaseEntity<int>
+    public class Category: BaseAuditableEntity<int>
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = default!;
         public string Name { get; set; } = default!;
         public CategoryType Type { get; set; }
         public string? Description { get; set; }

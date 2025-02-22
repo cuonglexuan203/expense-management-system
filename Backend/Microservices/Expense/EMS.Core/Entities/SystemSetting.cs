@@ -3,7 +3,7 @@ using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class SystemSetting : BaseEntity<int>
+    public class SystemSetting : BaseAuditableEntity<int>
     {
         public string SettingKey { get; set; } = default!;
         public string? SettingValue { get; set; }
