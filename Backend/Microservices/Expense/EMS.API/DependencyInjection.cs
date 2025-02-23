@@ -23,7 +23,6 @@ namespace EMS.API
             services.AddProblemDetails();
             services.AddHttpContextAccessor();
             services.TryAddScoped<IUser, CurrentUserService>();
-            services.AddSerilog();
 
             AddSwaggerService(services);
             AddCors(services);
