@@ -55,7 +55,9 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 .fvm/
-assets/env/
+assets/env/.env*
+!assets/env/.env.example
+
 
 
 # Android related
