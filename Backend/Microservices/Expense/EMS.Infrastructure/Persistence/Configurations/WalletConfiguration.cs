@@ -1,23 +1,21 @@
 ﻿using EMS.Core.Entities;
-using Microsoft.EntityFrameworkCore;
+using EMS.Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
 {
-    public class WalletConfiguration : IEntityTypeConfiguration<Wallet>
+    public class WalletConfiguration : EntityTypeConfiguration<Wallet>
     {
-        public void Configure(EntityTypeBuilder<Wallet> builder)
+        public override void ConfigureProperties(EntityTypeBuilder<Wallet> builder)
         {
-            ConfigureProperties(builder);
-            ConfigureRelationships(builder);
+            builder.Property(e => e.UserId)
+                .HasMaxLength(36);
+
+            builder.Property(e => e.Name)
+                .HasMaxLength(255);
         }
 
-        private void ConfigureProperties(EntityTypeBuilder<Wallet> builder)
-        {
-
-        }
-
-        private void ConfigureRelationships(EntityTypeBuilder<Wallet> builder)
+        public override void ConfigureRelationships(EntityTypeBuilder<Wallet> builder)
         {
             builder.HasMany(e => e.CalendarEvents)
                 .WithOne(e => e.Wallet)

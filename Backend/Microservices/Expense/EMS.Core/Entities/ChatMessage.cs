@@ -12,7 +12,7 @@ namespace EMS.Core.Entities
         public string? DetectedItems { get; set; }
         public bool RequiresConfirmation { get; set; }
         public bool UserConfirmation { get; set; }
-        public string? Metadata { get; set; }
+        //public string? Metadata { get; set; }
 
         // Navigations
         public ChatThread ChatThread { get; set; } = default!;

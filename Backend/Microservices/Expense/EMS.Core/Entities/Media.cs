@@ -13,7 +13,7 @@ namespace EMS.Core.Entities
         public MediaType Type { get; set; }
         public string? AltText { get; set; }
         public string? Caption { get; set; }
-        public string? Metadata { get; set; }
+        //public string? Metadata { get; set; }
         public int? ChatMessageId { get; set; }
 
         // Navigations

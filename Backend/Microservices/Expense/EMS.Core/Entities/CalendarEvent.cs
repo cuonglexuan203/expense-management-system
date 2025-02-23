@@ -10,7 +10,6 @@ namespace EMS.Core.Entities
         public string Title { get; set; } = default!;
         public string? Description { get; set; }
         public RecurrenceInterval Interval { get; set; }
-        public bool IsActive { get; set; } = true;
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset? EndDate { get; set; }
         public string? Location { get; set; }

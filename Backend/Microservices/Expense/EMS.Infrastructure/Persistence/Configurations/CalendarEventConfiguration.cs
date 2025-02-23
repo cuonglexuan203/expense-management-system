@@ -1,22 +1,32 @@
 ﻿using EMS.Core.Entities;
-using Microsoft.EntityFrameworkCore;
+using EMS.Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
 {
-    public class CalendarEventConfiguration : IEntityTypeConfiguration<CalendarEvent>
+    public class CalendarEventConfiguration : EntityTypeConfiguration<CalendarEvent>
     {
-        public void Configure(EntityTypeBuilder<CalendarEvent> builder)
+        public override void ConfigureProperties(EntityTypeBuilder<CalendarEvent> builder)
         {
-            ConfigureProperties(builder);
-            ConfigureRelationships(builder);
+            builder.Property(e => e.UserId)
+                .HasMaxLength(36);
+
+            builder.Property(e => e.Title)
+                .HasMaxLength(255);
+
+            builder.Property(e => e.Interval)
+                .HasConversion<string>()
+                .HasMaxLength(15);
+
+            builder.Property(e => e.Location)
+                .HasMaxLength(500);
+
+            builder.Property(e => e.TransactionType)
+                .HasConversion<string>()
+                .HasMaxLength(15);
         }
 
-        private void ConfigureProperties(EntityTypeBuilder<CalendarEvent> builder)
-        {
-        }
-
-        private void ConfigureRelationships(EntityTypeBuilder<CalendarEvent> builder)
+        public override void ConfigureRelationships(EntityTypeBuilder<CalendarEvent> builder)
         {
             builder.HasMany(e => e.Transactions)
                 .WithOne(e => e.CalendarEvent)
