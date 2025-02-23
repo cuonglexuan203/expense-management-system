@@ -1,23 +1,26 @@
 ﻿using EMS.Core.Entities;
+using EMS.Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
 {
-    public class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMessage>
+    public class ChatMessageConfiguration : EntityTypeConfiguration<ChatMessage>
     {
-        public void Configure(EntityTypeBuilder<ChatMessage> builder)
+        public override void ConfigureProperties(EntityTypeBuilder<ChatMessage> builder)
         {
-            ConfigureProperties(builder);
-            ConfigureRelationships(builder);
+            builder.Property(e => e.UserId)
+                .HasMaxLength(36);
+
+            builder.Property(e => e.Role)
+                .HasConversion<string>()
+                .HasMaxLength(15);
+
+            builder.Property(e => e.DetectedItems)
+                .HasColumnType("jsonb");
         }
 
-        private void ConfigureProperties(EntityTypeBuilder<ChatMessage> builder)
-        {
-
-        }
-
-        private void ConfigureRelationships(EntityTypeBuilder<ChatMessage> builder)
+        public override void ConfigureRelationships(EntityTypeBuilder<ChatMessage> builder)
         {
             builder.HasMany(e => e.Medias)
                 .WithOne(e => e.ChatMessage)

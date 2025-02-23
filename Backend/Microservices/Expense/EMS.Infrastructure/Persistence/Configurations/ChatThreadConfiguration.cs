@@ -1,24 +1,22 @@
 ﻿using EMS.Core.Entities;
+using EMS.Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
 {
-    public class ChatThreadConfiguration : IEntityTypeConfiguration<ChatThread>
+    public class ChatThreadConfiguration : EntityTypeConfiguration<ChatThread>
     {
-
-        public void Configure(EntityTypeBuilder<ChatThread> builder)
+        public override void ConfigureProperties(EntityTypeBuilder<ChatThread> builder)
         {
-            ConfigureProperties(builder);
-            ConfigureRelationships(builder);
+            builder.Property(e => e.UserId)
+                .HasMaxLength(36);
+
+            builder.Property(e => e.Title)
+                .HasMaxLength(255);
         }
 
-        private void ConfigureProperties(EntityTypeBuilder<ChatThread> builder)
-        {
-            
-        }
-
-        private void ConfigureRelationships(EntityTypeBuilder<ChatThread> builder)
+        public override void ConfigureRelationships(EntityTypeBuilder<ChatThread> builder)
         {
             builder.HasMany(e => e.ChatMessages)
                 .WithOne(e => e.ChatThread)

@@ -12,7 +12,7 @@ namespace EMS.Core.Entities
         public string? Description { get; set; }
         public TransactionType Type { get; set; }
         public int? CalendarEventId { get; set; }
-        public string? Metadata { get; set; }
+        //public string? Metadata { get; set; }
         public int? ChatMessageId { get; set; }
 
         // Navigations

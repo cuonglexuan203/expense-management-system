@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace EMS.Application.Common.Behaviors
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : notnull
+        where TRequest : IRequest<TResponse>
     {
         private readonly ILogger<ValidationBehavior<TRequest, TResponse>> _logger;
         private readonly IEnumerable<IValidator<TRequest>> _validators;

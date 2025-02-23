@@ -4,17 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
 {
-    public class FinancialGoalConfiguration : EntityTypeConfiguration<FinancialGoal>
+    public class TransactionConfiguration : EntityTypeConfiguration<Transaction>
     {
-        public override void ConfigureProperties(EntityTypeBuilder<FinancialGoal> builder)
+        public override void ConfigureProperties(EntityTypeBuilder<Transaction> builder)
         {
             builder.Property(e => e.UserId)
                 .HasMaxLength(36);
 
-            builder.Property(e => e.Title)
-                .HasMaxLength(255);
-
-            builder.Property(e => e.Status)
+            builder.Property(e => e.Type)
                 .HasConversion<string>()
                 .HasMaxLength(15);
         }

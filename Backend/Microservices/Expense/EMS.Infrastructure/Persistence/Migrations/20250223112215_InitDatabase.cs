@@ -35,12 +35,12 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Avatar = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -67,19 +67,19 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SettingKey = table.Column<string>(type: "text", nullable: false),
-                    SettingValue = table.Column<string>(type: "text", nullable: true),
-                    DataType = table.Column<int>(type: "integer", nullable: false),
+                    SettingKey = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    SettingValue = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    DataType = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<string>(type: "character varying(31)", maxLength: 31, nullable: false),
                     UserConfigurable = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -113,15 +113,15 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    EntityType = table.Column<string>(type: "text", nullable: false),
-                    OldValues = table.Column<string>(type: "text", nullable: true),
-                    NewValues = table.Column<string>(type: "text", nullable: true),
-                    PrimaryKey = table.Column<string>(type: "text", nullable: false),
-                    AffectedColumns = table.Column<string>(type: "text", nullable: true),
-                    IpAddress = table.Column<string>(type: "text", nullable: true),
-                    UserAgent = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    Type = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
+                    EntityType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    OldValues = table.Column<string>(type: "jsonb", nullable: true),
+                    NewValues = table.Column<string>(type: "jsonb", nullable: true),
+                    PrimaryKey = table.Column<string>(type: "jsonb", nullable: false),
+                    AffectedColumns = table.Column<string>(type: "jsonb", nullable: true),
+                    IpAddress = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    UserAgent = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
@@ -226,17 +226,17 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Type = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -255,16 +255,15 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -283,17 +282,17 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    Type = table.Column<string>(type: "character varying(31)", maxLength: 31, nullable: false),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    Channel = table.Column<int>(type: "integer", nullable: false),
+                    Channel = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -312,18 +311,17 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Language = table.Column<string>(type: "text", nullable: false),
-                    Currency = table.Column<int>(type: "integer", nullable: false),
-                    Metadata = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    Language = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Currency = table.Column<string>(type: "character varying(31)", maxLength: 31, nullable: false),
                     RequiresConfirmation = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -342,17 +340,17 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Balance = table.Column<float>(type: "real", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -372,20 +370,19 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ChatThreadId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    Role = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     Content = table.Column<string>(type: "text", nullable: true),
-                    DetectedItems = table.Column<string>(type: "text", nullable: true),
+                    DetectedItems = table.Column<string>(type: "jsonb", nullable: true),
                     RequiresConfirmation = table.Column<bool>(type: "boolean", nullable: false),
                     UserConfirmation = table.Column<bool>(type: "boolean", nullable: false),
-                    Metadata = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -404,24 +401,23 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
                     WalletId = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    Interval = table.Column<int>(type: "integer", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Interval = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     StartDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     EndDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    Location = table.Column<string>(type: "text", nullable: true),
+                    Location = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     EstimatedAmount = table.Column<float>(type: "real", nullable: true),
-                    TransactionType = table.Column<int>(type: "integer", nullable: true),
+                    TransactionType = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -446,21 +442,21 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
                     WalletId = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     TargetAmount = table.Column<float>(type: "real", nullable: false),
                     CurrentAmount = table.Column<float>(type: "real", nullable: false),
                     StartTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     EndTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -484,23 +480,22 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FileName = table.Column<string>(type: "text", nullable: false),
-                    ContentType = table.Column<string>(type: "text", nullable: true),
-                    Url = table.Column<string>(type: "text", nullable: false),
+                    FileName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ContentType = table.Column<string>(type: "character varying(31)", maxLength: 31, nullable: true),
+                    Url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     Size = table.Column<int>(type: "integer", nullable: false),
-                    Extension = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    AltText = table.Column<string>(type: "text", nullable: true),
-                    Caption = table.Column<string>(type: "text", nullable: true),
-                    Metadata = table.Column<string>(type: "text", nullable: true),
+                    Extension = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: false),
+                    AltText = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Caption = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     ChatMessageId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -520,20 +515,19 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     WalletId = table.Column<int>(type: "integer", nullable: false),
                     CategoryId = table.Column<int>(type: "integer", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
                     Amount = table.Column<float>(type: "real", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     CalendarEventId = table.Column<int>(type: "integer", nullable: true),
-                    Metadata = table.Column<string>(type: "text", nullable: true),
                     ChatMessageId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true)
+                    DeletedBy = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true)
                 },
                 constraints: table =>
                 {

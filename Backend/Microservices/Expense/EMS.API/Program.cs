@@ -1,6 +1,6 @@
-
 using EMS.API.Common.Extensions;
 using EMS.Infrastructure.Persistence.DbContext;
+using Serilog;
 
 namespace EMS.API
 {
@@ -8,6 +8,12 @@ namespace EMS.API
     {
         public static async Task Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+
+            Log.Information("Starting Server...");
+
             try
             {
                 var host = CreateHostBuilder(args)
@@ -20,12 +26,21 @@ namespace EMS.API
             }
             catch (Exception ex)
             {
-
+                Log.Fatal(ex, "Application terminated unexpectedly");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
             }
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)
             => Host.CreateDefaultBuilder(args)
+            .UseSerilog((context, configuration) =>
+            {
+                configuration.WriteTo.Console();
+                configuration.ReadFrom.Configuration(context.Configuration);
+            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();

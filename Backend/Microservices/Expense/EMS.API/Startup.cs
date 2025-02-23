@@ -14,12 +14,6 @@ namespace EMS.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .CreateLogger();
-
-            Log.Information("Starting Server...");
-
             #region Adding layers
             services.AddApplicationServices();
             services.AddInfrastructureServices(_configuration);

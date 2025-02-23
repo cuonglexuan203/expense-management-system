@@ -1,4 +1,4 @@
-﻿using EMS.Application.Common.Interfaces;
+﻿using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Infrastructure.Identity.Models;
 using EMS.Infrastructure.Persistence.DbContext;
 using EMS.Infrastructure.Persistence.Interceptors;
