@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateways", "ApiGateways", "{6725EC78-33AD-481C-988D-7772922A1128}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{C9FD0606-7423-4245-B60B-07A60966004E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{0BA2219E-CE5A-484F-92B2-95F055CE7565}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Expense", "Expense", "{689E558B-8021-4427-92E9-152C09988BD1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AI", "AI", "{E19770E8-B7E3-42EC-98D0-764B32DFA382}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMS.Core", "Microservices\Expense\EMS.Core\EMS.Core.csproj", "{88F73982-B39D-4B1C-B6EE-5AED21C56E52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMS.Application", "Microservices\Expense\EMS.Application\EMS.Application.csproj", "{A611163B-1F90-4AF9-800C-D38DC5907DCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMS.Infrastructure", "Microservices\Expense\EMS.Infrastructure\EMS.Infrastructure.csproj", "{FD0958B6-5A17-4E0A-B282-1D79434F4FAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMS.API", "Microservices\Expense\EMS.API\EMS.API.csproj", "{C23AF3CC-59B7-4B4D-8C5D-45C66D0C1ED7}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{17C3ABFB-FDDC-4777-90EB-EA73BD78E948}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88F73982-B39D-4B1C-B6EE-5AED21C56E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88F73982-B39D-4B1C-B6EE-5AED21C56E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88F73982-B39D-4B1C-B6EE-5AED21C56E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88F73982-B39D-4B1C-B6EE-5AED21C56E52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A611163B-1F90-4AF9-800C-D38DC5907DCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A611163B-1F90-4AF9-800C-D38DC5907DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A611163B-1F90-4AF9-800C-D38DC5907DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A611163B-1F90-4AF9-800C-D38DC5907DCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD0958B6-5A17-4E0A-B282-1D79434F4FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD0958B6-5A17-4E0A-B282-1D79434F4FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD0958B6-5A17-4E0A-B282-1D79434F4FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD0958B6-5A17-4E0A-B282-1D79434F4FAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C23AF3CC-59B7-4B4D-8C5D-45C66D0C1ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C23AF3CC-59B7-4B4D-8C5D-45C66D0C1ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C23AF3CC-59B7-4B4D-8C5D-45C66D0C1ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C23AF3CC-59B7-4B4D-8C5D-45C66D0C1ED7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17C3ABFB-FDDC-4777-90EB-EA73BD78E948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17C3ABFB-FDDC-4777-90EB-EA73BD78E948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17C3ABFB-FDDC-4777-90EB-EA73BD78E948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17C3ABFB-FDDC-4777-90EB-EA73BD78E948}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{689E558B-8021-4427-92E9-152C09988BD1} = {0BA2219E-CE5A-484F-92B2-95F055CE7565}
+		{E19770E8-B7E3-42EC-98D0-764B32DFA382} = {0BA2219E-CE5A-484F-92B2-95F055CE7565}
+		{88F73982-B39D-4B1C-B6EE-5AED21C56E52} = {689E558B-8021-4427-92E9-152C09988BD1}
+		{A611163B-1F90-4AF9-800C-D38DC5907DCF} = {689E558B-8021-4427-92E9-152C09988BD1}
+		{FD0958B6-5A17-4E0A-B282-1D79434F4FAB} = {689E558B-8021-4427-92E9-152C09988BD1}
+		{C23AF3CC-59B7-4B4D-8C5D-45C66D0C1ED7} = {689E558B-8021-4427-92E9-152C09988BD1}
+	EndGlobalSection
+EndGlobal

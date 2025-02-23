@@ -1,0 +1,8 @@
+# Note:
+# Terminal at: \Backend\Microservices\Expense
+
+# Add migration
+dotnet ef migrations add MigrationName -c ApplicationDbContext -s ./EMS.API/EMS.API.csproj -p ./EMS.Infrastructure/EMS.Infrastructure.csproj -o ./Persistence/Migrations
+
+# Run migration
+dotnet ef database update -c ApplicationDbContext -s ./EMS.API/EMS.API.csproj -p ./EMS.Infrastructure/EMS.Infrastructure.csproj

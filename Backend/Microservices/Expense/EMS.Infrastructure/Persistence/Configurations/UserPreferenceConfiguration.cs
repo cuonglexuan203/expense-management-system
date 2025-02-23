@@ -1,0 +1,22 @@
+﻿using EMS.Core.Entities;
+using EMS.Infrastructure.Persistence.Configurations.Common;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace EMS.Infrastructure.Persistence.Configurations
+{
+    public class UserPreferenceConfiguration : EntityTypeConfiguration<UserPreference>
+    {
+        public override void ConfigureProperties(EntityTypeBuilder<UserPreference> builder)
+        {
+            builder.Property(e => e.UserId)
+                .HasMaxLength(36);
+
+            builder.Property(e => e.Language)
+                .HasMaxLength(100);
+
+            builder.Property(e => e.Currency)
+                .HasConversion<string>()
+                .HasMaxLength(31);
+        }
+    }
+}
