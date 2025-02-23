@@ -1,0 +1,45 @@
+﻿using EMS.Application.Common.Interfaces.DbContext;
+using EMS.Infrastructure.Identity.Models;
+using EMS.Infrastructure.Persistence.DbContext;
+using EMS.Infrastructure.Persistence.Interceptors;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace EMS.Infrastructure
+{
+    public static class DependencyInjection
+    {
+        public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton(TimeProvider.System);
+            services.TryAddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+
+            #region Adding DbContext
+            services
+                .AddDbContext<ApplicationDbContext>((sp, ob) =>
+            {
+                ob.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+
+                ob.UseNpgsql(configuration.GetSection("DatabaseSettings:ConnectionString").Value, options =>
+                {
+                    options.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                    options.EnableRetryOnFailure(3);
+                });
+            });
+
+            services.TryAddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+            services.TryAddScoped<ApplicationDbContextInitializer>();
+
+            services
+                .AddIdentityCore<ApplicationUser>()
+                .AddRoles<ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+            #endregion
+        }
+    }
+}
