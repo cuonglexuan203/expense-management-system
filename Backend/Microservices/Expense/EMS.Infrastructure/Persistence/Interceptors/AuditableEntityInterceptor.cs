@@ -11,10 +11,10 @@ namespace EMS.Infrastructure.Persistence.Interceptors
 {
     public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
-        private readonly IUser _user;
+        private readonly ICurrentUserService _user;
         private readonly TimeProvider _timeProvider;
 
-        public AuditableEntityInterceptor(IUser user, TimeProvider timeProvider)
+        public AuditableEntityInterceptor(ICurrentUserService user, TimeProvider timeProvider)
         {
             _timeProvider = timeProvider;
             _user = user;

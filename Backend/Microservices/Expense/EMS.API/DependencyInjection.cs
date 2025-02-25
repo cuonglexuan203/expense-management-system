@@ -21,7 +21,7 @@ namespace EMS.API
             services.AddAuthorization(options => options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
             services.AddProblemDetails();
             services.AddHttpContextAccessor();
-            services.TryAddScoped<IUser, CurrentUserService>();
+            services.TryAddScoped<ICurrentUserService, CurrentUserService>();
 
             AddSwaggerService(services);
             AddCors(services);
