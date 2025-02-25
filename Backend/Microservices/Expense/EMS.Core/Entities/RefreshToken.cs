@@ -13,5 +13,17 @@ namespace EMS.Core.Entities
         #region Navigations
         public virtual IUser<string> User { get; set; } = default!;
         #endregion
+
+        public RefreshToken()
+        {
+            
+        }
+
+        public RefreshToken(string userId, string token, DateTimeOffset expires)
+        {
+            UserId = userId;
+            Token = token;
+            Expires = expires;
+        }
     }
 }
