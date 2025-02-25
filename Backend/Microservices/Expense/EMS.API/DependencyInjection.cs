@@ -6,7 +6,6 @@ using EMS.Core.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
-using Serilog;
 
 namespace EMS.API
 {
