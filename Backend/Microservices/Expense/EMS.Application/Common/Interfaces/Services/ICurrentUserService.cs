@@ -1,6 +1,6 @@
 ﻿namespace EMS.Application.Common.Interfaces.Services
 {
-    public interface IUser
+    public interface ICurrentUserService
     {
         string? Id { get; }
         string? IpAddress { get; }

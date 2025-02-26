@@ -10,10 +10,10 @@ namespace EMS.Application.Common.Behaviors
     {
         private readonly Stopwatch _timer;
         private readonly ILogger<PerformanceBehavior<TRequest, TResponse>> _logger;
-        private readonly IUser _user;
+        private readonly ICurrentUserService _user;
         private readonly IIdentityService _identityService;
 
-        public PerformanceBehavior(ILogger<PerformanceBehavior<TRequest, TResponse>> logger, IUser user, IIdentityService identityService)
+        public PerformanceBehavior(ILogger<PerformanceBehavior<TRequest, TResponse>> logger, ICurrentUserService user, IIdentityService identityService)
         {
             _timer = new Stopwatch();
 

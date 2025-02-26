@@ -4,12 +4,12 @@ namespace EMS.Core.Entities.Common
 {
     public class BaseAuditableEntity<TKey> : BaseEntity<TKey>, IAuditableEntity
     {
-        public DateTimeOffset? CreatedAt { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTimeOffset? ModifiedAt { get; set; }
-        public string? ModifiedBy { get; set; }
-        public bool IsDeleted { get; set; }
-        public DateTimeOffset? DeletedAt { get; set; }
-        public string? DeletedBy { get; set; }
+        public virtual DateTimeOffset? CreatedAt { get; set; }
+        public virtual string? CreatedBy { get; set; }
+        public virtual DateTimeOffset? ModifiedAt { get; set; }
+        public virtual string? ModifiedBy { get; set; }
+        public virtual bool IsDeleted { get; set; }
+        public virtual DateTimeOffset? DeletedAt { get; set; }
+        public virtual string? DeletedBy { get; set; }
     }
 }

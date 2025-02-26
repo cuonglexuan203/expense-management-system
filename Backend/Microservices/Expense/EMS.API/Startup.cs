@@ -17,7 +17,7 @@ namespace EMS.API
             #region Adding layers
             services.AddApplicationServices();
             services.AddInfrastructureServices(_configuration);
-            services.AddApiServices();
+            services.AddApiServices(_configuration);
             #endregion
         }
 
