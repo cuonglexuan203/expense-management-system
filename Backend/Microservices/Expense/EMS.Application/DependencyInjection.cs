@@ -1,5 +1,4 @@
-﻿
-using EMS.Application.Common.Behaviors;
+﻿using EMS.Application.Common.Behaviors;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -8,7 +7,7 @@ namespace EMS.Application
 {
     public static class DependencyInjection
     {
-        public static void AddApplicationServices(this IServiceCollection services)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
@@ -22,6 +21,8 @@ namespace EMS.Application
                 config.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 config.AddOpenBehavior(typeof(PerformanceBehavior<,>));
             });
+
+            return services;
         }
     }
 }
