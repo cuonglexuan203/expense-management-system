@@ -12,7 +12,7 @@ namespace EMS.Application.Common.Interfaces.Services
         Task<bool> AuthorizeAsync(string userId, string policyName, CancellationToken cancellationToken = default);
         Task<Result> UpdateUserAsync(string userId, string userName, CancellationToken cancellationToken = default);
         Task<Result> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default);
-        Task<Result> ValidateUserAsync(string userName, string password, CancellationToken cancellationToken = default);
+        Task<(Result result, string? userId)> ValidateUserAsync(string userName, string password, CancellationToken cancellationToken = default);
         Task<string?> GetUserNameAsync(string userId, CancellationToken cancellationToken = default);
         Task<Result> CreateRoleAsync(string roleName, CancellationToken cancellationToken = default);
     }

@@ -152,20 +152,20 @@ namespace EMS.Infrastructure.Identity
         }
 
 
-        public async Task<Result> ValidateUserAsync(string userName, string password, CancellationToken cancellationToken = default)
+        public async Task<(Result result, string? userId)> ValidateUserAsync(string userName, string password, CancellationToken cancellationToken = default)
         {
             var user = await _userManager.FindByNameAsync(userName);
 
             if (user == null)
             {
-                return Result.Failure(["User not found"]);
+                return (Result.Failure(["User not found"]), null);
             }
 
             var result = await _userManager.CheckPasswordAsync(user, password);
-
+            
             return result ?
-                Result.Success() :
-                Result.Failure(["Invalid password"]);
+                (Result.Success(), user.Id) :
+                (Result.Failure(["Invalid password"]), null);
         }
 
         public async Task<string?> GetUserNameAsync(string userId, CancellationToken cancellationToken = default)

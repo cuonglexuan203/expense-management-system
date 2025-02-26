@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using EMS.Infrastructure.Common.Options;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EMS.API
 {
@@ -19,6 +20,7 @@ namespace EMS.API
             services.AddExceptionHandler<CustomExceptionHandler>();
             services.AddControllers();
 
+            services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
             var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt Settings not configured");
 
             services.AddAuthentication(options =>
