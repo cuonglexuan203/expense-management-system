@@ -1,5 +1,6 @@
 ﻿using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Core.Constants;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -29,6 +30,14 @@ namespace EMS.Application.Features.Auth.Commands.Register
             if (!result.Succeeded)
             {
                 throw new BadRequestException(string.Join(", ", result.Errors));
+            }
+
+            var roleResult = await _identityService.AddToRoleAsync(userId, Roles.User);
+
+            if (!roleResult.Succeeded)
+            {
+                _logger.LogError("Failed to add user {0} to role {1}", request.Email, Roles.User);
+                throw new Exception(string.Join(", ", roleResult.Errors));
             }
 
             _logger.LogInformation("User {0} registered", request.Email);

@@ -23,7 +23,6 @@
     <Folder Include="Common\DTOs\" />
     <Folder Include="Common\Validators\" />
     <Folder Include="Common\Utils\" />
-    <Folder Include="Features\Auth\Commands\" />
     <Folder Include="Features\Auth\Queries\" />
     <Folder Include="Features\Transaction\Commands\" />
     <Folder Include="Features\Transaction\Queries\" />

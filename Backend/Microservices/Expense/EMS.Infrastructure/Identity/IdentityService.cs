@@ -167,5 +167,19 @@ namespace EMS.Infrastructure.Identity
                 Result.Success() :
                 Result.Failure(["Invalid password"]);
         }
+
+        public async Task<string?> GetUserNameAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            return user?.UserName;
+        }
+
+        public async Task<Result> CreateRoleAsync(string roleName, CancellationToken cancellationToken = default)
+        {
+            var roleResult = await _roleManager.CreateAsync(new ApplicationRole(roleName));
+
+            return roleResult.ToApplicationResult();
+        }
     }
 }
