@@ -5,29 +5,26 @@ using EMS.Infrastructure.Common.Options;
 using EMS.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EMS.Infrastructure.Identity
 {
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IApplicationDbContext _context;
-        private readonly ITokenService _tokenService;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
-        private readonly JwtSettings _jwtSettings;
+        private readonly IAuthorizationService _authorizationService;
 
         public IdentityService(UserManager<ApplicationUser> userManager, IApplicationDbContext context,
             ITokenService tokenService, IOptions<JwtSettings> jwtSettings, RoleManager<ApplicationRole> roleManager,
-            IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory
+            IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory, IAuthorizationService authorizationService
             )
         {
             _userManager = userManager;
-            _context = context;
-            _tokenService = tokenService;
             _roleManager = roleManager;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
-            _jwtSettings = jwtSettings.Value;
+            _authorizationService = authorizationService;
         }
 
         public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, CancellationToken cancellationToken = default)
@@ -110,7 +107,6 @@ namespace EMS.Infrastructure.Identity
 
         public async Task<bool> AuthorizeAsync(string userId, string policyName, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
 
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -120,23 +116,56 @@ namespace EMS.Infrastructure.Identity
             }
 
             var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-            //var result = await _authenticationService.
+            var result = await _authorizationService.AuthorizeAsync(principal, policyName);
+
+            return result.Succeeded;
+        }
+        public async Task<Result> UpdateUserAsync(string userId, string userName, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return Result.Failure(["User not found"]);
+            }
+
+            user.UserName = userName;
+            user.Email = userName;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            return result.ToApplicationResult();
         }
 
-        public Task<Result> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default)
+        public async Task<Result> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return Result.Failure(["User not found"]);
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+            return result.ToApplicationResult();
         }
 
-        public Task<Result> UpdateUserAsync(string userId, string userName, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
 
-        }
-
-        public Task<Result> ValidateUserAsync(string userName, string password, CancellationToken cancellationToken = default)
+        public async Task<Result> ValidateUserAsync(string userName, string password, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                return Result.Failure(["User not found"]);
+            }
+
+            var result = await _userManager.CheckPasswordAsync(user, password);
+
+            return result ?
+                Result.Success() :
+                Result.Failure(["Invalid password"]);
         }
     }
 }
