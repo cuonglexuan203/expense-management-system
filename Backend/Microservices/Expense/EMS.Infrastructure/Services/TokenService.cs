@@ -77,14 +77,15 @@ namespace EMS.Infrastructure.Services
             }
 
             var storedRefreshToken = await _context.RefreshTokens
-                .FirstOrDefaultAsync(e => e.Token == refreshToken, cancellationToken);
-
+                .SingleOrDefaultAsync(e => e.Token == refreshToken, cancellationToken);
             if (storedRefreshToken == null ||
                 storedRefreshToken.UserId != userId ||
                 !storedRefreshToken.IsActive)
             {
                 throw new SecurityTokenException("Invalid refresh token");
             }
+
+            storedRefreshToken.RevokeAt = DateTime.UtcNow;
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)

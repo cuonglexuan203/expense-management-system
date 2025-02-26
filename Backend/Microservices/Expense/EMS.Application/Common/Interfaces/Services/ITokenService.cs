@@ -1,6 +1,4 @@
 ﻿using EMS.Application.Common.Models;
-using EMS.Core.Entities;
-using System.Security.Claims;
 
 namespace EMS.Application.Common.Interfaces.Services
 {

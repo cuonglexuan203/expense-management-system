@@ -4,27 +4,14 @@ namespace EMS.Application.Common.Interfaces.Services
 {
     public interface IIdentityService
     {
-        Task<string?> GetUserNameAsync(string userId);
-        Task<bool> IsInRoleAsync(string userId, string roleName);
-        Task<bool> AuthorizeAsync(string userId, string policyName);
-        Task<(Result result, string userId)> CreateUserAsync(string userName, string password);
-        Task<Result> DeleteUserAsync(string userId);
-
-        //
-
-        // Authentication
-        Task<TokenResponse> LoginAsync(string email, string password);
-        Task LogoutAsync(string accessToken);
-        Task<TokenResponse> RefreshTokenAsync(string accessToken, string refreshToken);
-
-        // User Management
-        Task<Result> RegisterAsync(string email, string password);
-        Task<string> GenerateEmailConfirmationTokenAsync(string email);
-        Task<Result> ConfirmEmailAsync(string userId, string token);
-        Task RequestPasswordResetAsync(string email);
-        Task<Result> ResetPasswordAsync(string email, string token, string newPassword);
-
-        // Token Management
-        Task RevokeRefreshTokensForUser(string userId);
+        Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, CancellationToken cancellationToken = default);
+        Task<Result> DeleteUserAsync(string userId, CancellationToken cancellationToken = default);
+        Task<bool> IsInRoleAsync(string userId, string role, CancellationToken cancellationToken = default);
+        Task<Result> AddToRoleAsync(string userId, string role, CancellationToken cancellationToken = default);
+        Task<Result> RemoveFromRoleAsync(string userId, string role, CancellationToken cancellationToken = default);
+        Task<bool> AuthorizeAsync(string userId, string policyName, CancellationToken cancellationToken = default);
+        Task<Result> UpdateUserAsync(string userId, string userName, CancellationToken cancellationToken = default);
+        Task<Result> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default);
+        Task<Result> ValidateUserAsync(string userName, string password, CancellationToken cancellationToken = default);
     }
 }
