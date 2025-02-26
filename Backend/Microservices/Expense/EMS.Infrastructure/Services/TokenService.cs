@@ -99,7 +99,7 @@ namespace EMS.Infrastructure.Services
         public async Task RevokeTokenAsync(string userId, CancellationToken cancellationToken = default)
         {
             var refreshTokens = await _context.RefreshTokens
-                .Where(e => e.UserId == userId && e.IsActive)
+                .Where(e => e.UserId == userId && e.RevokeAt == null && e.ExpiresAt > DateTime.UtcNow)
                 .ToListAsync(cancellationToken);
 
             foreach (var refreshToken in refreshTokens)
