@@ -1,4 +1,5 @@
-﻿using EMS.Application.Common.Interfaces.DbContext;
+﻿using EMS.Core.Entities;
+using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Models;
 using EMS.Infrastructure.Common.Options;
@@ -25,40 +26,6 @@ namespace EMS.Infrastructure.Identity
             _context = context;
             _tokenService = tokenService;
             _jwtSettings = jwtSettings.Value;
-        }
-        public Task<bool> AuthorizeAsync(string userId, string policyName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Result> ConfirmEmailAsync(string userId, string token)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<(Result result, string userId)> CreateUserAsync(string userName, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Result> DeleteUserAsync(string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> GenerateEmailConfirmationTokenAsync(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string?> GetUserNameAsync(string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> IsInRoleAsync(string userId, string roleName)
-        {
-            throw new NotImplementedException();
         }
 
         //
@@ -96,31 +63,10 @@ namespace EMS.Infrastructure.Identity
             if (storedRefreshToken == null || storedRefreshToken.UserId != userId || !storedRefreshToken.IsActive)
                 throw new SecurityTokenException("Invalid token");
 
-            storedRefreshToken.Expires = DateTime.UtcNow;
+            storedRefreshToken.ExpiresAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
             return await GenerateTokensAsync(user);
-
-        }
-
-        public Task<Result> RegisterAsync(string email, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RequestPasswordResetAsync(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Result> ResetPasswordAsync(string email, string token, string newPassword)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RevokeRefreshTokensForUser(string userId)
-        {
-            throw new NotImplementedException();
         }
 
         private async Task<TokenResponse> GenerateTokensAsync(ApplicationUser user)
@@ -128,7 +74,7 @@ namespace EMS.Infrastructure.Identity
             var accessToken = _tokenService.GenerateAccessToken(user);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
-            _context.RefreshTokens.Add(new Core.Entities.RefreshToken(user.Id, refreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
+            _context.RefreshTokens.Add(new RefreshToken(user.Id, refreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays)));
             await _context.SaveChangesAsync();
 
             return new(accessToken, refreshToken, DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationInMinutes));

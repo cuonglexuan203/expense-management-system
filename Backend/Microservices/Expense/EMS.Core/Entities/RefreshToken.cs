@@ -6,9 +6,9 @@ namespace EMS.Core.Entities
     {
         public string UserId { get; set; } = default!;
         public string Token { get; set; } = default!;
-        public DateTimeOffset Expires { get; set; }
-        public DateTimeOffset? Revoked { get; set; }
-        public bool IsActive => Revoked == null && Expires > DateTimeOffset.UtcNow;
+        public DateTime ExpiresAt { get; set; }
+        public DateTime? RevokeAt { get; set; }
+        public bool IsActive => RevokeAt == null && ExpiresAt > DateTime.UtcNow;
 
         #region Navigations
         public virtual IUser<string> User { get; set; } = default!;
@@ -19,11 +19,11 @@ namespace EMS.Core.Entities
             
         }
 
-        public RefreshToken(string userId, string token, DateTimeOffset expires)
+        public RefreshToken(string userId, string token, DateTime expiresAt)
         {
             UserId = userId;
             Token = token;
-            Expires = expires;
+            ExpiresAt = expiresAt;
         }
     }
 }

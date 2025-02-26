@@ -19,7 +19,7 @@ namespace EMS.Infrastructure
         {
             services.AddSingleton(TimeProvider.System);
             services.TryAddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-            services.TryAddScoped<ITokenService, JwtService>();
+            services.TryAddScoped<ITokenService, TokenService>();
             
             #region Adding DbContext
             services

@@ -8,5 +8,6 @@ namespace EMS.Core.Entities
         string FullName { get; set; }
         string Avatar { get; set; }
         string? Email { get; set; }
+        string? UserName { get; set; }
     }
 }
