@@ -85,7 +85,7 @@ namespace EMS.API
                 {
                     In = ParameterLocation.Header,
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     Description = "Type into the textbox: Bearer {your JWT token}."

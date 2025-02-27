@@ -104,7 +104,7 @@ namespace EMS.Infrastructure.Services
 
             foreach (var refreshToken in refreshTokens)
             {
-                refreshToken.RevokeAt = DateTime.Now;
+                refreshToken.RevokeAt = DateTime.UtcNow;
             }
 
             await _context.SaveChangesAsync();
