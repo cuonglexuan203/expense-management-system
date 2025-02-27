@@ -1,9 +1,10 @@
-﻿using EMS.Core.Entities;
+﻿using EMS.Core.Common.Interfaces.Audit;
+using EMS.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace EMS.Infrastructure.Identity.Models
 {
-    public class ApplicationUser : IdentityUser, IUser<string>
+    public class ApplicationUser : IdentityUser, IUser<string>, IAuditableEntity
     {
         public string FullName { get; set; } = default!;
         public string Avatar { get; set; } = default!;
