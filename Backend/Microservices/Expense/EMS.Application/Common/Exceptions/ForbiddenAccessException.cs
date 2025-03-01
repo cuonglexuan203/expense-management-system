@@ -9,6 +9,7 @@
 
         public ForbiddenAccessException(string? message) : base(message)
         {
+
         }
     }
 }

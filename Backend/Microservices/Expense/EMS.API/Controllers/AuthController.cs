@@ -1,7 +1,9 @@
 ﻿using EMS.Application.Features.Auth.Commands.RefreshToken;
 using EMS.Application.Features.Auth.Commands.Register;
 using EMS.Application.Features.Auth.Queries.Login;
+using EMS.Application.Features.Auth.Queries.Logout;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EMS.API.Controllers
@@ -33,6 +35,15 @@ namespace EMS.API.Controllers
 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(RefreshTokenCommand command)
+        {
+            var result = await _sender.Send(command);
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(LogoutCommand command)
         {
             var result = await _sender.Send(command);
 

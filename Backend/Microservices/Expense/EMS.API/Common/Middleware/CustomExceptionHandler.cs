@@ -1,6 +1,7 @@
 ﻿using EMS.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EMS.API.Common.Middleware
 {
@@ -17,6 +18,7 @@ namespace EMS.API.Common.Middleware
              BadRequestException ex => await HandleBadRequestException(httpContext, ex),
              NotFoundException ex => await HandleNotFoundException(httpContext, ex),
              UnauthorizedAccessException ex => await HandleUnauthorizedAccessException(httpContext, ex),
+             SecurityTokenException ex => await HandleSecurityTokenException(httpContext, ex),
              ForbiddenAccessException ex => await HandleForbiddenAccessException(httpContext, ex),
              _ => false
          };
@@ -42,6 +44,21 @@ namespace EMS.API.Common.Middleware
             var problemDetails = new ProblemDetails
             {
                 Title = "Unauthorized",
+                Status = StatusCodes.Status401Unauthorized,
+                Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
+            };
+
+            await httpContext.Response.WriteAsJsonAsync(problemDetails).ConfigureAwait(false);
+
+            return true;
+        }
+
+        private async Task<bool> HandleSecurityTokenException(HttpContext httpContext, SecurityTokenException ex)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            var problemDetails = new ProblemDetails
+            {
+                Title = "Invalid token",
                 Status = StatusCodes.Status401Unauthorized,
                 Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
             };
