@@ -8,10 +8,10 @@ namespace EMS.Application.Common.Behaviors
         where TRequest : notnull
     {
         private readonly ILogger<LoggingBehavior<TRequest>> _logger;
-        private readonly IUser _user;
+        private readonly ICurrentUserService _user;
         private readonly IIdentityService _identityService;
 
-        public LoggingBehavior(ILogger<LoggingBehavior<TRequest>> logger, IUser user, IIdentityService identityService)
+        public LoggingBehavior(ILogger<LoggingBehavior<TRequest>> logger, ICurrentUserService user, IIdentityService identityService)
         {
             _logger = logger;
             _user = user;

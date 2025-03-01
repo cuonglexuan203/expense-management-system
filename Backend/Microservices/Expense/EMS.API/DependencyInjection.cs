@@ -3,26 +3,54 @@ using EMS.API.Common.Middleware;
 using EMS.API.Services;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Core.Constants;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
-using Serilog;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using EMS.Infrastructure.Common.Options;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EMS.API
 {
     public static class DependencyInjection
     {
-        public static void AddApiServices(this IServiceCollection services)
+        public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddExceptionHandler<CustomExceptionHandler>();
             services.AddControllers();
-            services.AddAuthentication()
-                .AddBearerToken(IdentityConstants.BearerScheme);
+
+            services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
+            var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt Settings not configured");
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+                        ClockSkew = TimeSpan.Zero,
+                    };
+                });
+
             services.AddAuthorizationBuilder();
             services.AddAuthorization(options => options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
             services.AddProblemDetails();
             services.AddHttpContextAccessor();
-            services.TryAddScoped<IUser, CurrentUserService>();
+            services.TryAddScoped<ICurrentUserService, CurrentUserService>();
 
             AddSwaggerService(services);
             AddCors(services);
@@ -43,6 +71,8 @@ namespace EMS.API
                 options.DefaultApiVersion = defaultVersion;
             });
             #endregion
+
+            return services;
         }
 
         private static void AddSwaggerService(IServiceCollection services)
@@ -55,7 +85,7 @@ namespace EMS.API
                 {
                     In = ParameterLocation.Header,
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     Description = "Type into the textbox: Bearer {your JWT token}."

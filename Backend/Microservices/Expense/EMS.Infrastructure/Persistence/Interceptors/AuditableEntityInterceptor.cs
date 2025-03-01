@@ -11,10 +11,10 @@ namespace EMS.Infrastructure.Persistence.Interceptors
 {
     public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
-        private readonly IUser _user;
+        private readonly ICurrentUserService _user;
         private readonly TimeProvider _timeProvider;
 
-        public AuditableEntityInterceptor(IUser user, TimeProvider timeProvider)
+        public AuditableEntityInterceptor(ICurrentUserService user, TimeProvider timeProvider)
         {
             _timeProvider = timeProvider;
             _user = user;
@@ -39,6 +39,8 @@ namespace EMS.Infrastructure.Persistence.Interceptors
                 return;
             }
 
+            bool isUserAuthenticated = !string.IsNullOrEmpty(_user.Id);
+
             var auditEntries = new List<AuditEntry>();
             foreach (var entry in context.ChangeTracker.Entries())
             {
@@ -54,13 +56,21 @@ namespace EMS.Infrastructure.Persistence.Interceptors
                     if (entry.State == EntityState.Added && entry.Entity is ICreated created)
                     {
                         created.CreatedAt = utcNow;
-                        created.CreatedBy = _user.Id;
+
+                        if (isUserAuthenticated)
+                        {
+                            created.CreatedBy = _user.Id;
+                        }
                     }
 
                     if (entry.Entity is IModified modified)
                     {
                         modified.ModifiedAt = utcNow;
-                        modified.ModifiedBy = _user.Id;
+
+                        if (isUserAuthenticated)
+                        {
+                            modified.ModifiedBy = _user.Id;
+                        }
                     }
                 }
 
@@ -68,7 +78,11 @@ namespace EMS.Infrastructure.Persistence.Interceptors
                 {
                     deleted.IsDeleted = true;
                     deleted.DeletedAt = utcNow;
-                    deleted.DeletedBy = _user.Id;
+
+                    if (isUserAuthenticated)
+                    {
+                        deleted.DeletedBy = _user.Id;
+                    }
 
                     entry.State = EntityState.Modified;
                 }
@@ -76,9 +90,12 @@ namespace EMS.Infrastructure.Persistence.Interceptors
                 auditEntries.Add(GetAuditEntry(entry));
             }
 
-            foreach (var auditEntry in auditEntries)
+            if (isUserAuthenticated)
             {
-                context.Add(auditEntry.ToActivityLog());
+                foreach (var auditEntry in auditEntries)
+                {
+                    context.Add(auditEntry.ToActivityLog());
+                }
             }
         }
 

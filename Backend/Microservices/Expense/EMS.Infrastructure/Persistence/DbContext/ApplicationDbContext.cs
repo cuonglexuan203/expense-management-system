@@ -1,5 +1,4 @@
-﻿using EMS.Application.Common.Interfaces;
-using EMS.Application.Common.Interfaces.DbContext;
+﻿using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Core.Entities;
 using EMS.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -27,6 +26,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<UserPreference> UserPreferences { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
