@@ -26,6 +26,8 @@ dependencies:
   easy_localization: 3.0.7+1
   iconsax: ^0.0.8
   freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.0
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

@@ -8,6 +8,7 @@ import 'package:flutter_boilerplate/feature/auth/widget/sign_in_page.dart';
 import 'package:flutter_boilerplate/feature/auth/widget/sign_up_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_boilerplate/feature/chat/widget/chat_page.dart';
 
 part 'app_router.g.dart';
 
@@ -60,6 +61,18 @@ class SignUpRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return SignUpPage();
+  }
+}
+
+@TypedGoRoute<ChatRoute>(path: ChatRoute.path)
+class ChatRoute extends GoRouteData {
+  const ChatRoute();
+
+  static const path = '/chat';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const ChatPage();
   }
 }
 

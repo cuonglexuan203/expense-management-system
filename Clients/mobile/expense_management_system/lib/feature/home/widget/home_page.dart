@@ -1,11 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boilerplate/app/widget/bottom_nav_bar.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_boilerplate/feature/home/provider/books_provider.dart';
-import 'package:flutter_boilerplate/feature/home/widget/row_book_widget.dart';
-import 'package:flutter_boilerplate/shared/http/app_exception.dart';
-import 'package:flutter_boilerplate/shared/route/app_router.dart';
+import 'package:flutter_boilerplate/gen/colors.gen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,15 +17,15 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF386BF6),
+      backgroundColor: Colors.white,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF9DB2CE),
-              Color(0xFF386BF6),
+              Color(0xFFB7C5E1),
+              Color(0xFF4B7BF9),
             ],
           ),
         ),
@@ -37,11 +33,11 @@ class _HomePageState extends State<HomePage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                // Header Section
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      // Header
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -53,6 +49,8 @@ class _HomePageState extends State<HomePage> {
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'Nunito',
                                 ),
                               ),
                               SizedBox(height: 4),
@@ -61,69 +59,77 @@ class _HomePageState extends State<HomePage> {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Nunito',
                                 ),
                               ),
                             ],
                           ),
                           IconButton(
-                            icon: const Icon(Icons.notifications_outlined,
-                                color: Colors.white),
+                            icon: const Icon(
+                              Iconsax.notification,
+                              color: Colors.white,
+                            ),
                             onPressed: () {},
                           ),
                         ],
                       ),
                       const SizedBox(height: 20),
-                      // Wallet Section
+                      // Wallets Row
                       Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF386BF6),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
                         child: Column(
                           children: [
-                            // Wallets Row
                             Row(
                               children: [
-                                // Main Wallet
-                                Container(
-                                  width: 120,
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF4B7BF9),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: const Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Icon(Icons.account_balance_wallet,
-                                          color: Colors.white, size: 24),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        "Wallet's name",
-                                        style: TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 12,
-                                          fontFamily: 'Nunito',
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: ColorName.blue.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color:
+                                              ColorName.blue.withOpacity(0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
                                         ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        '\$2,548.00',
-                                        style: TextStyle(
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Icon(
+                                          Iconsax.wallet,
                                           color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Nunito',
+                                          size: 24,
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          "Wallet's name",
+                                          style: TextStyle(
+                                            color:
+                                                Colors.white.withOpacity(0.7),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'Nunito',
+                                          ),
+                                        ),
+                                        const Text(
+                                          '\$2,548.00',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Nunito',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 15),
-                                // Add New Wallet
                                 Container(
                                   width: 100,
                                   padding: const EdgeInsets.all(15),
@@ -131,17 +137,17 @@ class _HomePageState extends State<HomePage> {
                                     color: Colors.white.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(15),
                                   ),
-                                  child: const Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  child: Column(
                                     children: [
-                                      Icon(Icons.add,
-                                          color: Colors.white, size: 24),
-                                      SizedBox(height: 8),
+                                      const Icon(Iconsax.add,
+                                          color: Colors.white),
+                                      const SizedBox(height: 8),
                                       Text(
                                         'New wallet',
                                         style: TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 12,
+                                          color: Colors.white.withOpacity(0.7),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
                                           fontFamily: 'Nunito',
                                         ),
                                       ),
@@ -150,8 +156,26 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20),
-                            // Balance Section
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Balance Card
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: ColorName.blue.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: ColorName.blue.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -163,6 +187,8 @@ class _HomePageState extends State<HomePage> {
                                       style: TextStyle(
                                         color: Colors.white70,
                                         fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'Nunito',
                                       ),
                                     ),
                                     SizedBox(height: 8),
@@ -171,20 +197,22 @@ class _HomePageState extends State<HomePage> {
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 24,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Nunito',
                                       ),
                                     ),
                                   ],
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.more_horiz,
-                                      color: Colors.white),
+                                  icon: const Icon(
+                                    Iconsax.more,
+                                    color: Colors.white,
+                                  ),
                                   onPressed: () {},
                                 ),
                               ],
                             ),
                             const SizedBox(height: 20),
-                            // Income/Expenses Row
                             Row(
                               children: [
                                 Expanded(
@@ -192,16 +220,16 @@ class _HomePageState extends State<HomePage> {
                                     icon: Icons.arrow_downward,
                                     label: 'Income',
                                     amount: '\$1,840.00',
-                                    iconColor: Colors.green,
+                                    iconColor: Colors.white70,
                                   ),
                                 ),
-                                const SizedBox(width: 20),
+                                const SizedBox(width: 15),
                                 Expanded(
                                   child: _buildIncomeExpenseItem(
                                     icon: Icons.arrow_upward,
                                     label: 'Expenses',
                                     amount: '\$284.00',
-                                    iconColor: Colors.red,
+                                    iconColor: Colors.white70,
                                   ),
                                 ),
                               ],
@@ -212,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                // Transactions History
+                // Transactions Section
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: const BoxDecoration(
@@ -230,19 +258,12 @@ class _HomePageState extends State<HomePage> {
                             'Transactions History',
                             style: TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           TextButton(
                             onPressed: () {},
-                            child: Text(
-                              'See all',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontFamily: 'Nunito',
-                              ),
-                            ),
+                            child: const Text('See all'),
                           ),
                         ],
                       ),
@@ -275,7 +296,6 @@ class _HomePageState extends State<HomePage> {
                         amount: '-\$11.99',
                         isIncome: false,
                       ),
-                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
@@ -292,24 +312,11 @@ class _HomePageState extends State<HomePage> {
           });
         },
       ),
-      floatingActionButton: Container(
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF9DB2CE),
-              Color(0xFF386BF6),
-            ],
-          ),
-        ),
-        child: FloatingActionButton(
-          onPressed: () {},
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: const Icon(Iconsax.add, color: Colors.white),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/chat'),
+        shape: const CircleBorder(),
+        backgroundColor: const Color(0xFF386BF6),
+        child: const Icon(Iconsax.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
@@ -322,42 +329,50 @@ class _HomePageState extends State<HomePage> {
     required Color iconColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white12,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: iconColor, size: 20),
+        color: const Color(0xFF386BF6),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(
+                icon,
+                color: Colors.white,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
               Text(
                 label,
                 style: const TextStyle(
                   color: Colors.white70,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                amount,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontFamily: 'Nunito',
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            amount,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Nunito',
+            ),
           ),
         ],
       ),
@@ -378,6 +393,7 @@ class _HomePageState extends State<HomePage> {
           Container(
             width: 48,
             height: 48,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(12),
@@ -410,7 +426,7 @@ class _HomePageState extends State<HomePage> {
             amount,
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
               color: isIncome ? Colors.green : Colors.red,
             ),
           ),

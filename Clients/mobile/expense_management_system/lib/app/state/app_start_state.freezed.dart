@@ -12,7 +12,7 @@ part of 'app_start_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$AppStartState {
@@ -91,27 +91,34 @@ class _$AppStartStateCopyWithImpl<$Res, $Val extends AppStartState>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of AppStartState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
-abstract class _$$_InitialCopyWith<$Res> {
-  factory _$$_InitialCopyWith(
-          _$_Initial value, $Res Function(_$_Initial) then) =
-      __$$_InitialCopyWithImpl<$Res>;
+abstract class _$$InitialImplCopyWith<$Res> {
+  factory _$$InitialImplCopyWith(
+          _$InitialImpl value, $Res Function(_$InitialImpl) then) =
+      __$$InitialImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$_InitialCopyWithImpl<$Res>
-    extends _$AppStartStateCopyWithImpl<$Res, _$_Initial>
-    implements _$$_InitialCopyWith<$Res> {
-  __$$_InitialCopyWithImpl(_$_Initial _value, $Res Function(_$_Initial) _then)
+class __$$InitialImplCopyWithImpl<$Res>
+    extends _$AppStartStateCopyWithImpl<$Res, _$InitialImpl>
+    implements _$$InitialImplCopyWith<$Res> {
+  __$$InitialImplCopyWithImpl(
+      _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppStartState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$_Initial implements _Initial {
-  const _$_Initial();
+class _$InitialImpl implements _Initial {
+  const _$InitialImpl();
 
   @override
   String toString() {
@@ -119,9 +126,9 @@ class _$_Initial implements _Initial {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$_Initial);
+        (other.runtimeType == runtimeType && other is _$InitialImpl);
   }
 
   @override
@@ -210,29 +217,32 @@ class _$_Initial implements _Initial {
 }
 
 abstract class _Initial implements AppStartState {
-  const factory _Initial() = _$_Initial;
+  const factory _Initial() = _$InitialImpl;
 }
 
 /// @nodoc
-abstract class _$$UnauthenticatedCopyWith<$Res> {
-  factory _$$UnauthenticatedCopyWith(
-          _$Unauthenticated value, $Res Function(_$Unauthenticated) then) =
-      __$$UnauthenticatedCopyWithImpl<$Res>;
+abstract class _$$UnauthenticatedImplCopyWith<$Res> {
+  factory _$$UnauthenticatedImplCopyWith(_$UnauthenticatedImpl value,
+          $Res Function(_$UnauthenticatedImpl) then) =
+      __$$UnauthenticatedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$UnauthenticatedCopyWithImpl<$Res>
-    extends _$AppStartStateCopyWithImpl<$Res, _$Unauthenticated>
-    implements _$$UnauthenticatedCopyWith<$Res> {
-  __$$UnauthenticatedCopyWithImpl(
-      _$Unauthenticated _value, $Res Function(_$Unauthenticated) _then)
+class __$$UnauthenticatedImplCopyWithImpl<$Res>
+    extends _$AppStartStateCopyWithImpl<$Res, _$UnauthenticatedImpl>
+    implements _$$UnauthenticatedImplCopyWith<$Res> {
+  __$$UnauthenticatedImplCopyWithImpl(
+      _$UnauthenticatedImpl _value, $Res Function(_$UnauthenticatedImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppStartState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$Unauthenticated implements Unauthenticated {
-  const _$Unauthenticated();
+class _$UnauthenticatedImpl implements Unauthenticated {
+  const _$UnauthenticatedImpl();
 
   @override
   String toString() {
@@ -240,9 +250,9 @@ class _$Unauthenticated implements Unauthenticated {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$Unauthenticated);
+        (other.runtimeType == runtimeType && other is _$UnauthenticatedImpl);
   }
 
   @override
@@ -331,29 +341,32 @@ class _$Unauthenticated implements Unauthenticated {
 }
 
 abstract class Unauthenticated implements AppStartState {
-  const factory Unauthenticated() = _$Unauthenticated;
+  const factory Unauthenticated() = _$UnauthenticatedImpl;
 }
 
 /// @nodoc
-abstract class _$$_InternetUnAvailableCopyWith<$Res> {
-  factory _$$_InternetUnAvailableCopyWith(_$_InternetUnAvailable value,
-          $Res Function(_$_InternetUnAvailable) then) =
-      __$$_InternetUnAvailableCopyWithImpl<$Res>;
+abstract class _$$InternetUnAvailableImplCopyWith<$Res> {
+  factory _$$InternetUnAvailableImplCopyWith(_$InternetUnAvailableImpl value,
+          $Res Function(_$InternetUnAvailableImpl) then) =
+      __$$InternetUnAvailableImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$_InternetUnAvailableCopyWithImpl<$Res>
-    extends _$AppStartStateCopyWithImpl<$Res, _$_InternetUnAvailable>
-    implements _$$_InternetUnAvailableCopyWith<$Res> {
-  __$$_InternetUnAvailableCopyWithImpl(_$_InternetUnAvailable _value,
-      $Res Function(_$_InternetUnAvailable) _then)
+class __$$InternetUnAvailableImplCopyWithImpl<$Res>
+    extends _$AppStartStateCopyWithImpl<$Res, _$InternetUnAvailableImpl>
+    implements _$$InternetUnAvailableImplCopyWith<$Res> {
+  __$$InternetUnAvailableImplCopyWithImpl(_$InternetUnAvailableImpl _value,
+      $Res Function(_$InternetUnAvailableImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppStartState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$_InternetUnAvailable implements _InternetUnAvailable {
-  const _$_InternetUnAvailable();
+class _$InternetUnAvailableImpl implements _InternetUnAvailable {
+  const _$InternetUnAvailableImpl();
 
   @override
   String toString() {
@@ -361,9 +374,10 @@ class _$_InternetUnAvailable implements _InternetUnAvailable {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$_InternetUnAvailable);
+        (other.runtimeType == runtimeType &&
+            other is _$InternetUnAvailableImpl);
   }
 
   @override
@@ -452,29 +466,32 @@ class _$_InternetUnAvailable implements _InternetUnAvailable {
 }
 
 abstract class _InternetUnAvailable implements AppStartState {
-  const factory _InternetUnAvailable() = _$_InternetUnAvailable;
+  const factory _InternetUnAvailable() = _$InternetUnAvailableImpl;
 }
 
 /// @nodoc
-abstract class _$$AppAuthenticatedCopyWith<$Res> {
-  factory _$$AppAuthenticatedCopyWith(
-          _$AppAuthenticated value, $Res Function(_$AppAuthenticated) then) =
-      __$$AppAuthenticatedCopyWithImpl<$Res>;
+abstract class _$$AppAuthenticatedImplCopyWith<$Res> {
+  factory _$$AppAuthenticatedImplCopyWith(_$AppAuthenticatedImpl value,
+          $Res Function(_$AppAuthenticatedImpl) then) =
+      __$$AppAuthenticatedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$AppAuthenticatedCopyWithImpl<$Res>
-    extends _$AppStartStateCopyWithImpl<$Res, _$AppAuthenticated>
-    implements _$$AppAuthenticatedCopyWith<$Res> {
-  __$$AppAuthenticatedCopyWithImpl(
-      _$AppAuthenticated _value, $Res Function(_$AppAuthenticated) _then)
+class __$$AppAuthenticatedImplCopyWithImpl<$Res>
+    extends _$AppStartStateCopyWithImpl<$Res, _$AppAuthenticatedImpl>
+    implements _$$AppAuthenticatedImplCopyWith<$Res> {
+  __$$AppAuthenticatedImplCopyWithImpl(_$AppAuthenticatedImpl _value,
+      $Res Function(_$AppAuthenticatedImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppStartState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$AppAuthenticated implements AppAuthenticated {
-  const _$AppAuthenticated();
+class _$AppAuthenticatedImpl implements AppAuthenticated {
+  const _$AppAuthenticatedImpl();
 
   @override
   String toString() {
@@ -482,9 +499,9 @@ class _$AppAuthenticated implements AppAuthenticated {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$AppAuthenticated);
+        (other.runtimeType == runtimeType && other is _$AppAuthenticatedImpl);
   }
 
   @override
@@ -573,30 +590,34 @@ class _$AppAuthenticated implements AppAuthenticated {
 }
 
 abstract class AppAuthenticated implements AppStartState {
-  const factory AppAuthenticated() = _$AppAuthenticated;
+  const factory AppAuthenticated() = _$AppAuthenticatedImpl;
 }
 
 /// @nodoc
-abstract class _$$AppAuthenticatedAnonymousCopyWith<$Res> {
-  factory _$$AppAuthenticatedAnonymousCopyWith(
-          _$AppAuthenticatedAnonymous value,
-          $Res Function(_$AppAuthenticatedAnonymous) then) =
-      __$$AppAuthenticatedAnonymousCopyWithImpl<$Res>;
+abstract class _$$AppAuthenticatedAnonymousImplCopyWith<$Res> {
+  factory _$$AppAuthenticatedAnonymousImplCopyWith(
+          _$AppAuthenticatedAnonymousImpl value,
+          $Res Function(_$AppAuthenticatedAnonymousImpl) then) =
+      __$$AppAuthenticatedAnonymousImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$AppAuthenticatedAnonymousCopyWithImpl<$Res>
-    extends _$AppStartStateCopyWithImpl<$Res, _$AppAuthenticatedAnonymous>
-    implements _$$AppAuthenticatedAnonymousCopyWith<$Res> {
-  __$$AppAuthenticatedAnonymousCopyWithImpl(_$AppAuthenticatedAnonymous _value,
-      $Res Function(_$AppAuthenticatedAnonymous) _then)
+class __$$AppAuthenticatedAnonymousImplCopyWithImpl<$Res>
+    extends _$AppStartStateCopyWithImpl<$Res, _$AppAuthenticatedAnonymousImpl>
+    implements _$$AppAuthenticatedAnonymousImplCopyWith<$Res> {
+  __$$AppAuthenticatedAnonymousImplCopyWithImpl(
+      _$AppAuthenticatedAnonymousImpl _value,
+      $Res Function(_$AppAuthenticatedAnonymousImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppStartState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$AppAuthenticatedAnonymous implements AppAuthenticatedAnonymous {
-  const _$AppAuthenticatedAnonymous();
+class _$AppAuthenticatedAnonymousImpl implements AppAuthenticatedAnonymous {
+  const _$AppAuthenticatedAnonymousImpl();
 
   @override
   String toString() {
@@ -604,10 +625,10 @@ class _$AppAuthenticatedAnonymous implements AppAuthenticatedAnonymous {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AppAuthenticatedAnonymous);
+            other is _$AppAuthenticatedAnonymousImpl);
   }
 
   @override
@@ -696,5 +717,5 @@ class _$AppAuthenticatedAnonymous implements AppAuthenticatedAnonymous {
 }
 
 abstract class AppAuthenticatedAnonymous implements AppStartState {
-  const factory AppAuthenticatedAnonymous() = _$AppAuthenticatedAnonymous;
+  const factory AppAuthenticatedAnonymous() = _$AppAuthenticatedAnonymousImpl;
 }

@@ -6,13 +6,14 @@ part of 'app_router.dart';
 // GoRouterGenerator
 // **************************************************************************
 
-List<GoRoute> get $appRoutes => [
+List<RouteBase> get $appRoutes => [
       $appRoute,
       $signInRoute,
       $signUpRoute,
+      $chatRoute,
     ];
 
-GoRoute get $appRoute => GoRouteData.$route(
+RouteBase get $appRoute => GoRouteData.$route(
       path: '/',
       factory: $AppRouteExtension._fromState,
     );
@@ -26,13 +27,15 @@ extension $AppRouteExtension on AppRoute {
 
   void go(BuildContext context) => context.go(location);
 
-  void push(BuildContext context) => context.push(location);
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
   void pushReplacement(BuildContext context) =>
       context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
 }
 
-GoRoute get $signInRoute => GoRouteData.$route(
+RouteBase get $signInRoute => GoRouteData.$route(
       path: '/signIn',
       factory: $SignInRouteExtension._fromState,
     );
@@ -46,13 +49,15 @@ extension $SignInRouteExtension on SignInRoute {
 
   void go(BuildContext context) => context.go(location);
 
-  void push(BuildContext context) => context.push(location);
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
   void pushReplacement(BuildContext context) =>
       context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
 }
 
-GoRoute get $signUpRoute => GoRouteData.$route(
+RouteBase get $signUpRoute => GoRouteData.$route(
       path: '/signUp',
       factory: $SignUpRouteExtension._fromState,
     );
@@ -66,10 +71,34 @@ extension $SignUpRouteExtension on SignUpRoute {
 
   void go(BuildContext context) => context.go(location);
 
-  void push(BuildContext context) => context.push(location);
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
   void pushReplacement(BuildContext context) =>
       context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $chatRoute => GoRouteData.$route(
+      path: '/chat',
+      factory: $ChatRouteExtension._fromState,
+    );
+
+extension $ChatRouteExtension on ChatRoute {
+  static ChatRoute _fromState(GoRouterState state) => const ChatRoute();
+
+  String get location => GoRouteData.$location(
+        '/chat',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
 }
 
 // **************************************************************************
@@ -89,5 +118,8 @@ final routerProvider = AutoDisposeProvider<GoRouter>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef RouterRef = AutoDisposeProviderRef<GoRouter>;
-// ignore_for_file: unnecessary_raw_strings, subtype_of_sealed_class, invalid_use_of_internal_member, do_not_use_environment, prefer_const_constructors, public_member_api_docs, avoid_private_typedef_functions
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
