@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EMS.Application.Common.Interfaces.Services;
+using EMS.Core.Constants;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace EMS.Infrastructure.Persistence.DbContext
@@ -7,11 +9,13 @@ namespace EMS.Infrastructure.Persistence.DbContext
     {
         private readonly ILogger<ApplicationDbContextInitializer> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly IIdentityService _identityService;
 
-        public ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
+        public ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context, IIdentityService identityService)
         {
             _logger = logger;
             _context = context;
+            _identityService = identityService;
         }
 
         public async Task InitializeAsync()
@@ -35,7 +39,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
                 _logger.LogInformation("...Seeding the database: {dbName}.", _context.GetType().FullName);
                 await TrySeedAsync();
             }
-            catch (Exception ex)
+            catch
             {
                 _logger.LogError("An error occurred while seeding the database.");
                 throw;
@@ -44,7 +48,69 @@ namespace EMS.Infrastructure.Persistence.DbContext
 
         public async Task TrySeedAsync()
         {
+            if (!_context.Roles.Any())
+            {
+                #region Add default roles
+                var roles = new[]
+                {
+                    Roles.Administrator,
+                    Roles.User
+                };
 
+                foreach (var role in roles)
+                {
+                    var result = await _identityService.CreateRoleAsync(role);
+
+                    if (!result.Succeeded)
+                    {
+                        _logger.LogError("Failed to seed the role {0}: {1}", role, string.Join(", ", result.Errors));
+                    }
+                }
+                #endregion
+
+                #region Add default users
+                // Add default admins
+                var admins = new (string userName, string pwd)[]
+                {
+                    ("admin1@gmail.com", "123456"),
+                    ("admin2@gmail.com", "123456")
+                };
+
+                foreach(var admin in admins)
+                {
+                    var (result , adminId) = await _identityService.CreateUserAsync(admin.userName, admin.pwd);
+
+                    if (!result.Succeeded)
+                    {
+                        _logger.LogError("Failed to seed the admin {0}: {1}", admin.userName, string.Join(", ", result.Errors));
+                        continue;
+                    }
+                 
+                    await _identityService.AddToRoleAsync(adminId, Roles.Administrator);
+                }
+
+                // Add default users
+                var users = new (string userName, string pwd)[]
+                {
+                    ("user1@gmail.com", "123456"),
+                    ("user2@gmail.com", "123456")
+                };
+
+                foreach (var user in users)
+                {
+                    var (result, userId) = await _identityService.CreateUserAsync(user.userName, user.pwd);
+
+                    if (!result.Succeeded)
+                    {
+                        _logger.LogError("Failed to seed the user {0}: {1}", user.userName, string.Join(", ", result.Errors));
+                        continue;
+                    }
+
+                    await _identityService.AddToRoleAsync(userId, Roles.User);
+                }
+                #endregion
+
+            }
         }
     }
 }

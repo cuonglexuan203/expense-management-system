@@ -32,7 +32,7 @@ namespace EMS.Application.Common.Behaviors
 
                 if (failures.Any())
                 {
-                    throw new ValidationException(failures);
+                    throw new EMS.Application.Common.Exceptions.ValidationException(failures);
                 }
             }
 

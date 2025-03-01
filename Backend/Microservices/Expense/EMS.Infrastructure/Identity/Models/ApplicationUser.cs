@@ -1,14 +1,12 @@
-﻿using EMS.Core.Common.Interfaces;
-using EMS.Core.Common.Interfaces.Audit;
+﻿using EMS.Core.Common.Interfaces.Audit;
 using EMS.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace EMS.Infrastructure.Identity.Models
 {
-    public class ApplicationUser : IdentityUser, IIdentifiable<string>, IAuditableEntity
+    public class ApplicationUser : IdentityUser, IUser<string>, IAuditableEntity
     {
         public string FullName { get; set; } = default!;
-        public bool IsActive { get; set; }
         public string Avatar { get; set; } = default!;
         public DateTimeOffset? CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
@@ -28,5 +26,6 @@ namespace EMS.Infrastructure.Identity.Models
         public ICollection<Category> Categories { get; set; } = [];
         public ICollection<Transaction> Transactions { get; set; } = [];
         public ICollection<Wallet> Wallets { get; set; } = [];
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
     }
 }

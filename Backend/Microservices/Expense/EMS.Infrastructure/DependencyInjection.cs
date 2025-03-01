@@ -1,7 +1,10 @@
 ﻿using EMS.Application.Common.Interfaces.DbContext;
+using EMS.Application.Common.Interfaces.Services;
+using EMS.Infrastructure.Identity;
 using EMS.Infrastructure.Identity.Models;
 using EMS.Infrastructure.Persistence.DbContext;
 using EMS.Infrastructure.Persistence.Interceptors;
+using EMS.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -13,11 +16,13 @@ namespace EMS.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton(TimeProvider.System);
             services.TryAddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-
+            services.TryAddScoped<ITokenService, TokenService>();
+            services.TryAddScoped<IIdentityService, IdentityService>();
+            
             #region Adding DbContext
             services
                 .AddDbContext<ApplicationDbContext>((sp, ob) =>
@@ -35,11 +40,22 @@ namespace EMS.Infrastructure
             services.TryAddScoped<ApplicationDbContextInitializer>();
 
             services
-                .AddIdentityCore<ApplicationUser>()
+                .AddIdentityCore<ApplicationUser>(options =>
+                {
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+
+                    options.SignIn.RequireConfirmedEmail = false;
+                })
                 .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
             #endregion
+
+            return services;
         }
     }
 }

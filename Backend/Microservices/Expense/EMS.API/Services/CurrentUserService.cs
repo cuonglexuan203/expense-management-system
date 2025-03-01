@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace EMS.API.Services
 {
-    public class CurrentUserService : IUser
+    public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _accessor;
 
