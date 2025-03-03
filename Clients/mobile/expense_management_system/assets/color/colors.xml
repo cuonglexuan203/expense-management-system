@@ -7,5 +7,7 @@
     <color name="black">#212121</color>
     <color name="error">#D80000</color>
     <color name="inProgressYellow">#CC9233</color>
-
+    <color name="blue">#386BF6</color>
+    <color name="chatGradientStart">#9DB2CE</color>
+    <color name="chatGradientEnd">#386BF6</color>
 </resources>

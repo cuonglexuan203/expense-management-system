@@ -12,7 +12,7 @@ part of 'app_exception.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$AppException {
@@ -84,28 +84,36 @@ class _$AppExceptionCopyWithImpl<$Res, $Val extends AppException>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of AppException
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
-abstract class _$$AppExceptionConnectivityCopyWith<$Res> {
-  factory _$$AppExceptionConnectivityCopyWith(_$AppExceptionConnectivity value,
-          $Res Function(_$AppExceptionConnectivity) then) =
-      __$$AppExceptionConnectivityCopyWithImpl<$Res>;
+abstract class _$$AppExceptionConnectivityImplCopyWith<$Res> {
+  factory _$$AppExceptionConnectivityImplCopyWith(
+          _$AppExceptionConnectivityImpl value,
+          $Res Function(_$AppExceptionConnectivityImpl) then) =
+      __$$AppExceptionConnectivityImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$AppExceptionConnectivityCopyWithImpl<$Res>
-    extends _$AppExceptionCopyWithImpl<$Res, _$AppExceptionConnectivity>
-    implements _$$AppExceptionConnectivityCopyWith<$Res> {
-  __$$AppExceptionConnectivityCopyWithImpl(_$AppExceptionConnectivity _value,
-      $Res Function(_$AppExceptionConnectivity) _then)
+class __$$AppExceptionConnectivityImplCopyWithImpl<$Res>
+    extends _$AppExceptionCopyWithImpl<$Res, _$AppExceptionConnectivityImpl>
+    implements _$$AppExceptionConnectivityImplCopyWith<$Res> {
+  __$$AppExceptionConnectivityImplCopyWithImpl(
+      _$AppExceptionConnectivityImpl _value,
+      $Res Function(_$AppExceptionConnectivityImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppException
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$AppExceptionConnectivity implements AppExceptionConnectivity {
-  const _$AppExceptionConnectivity();
+class _$AppExceptionConnectivityImpl implements AppExceptionConnectivity {
+  const _$AppExceptionConnectivityImpl();
 
   @override
   String toString() {
@@ -113,10 +121,10 @@ class _$AppExceptionConnectivity implements AppExceptionConnectivity {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AppExceptionConnectivity);
+            other is _$AppExceptionConnectivityImpl);
   }
 
   @override
@@ -198,29 +206,34 @@ class _$AppExceptionConnectivity implements AppExceptionConnectivity {
 }
 
 abstract class AppExceptionConnectivity implements AppException {
-  const factory AppExceptionConnectivity() = _$AppExceptionConnectivity;
+  const factory AppExceptionConnectivity() = _$AppExceptionConnectivityImpl;
 }
 
 /// @nodoc
-abstract class _$$AppExceptionUnauthorizedCopyWith<$Res> {
-  factory _$$AppExceptionUnauthorizedCopyWith(_$AppExceptionUnauthorized value,
-          $Res Function(_$AppExceptionUnauthorized) then) =
-      __$$AppExceptionUnauthorizedCopyWithImpl<$Res>;
+abstract class _$$AppExceptionUnauthorizedImplCopyWith<$Res> {
+  factory _$$AppExceptionUnauthorizedImplCopyWith(
+          _$AppExceptionUnauthorizedImpl value,
+          $Res Function(_$AppExceptionUnauthorizedImpl) then) =
+      __$$AppExceptionUnauthorizedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$AppExceptionUnauthorizedCopyWithImpl<$Res>
-    extends _$AppExceptionCopyWithImpl<$Res, _$AppExceptionUnauthorized>
-    implements _$$AppExceptionUnauthorizedCopyWith<$Res> {
-  __$$AppExceptionUnauthorizedCopyWithImpl(_$AppExceptionUnauthorized _value,
-      $Res Function(_$AppExceptionUnauthorized) _then)
+class __$$AppExceptionUnauthorizedImplCopyWithImpl<$Res>
+    extends _$AppExceptionCopyWithImpl<$Res, _$AppExceptionUnauthorizedImpl>
+    implements _$$AppExceptionUnauthorizedImplCopyWith<$Res> {
+  __$$AppExceptionUnauthorizedImplCopyWithImpl(
+      _$AppExceptionUnauthorizedImpl _value,
+      $Res Function(_$AppExceptionUnauthorizedImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppException
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$AppExceptionUnauthorized implements AppExceptionUnauthorized {
-  const _$AppExceptionUnauthorized();
+class _$AppExceptionUnauthorizedImpl implements AppExceptionUnauthorized {
+  const _$AppExceptionUnauthorizedImpl();
 
   @override
   String toString() {
@@ -228,10 +241,10 @@ class _$AppExceptionUnauthorized implements AppExceptionUnauthorized {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AppExceptionUnauthorized);
+            other is _$AppExceptionUnauthorizedImpl);
   }
 
   @override
@@ -313,33 +326,36 @@ class _$AppExceptionUnauthorized implements AppExceptionUnauthorized {
 }
 
 abstract class AppExceptionUnauthorized implements AppException {
-  const factory AppExceptionUnauthorized() = _$AppExceptionUnauthorized;
+  const factory AppExceptionUnauthorized() = _$AppExceptionUnauthorizedImpl;
 }
 
 /// @nodoc
-abstract class _$$_AppExceptionErrorMessageCopyWith<$Res> {
-  factory _$$_AppExceptionErrorMessageCopyWith(
-          _$_AppExceptionErrorMessage value,
-          $Res Function(_$_AppExceptionErrorMessage) then) =
-      __$$_AppExceptionErrorMessageCopyWithImpl<$Res>;
+abstract class _$$AppExceptionErrorMessageImplCopyWith<$Res> {
+  factory _$$AppExceptionErrorMessageImplCopyWith(
+          _$AppExceptionErrorMessageImpl value,
+          $Res Function(_$AppExceptionErrorMessageImpl) then) =
+      __$$AppExceptionErrorMessageImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String message});
 }
 
 /// @nodoc
-class __$$_AppExceptionErrorMessageCopyWithImpl<$Res>
-    extends _$AppExceptionCopyWithImpl<$Res, _$_AppExceptionErrorMessage>
-    implements _$$_AppExceptionErrorMessageCopyWith<$Res> {
-  __$$_AppExceptionErrorMessageCopyWithImpl(_$_AppExceptionErrorMessage _value,
-      $Res Function(_$_AppExceptionErrorMessage) _then)
+class __$$AppExceptionErrorMessageImplCopyWithImpl<$Res>
+    extends _$AppExceptionCopyWithImpl<$Res, _$AppExceptionErrorMessageImpl>
+    implements _$$AppExceptionErrorMessageImplCopyWith<$Res> {
+  __$$AppExceptionErrorMessageImplCopyWithImpl(
+      _$AppExceptionErrorMessageImpl _value,
+      $Res Function(_$AppExceptionErrorMessageImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of AppException
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? message = null,
   }) {
-    return _then(_$_AppExceptionErrorMessage(
+    return _then(_$AppExceptionErrorMessageImpl(
       null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -350,8 +366,8 @@ class __$$_AppExceptionErrorMessageCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_AppExceptionErrorMessage implements _AppExceptionErrorMessage {
-  const _$_AppExceptionErrorMessage(this.message);
+class _$AppExceptionErrorMessageImpl implements _AppExceptionErrorMessage {
+  const _$AppExceptionErrorMessageImpl(this.message);
 
   @override
   final String message;
@@ -362,22 +378,24 @@ class _$_AppExceptionErrorMessage implements _AppExceptionErrorMessage {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_AppExceptionErrorMessage &&
+            other is _$AppExceptionErrorMessageImpl &&
             (identical(other.message, message) || other.message == message));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, message);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of AppException
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$_AppExceptionErrorMessageCopyWith<_$_AppExceptionErrorMessage>
-      get copyWith => __$$_AppExceptionErrorMessageCopyWithImpl<
-          _$_AppExceptionErrorMessage>(this, _$identity);
+  _$$AppExceptionErrorMessageImplCopyWith<_$AppExceptionErrorMessageImpl>
+      get copyWith => __$$AppExceptionErrorMessageImplCopyWithImpl<
+          _$AppExceptionErrorMessageImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -456,34 +474,40 @@ class _$_AppExceptionErrorMessage implements _AppExceptionErrorMessage {
 
 abstract class _AppExceptionErrorMessage implements AppException {
   const factory _AppExceptionErrorMessage(final String message) =
-      _$_AppExceptionErrorMessage;
+      _$AppExceptionErrorMessageImpl;
 
   String get message;
-  @JsonKey(ignore: true)
-  _$$_AppExceptionErrorMessageCopyWith<_$_AppExceptionErrorMessage>
+
+  /// Create a copy of AppException
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AppExceptionErrorMessageImplCopyWith<_$AppExceptionErrorMessageImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$_AppExceptionErrorCopyWith<$Res> {
-  factory _$$_AppExceptionErrorCopyWith(_$_AppExceptionError value,
-          $Res Function(_$_AppExceptionError) then) =
-      __$$_AppExceptionErrorCopyWithImpl<$Res>;
+abstract class _$$AppExceptionErrorImplCopyWith<$Res> {
+  factory _$$AppExceptionErrorImplCopyWith(_$AppExceptionErrorImpl value,
+          $Res Function(_$AppExceptionErrorImpl) then) =
+      __$$AppExceptionErrorImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$_AppExceptionErrorCopyWithImpl<$Res>
-    extends _$AppExceptionCopyWithImpl<$Res, _$_AppExceptionError>
-    implements _$$_AppExceptionErrorCopyWith<$Res> {
-  __$$_AppExceptionErrorCopyWithImpl(
-      _$_AppExceptionError _value, $Res Function(_$_AppExceptionError) _then)
+class __$$AppExceptionErrorImplCopyWithImpl<$Res>
+    extends _$AppExceptionCopyWithImpl<$Res, _$AppExceptionErrorImpl>
+    implements _$$AppExceptionErrorImplCopyWith<$Res> {
+  __$$AppExceptionErrorImplCopyWithImpl(_$AppExceptionErrorImpl _value,
+      $Res Function(_$AppExceptionErrorImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AppException
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$_AppExceptionError implements _AppExceptionError {
-  const _$_AppExceptionError();
+class _$AppExceptionErrorImpl implements _AppExceptionError {
+  const _$AppExceptionErrorImpl();
 
   @override
   String toString() {
@@ -491,9 +515,9 @@ class _$_AppExceptionError implements _AppExceptionError {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$_AppExceptionError);
+        (other.runtimeType == runtimeType && other is _$AppExceptionErrorImpl);
   }
 
   @override
@@ -575,5 +599,5 @@ class _$_AppExceptionError implements _AppExceptionError {
 }
 
 abstract class _AppExceptionError implements AppException {
-  const factory _AppExceptionError() = _$_AppExceptionError;
+  const factory _AppExceptionError() = _$AppExceptionErrorImpl;
 }

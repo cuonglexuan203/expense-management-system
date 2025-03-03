@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'auth_state.dart';
+part of 'chat_state.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,13 +15,12 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$AuthState {
+mixin _$ChatState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function() loggedIn,
-    required TResult Function() loggedOut,
+    required TResult Function(List<Message> messages) loaded,
     required TResult Function(AppException error) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -29,8 +28,7 @@ mixin _$AuthState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function()? loggedIn,
-    TResult? Function()? loggedOut,
+    TResult? Function(List<Message> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -38,8 +36,7 @@ mixin _$AuthState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function()? loggedIn,
-    TResult Function()? loggedOut,
+    TResult Function(List<Message> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) =>
@@ -48,8 +45,7 @@ mixin _$AuthState {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(AuthStateLoggedIn value) loggedIn,
-    required TResult Function(AuthStateLoggedOut value) loggedOut,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -57,8 +53,7 @@ mixin _$AuthState {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(AuthStateLoggedIn value)? loggedIn,
-    TResult? Function(AuthStateLoggedOut value)? loggedOut,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -66,8 +61,7 @@ mixin _$AuthState {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(AuthStateLoggedIn value)? loggedIn,
-    TResult Function(AuthStateLoggedOut value)? loggedOut,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) =>
@@ -75,22 +69,22 @@ mixin _$AuthState {
 }
 
 /// @nodoc
-abstract class $AuthStateCopyWith<$Res> {
-  factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) then) =
-      _$AuthStateCopyWithImpl<$Res, AuthState>;
+abstract class $ChatStateCopyWith<$Res> {
+  factory $ChatStateCopyWith(ChatState value, $Res Function(ChatState) then) =
+      _$ChatStateCopyWithImpl<$Res, ChatState>;
 }
 
 /// @nodoc
-class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
-    implements $AuthStateCopyWith<$Res> {
-  _$AuthStateCopyWithImpl(this._value, this._then);
+class _$ChatStateCopyWithImpl<$Res, $Val extends ChatState>
+    implements $ChatStateCopyWith<$Res> {
+  _$ChatStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -103,13 +97,13 @@ abstract class _$$InitialImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$InitialImplCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res, _$InitialImpl>
+    extends _$ChatStateCopyWithImpl<$Res, _$InitialImpl>
     implements _$$InitialImplCopyWith<$Res> {
   __$$InitialImplCopyWithImpl(
       _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -120,7 +114,7 @@ class _$InitialImpl implements _Initial {
 
   @override
   String toString() {
-    return 'AuthState.initial()';
+    return 'ChatState.initial()';
   }
 
   @override
@@ -137,8 +131,7 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function() loggedIn,
-    required TResult Function() loggedOut,
+    required TResult Function(List<Message> messages) loaded,
     required TResult Function(AppException error) error,
   }) {
     return initial();
@@ -149,8 +142,7 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function()? loggedIn,
-    TResult? Function()? loggedOut,
+    TResult? Function(List<Message> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) {
     return initial?.call();
@@ -161,8 +153,7 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function()? loggedIn,
-    TResult Function()? loggedOut,
+    TResult Function(List<Message> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) {
@@ -177,8 +168,7 @@ class _$InitialImpl implements _Initial {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(AuthStateLoggedIn value) loggedIn,
-    required TResult Function(AuthStateLoggedOut value) loggedOut,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) {
     return initial(this);
@@ -189,8 +179,7 @@ class _$InitialImpl implements _Initial {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(AuthStateLoggedIn value)? loggedIn,
-    TResult? Function(AuthStateLoggedOut value)? loggedOut,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) {
     return initial?.call(this);
@@ -201,8 +190,7 @@ class _$InitialImpl implements _Initial {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(AuthStateLoggedIn value)? loggedIn,
-    TResult Function(AuthStateLoggedOut value)? loggedOut,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -213,7 +201,7 @@ class _$InitialImpl implements _Initial {
   }
 }
 
-abstract class _Initial implements AuthState {
+abstract class _Initial implements ChatState {
   const factory _Initial() = _$InitialImpl;
 }
 
@@ -226,13 +214,13 @@ abstract class _$$LoadingImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$LoadingImplCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res, _$LoadingImpl>
+    extends _$ChatStateCopyWithImpl<$Res, _$LoadingImpl>
     implements _$$LoadingImplCopyWith<$Res> {
   __$$LoadingImplCopyWithImpl(
       _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -243,7 +231,7 @@ class _$LoadingImpl implements _Loading {
 
   @override
   String toString() {
-    return 'AuthState.loading()';
+    return 'ChatState.loading()';
   }
 
   @override
@@ -260,8 +248,7 @@ class _$LoadingImpl implements _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function() loggedIn,
-    required TResult Function() loggedOut,
+    required TResult Function(List<Message> messages) loaded,
     required TResult Function(AppException error) error,
   }) {
     return loading();
@@ -272,8 +259,7 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function()? loggedIn,
-    TResult? Function()? loggedOut,
+    TResult? Function(List<Message> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) {
     return loading?.call();
@@ -284,8 +270,7 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function()? loggedIn,
-    TResult Function()? loggedOut,
+    TResult Function(List<Message> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) {
@@ -300,8 +285,7 @@ class _$LoadingImpl implements _Loading {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(AuthStateLoggedIn value) loggedIn,
-    required TResult Function(AuthStateLoggedOut value) loggedOut,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) {
     return loading(this);
@@ -312,8 +296,7 @@ class _$LoadingImpl implements _Loading {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(AuthStateLoggedIn value)? loggedIn,
-    TResult? Function(AuthStateLoggedOut value)? loggedOut,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) {
     return loading?.call(this);
@@ -324,8 +307,7 @@ class _$LoadingImpl implements _Loading {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(AuthStateLoggedIn value)? loggedIn,
-    TResult Function(AuthStateLoggedOut value)? loggedOut,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -336,58 +318,90 @@ class _$LoadingImpl implements _Loading {
   }
 }
 
-abstract class _Loading implements AuthState {
+abstract class _Loading implements ChatState {
   const factory _Loading() = _$LoadingImpl;
 }
 
 /// @nodoc
-abstract class _$$AuthStateLoggedInImplCopyWith<$Res> {
-  factory _$$AuthStateLoggedInImplCopyWith(_$AuthStateLoggedInImpl value,
-          $Res Function(_$AuthStateLoggedInImpl) then) =
-      __$$AuthStateLoggedInImplCopyWithImpl<$Res>;
+abstract class _$$LoadedImplCopyWith<$Res> {
+  factory _$$LoadedImplCopyWith(
+          _$LoadedImpl value, $Res Function(_$LoadedImpl) then) =
+      __$$LoadedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({List<Message> messages});
 }
 
 /// @nodoc
-class __$$AuthStateLoggedInImplCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res, _$AuthStateLoggedInImpl>
-    implements _$$AuthStateLoggedInImplCopyWith<$Res> {
-  __$$AuthStateLoggedInImplCopyWithImpl(_$AuthStateLoggedInImpl _value,
-      $Res Function(_$AuthStateLoggedInImpl) _then)
+class __$$LoadedImplCopyWithImpl<$Res>
+    extends _$ChatStateCopyWithImpl<$Res, _$LoadedImpl>
+    implements _$$LoadedImplCopyWith<$Res> {
+  __$$LoadedImplCopyWithImpl(
+      _$LoadedImpl _value, $Res Function(_$LoadedImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? messages = null,
+  }) {
+    return _then(_$LoadedImpl(
+      null == messages
+          ? _value._messages
+          : messages // ignore: cast_nullable_to_non_nullable
+              as List<Message>,
+    ));
+  }
 }
 
 /// @nodoc
 
-class _$AuthStateLoggedInImpl implements AuthStateLoggedIn {
-  const _$AuthStateLoggedInImpl();
+class _$LoadedImpl implements _Loaded {
+  const _$LoadedImpl(final List<Message> messages) : _messages = messages;
+
+  final List<Message> _messages;
+  @override
+  List<Message> get messages {
+    if (_messages is EqualUnmodifiableListView) return _messages;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_messages);
+  }
 
   @override
   String toString() {
-    return 'AuthState.loggedIn()';
+    return 'ChatState.loaded(messages: $messages)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$AuthStateLoggedInImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$LoadedImpl &&
+            const DeepCollectionEquality().equals(other._messages, _messages));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_messages));
+
+  /// Create a copy of ChatState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
+      __$$LoadedImplCopyWithImpl<_$LoadedImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function() loggedIn,
-    required TResult Function() loggedOut,
+    required TResult Function(List<Message> messages) loaded,
     required TResult Function(AppException error) error,
   }) {
-    return loggedIn();
+    return loaded(messages);
   }
 
   @override
@@ -395,11 +409,10 @@ class _$AuthStateLoggedInImpl implements AuthStateLoggedIn {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function()? loggedIn,
-    TResult? Function()? loggedOut,
+    TResult? Function(List<Message> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) {
-    return loggedIn?.call();
+    return loaded?.call(messages);
   }
 
   @override
@@ -407,13 +420,12 @@ class _$AuthStateLoggedInImpl implements AuthStateLoggedIn {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function()? loggedIn,
-    TResult Function()? loggedOut,
+    TResult Function(List<Message> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) {
-    if (loggedIn != null) {
-      return loggedIn();
+    if (loaded != null) {
+      return loaded(messages);
     }
     return orElse();
   }
@@ -423,11 +435,10 @@ class _$AuthStateLoggedInImpl implements AuthStateLoggedIn {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(AuthStateLoggedIn value) loggedIn,
-    required TResult Function(AuthStateLoggedOut value) loggedOut,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) {
-    return loggedIn(this);
+    return loaded(this);
   }
 
   @override
@@ -435,11 +446,10 @@ class _$AuthStateLoggedInImpl implements AuthStateLoggedIn {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(AuthStateLoggedIn value)? loggedIn,
-    TResult? Function(AuthStateLoggedOut value)? loggedOut,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) {
-    return loggedIn?.call(this);
+    return loaded?.call(this);
   }
 
   @override
@@ -447,143 +457,27 @@ class _$AuthStateLoggedInImpl implements AuthStateLoggedIn {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(AuthStateLoggedIn value)? loggedIn,
-    TResult Function(AuthStateLoggedOut value)? loggedOut,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
-    if (loggedIn != null) {
-      return loggedIn(this);
+    if (loaded != null) {
+      return loaded(this);
     }
     return orElse();
   }
 }
 
-abstract class AuthStateLoggedIn implements AuthState {
-  const factory AuthStateLoggedIn() = _$AuthStateLoggedInImpl;
-}
+abstract class _Loaded implements ChatState {
+  const factory _Loaded(final List<Message> messages) = _$LoadedImpl;
 
-/// @nodoc
-abstract class _$$AuthStateLoggedOutImplCopyWith<$Res> {
-  factory _$$AuthStateLoggedOutImplCopyWith(_$AuthStateLoggedOutImpl value,
-          $Res Function(_$AuthStateLoggedOutImpl) then) =
-      __$$AuthStateLoggedOutImplCopyWithImpl<$Res>;
-}
+  List<Message> get messages;
 
-/// @nodoc
-class __$$AuthStateLoggedOutImplCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res, _$AuthStateLoggedOutImpl>
-    implements _$$AuthStateLoggedOutImplCopyWith<$Res> {
-  __$$AuthStateLoggedOutImplCopyWithImpl(_$AuthStateLoggedOutImpl _value,
-      $Res Function(_$AuthStateLoggedOutImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$AuthStateLoggedOutImpl implements AuthStateLoggedOut {
-  const _$AuthStateLoggedOutImpl();
-
-  @override
-  String toString() {
-    return 'AuthState.loggedOut()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$AuthStateLoggedOutImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function() loggedIn,
-    required TResult Function() loggedOut,
-    required TResult Function(AppException error) error,
-  }) {
-    return loggedOut();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function()? loggedIn,
-    TResult? Function()? loggedOut,
-    TResult? Function(AppException error)? error,
-  }) {
-    return loggedOut?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function()? loggedIn,
-    TResult Function()? loggedOut,
-    TResult Function(AppException error)? error,
-    required TResult orElse(),
-  }) {
-    if (loggedOut != null) {
-      return loggedOut();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(AuthStateLoggedIn value) loggedIn,
-    required TResult Function(AuthStateLoggedOut value) loggedOut,
-    required TResult Function(_Error value) error,
-  }) {
-    return loggedOut(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(AuthStateLoggedIn value)? loggedIn,
-    TResult? Function(AuthStateLoggedOut value)? loggedOut,
-    TResult? Function(_Error value)? error,
-  }) {
-    return loggedOut?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(AuthStateLoggedIn value)? loggedIn,
-    TResult Function(AuthStateLoggedOut value)? loggedOut,
-    TResult Function(_Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (loggedOut != null) {
-      return loggedOut(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class AuthStateLoggedOut implements AuthState {
-  const factory AuthStateLoggedOut() = _$AuthStateLoggedOutImpl;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -599,13 +493,13 @@ abstract class _$$ErrorImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$ErrorImplCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res, _$ErrorImpl>
+    extends _$ChatStateCopyWithImpl<$Res, _$ErrorImpl>
     implements _$$ErrorImplCopyWith<$Res> {
   __$$ErrorImplCopyWithImpl(
       _$ErrorImpl _value, $Res Function(_$ErrorImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -620,7 +514,7 @@ class __$$ErrorImplCopyWithImpl<$Res>
     ));
   }
 
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -641,7 +535,7 @@ class _$ErrorImpl implements _Error {
 
   @override
   String toString() {
-    return 'AuthState.error(error: $error)';
+    return 'ChatState.error(error: $error)';
   }
 
   @override
@@ -655,7 +549,7 @@ class _$ErrorImpl implements _Error {
   @override
   int get hashCode => Object.hash(runtimeType, error);
 
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
@@ -668,8 +562,7 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function() loggedIn,
-    required TResult Function() loggedOut,
+    required TResult Function(List<Message> messages) loaded,
     required TResult Function(AppException error) error,
   }) {
     return error(this.error);
@@ -680,8 +573,7 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function()? loggedIn,
-    TResult? Function()? loggedOut,
+    TResult? Function(List<Message> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) {
     return error?.call(this.error);
@@ -692,8 +584,7 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function()? loggedIn,
-    TResult Function()? loggedOut,
+    TResult Function(List<Message> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) {
@@ -708,8 +599,7 @@ class _$ErrorImpl implements _Error {
   TResult map<TResult extends Object?>({
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
-    required TResult Function(AuthStateLoggedIn value) loggedIn,
-    required TResult Function(AuthStateLoggedOut value) loggedOut,
+    required TResult Function(_Loaded value) loaded,
     required TResult Function(_Error value) error,
   }) {
     return error(this);
@@ -720,8 +610,7 @@ class _$ErrorImpl implements _Error {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
-    TResult? Function(AuthStateLoggedIn value)? loggedIn,
-    TResult? Function(AuthStateLoggedOut value)? loggedOut,
+    TResult? Function(_Loaded value)? loaded,
     TResult? Function(_Error value)? error,
   }) {
     return error?.call(this);
@@ -732,8 +621,7 @@ class _$ErrorImpl implements _Error {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
-    TResult Function(AuthStateLoggedIn value)? loggedIn,
-    TResult Function(AuthStateLoggedOut value)? loggedOut,
+    TResult Function(_Loaded value)? loaded,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -744,12 +632,12 @@ class _$ErrorImpl implements _Error {
   }
 }
 
-abstract class _Error implements AuthState {
+abstract class _Error implements ChatState {
   const factory _Error(final AppException error) = _$ErrorImpl;
 
   AppException get error;
 
-  /// Create a copy of AuthState
+  /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>

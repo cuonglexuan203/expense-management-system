@@ -4,7 +4,7 @@ import 'package:flutter_boilerplate/start.dart';
 import 'gen/assets.gen.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: Assets.env.envDevelopment);
+  await dotenv.load(fileName: Assets.env.aEnvDevelopment);
 
   await start();
 }

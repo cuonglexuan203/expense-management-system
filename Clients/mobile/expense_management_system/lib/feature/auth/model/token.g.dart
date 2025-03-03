@@ -6,10 +6,11 @@ part of 'token.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Token _$$_TokenFromJson(Map<String, dynamic> json) => _$_Token(
+_$TokenImpl _$$TokenImplFromJson(Map<String, dynamic> json) => _$TokenImpl(
       token: json['token'] as String,
     );
 
-Map<String, dynamic> _$$_TokenToJson(_$_Token instance) => <String, dynamic>{
+Map<String, dynamic> _$$TokenImplToJson(_$TokenImpl instance) =>
+    <String, dynamic>{
       'token': instance.token,
     };

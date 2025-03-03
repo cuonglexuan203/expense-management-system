@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_boilerplate/gen/colors.gen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_boilerplate/feature/auth/provider/auth_provider.dart';
 import 'package:flutter_boilerplate/shared/route/app_router.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import '../provider/password_visibility_provider.dart';
 
@@ -20,8 +22,8 @@ class SignInPage extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF9DB2CE),
-              Color(0xFF386BF6),
+              ColorName.chatGradientStart,
+              ColorName.chatGradientEnd,
             ],
           ),
         ),
@@ -46,8 +48,8 @@ class SignInPage extends ConsumerWidget {
                         child: ShaderMask(
                           shaderCallback: (bounds) => const LinearGradient(
                             colors: [
-                              Color(0xFF9DB2CE),
-                              Color(0xFF386BF6),
+                              ColorName.chatGradientStart,
+                              ColorName.chatGradientEnd,
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -67,7 +69,7 @@ class SignInPage extends ConsumerWidget {
                       const SizedBox(height: 12),
                       Center(
                         child: Text(
-                          "Log in to continue",
+                          "Welcome back",
                           style: TextStyle(
                             fontFamily: 'Nunito',
                             fontSize: 14,
@@ -81,12 +83,12 @@ class SignInPage extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildRequiredLabel("Username"),
+                            _buildRequiredLabel("Email"),
                             const SizedBox(height: 8),
                             TextFormField(
                               controller: _emailController,
                               decoration: InputDecoration(
-                                hintText: "Enter username",
+                                hintText: "Enter your email",
                                 hintStyle: TextStyle(
                                   fontFamily: 'Nunito',
                                   color: Colors.grey[400],
@@ -111,7 +113,7 @@ class SignInPage extends ConsumerWidget {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: const BorderSide(
-                                    color: Color(0xFF386BF6),
+                                    color: ColorName.blue,
                                     width: 1,
                                   ),
                                 ),
@@ -154,7 +156,7 @@ class SignInPage extends ConsumerWidget {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: const BorderSide(
-                                    color: Color(0xFF386BF6),
+                                    color: ColorName.blue,
                                     width: 1,
                                   ),
                                 ),
@@ -180,31 +182,7 @@ class SignInPage extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {
-                                  // Handle forgot password
-                                },
-                                style: TextButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: Text(
-                                  "Forget password?",
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    color: Colors.grey[700],
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 24),
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
@@ -233,6 +211,32 @@ class SignInPage extends ConsumerWidget {
                                   ),
                                 ),
                               ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Don't have an account? ",
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
+                                    color: Colors.grey[600],
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => context.go('/signUp'),
+                                  child: const Text(
+                                    "Sign Up",
+                                    style: TextStyle(
+                                      fontFamily: 'Nunito',
+                                      color: ColorName.blue,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

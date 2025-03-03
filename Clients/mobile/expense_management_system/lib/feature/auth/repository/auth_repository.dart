@@ -26,17 +26,19 @@ class AuthRepository implements AuthRepositoryProtocol {
   Future<AuthState> login(String email, String password) async {
     if (!Validator.isValidPassWord(password)) {
       return const AuthState.error(
-          AppException.errorWithMessage('Minimum 8 characters required'));
+        AppException.errorWithMessage('Minimum 5 characters required'),
+      );
     }
     if (!Validator.isValidEmail(email)) {
       return const AuthState.error(
-          AppException.errorWithMessage('Please enter a valid email address'));
+        AppException.errorWithMessage('Please enter a valid email address'),
+      );
     }
     final params = {
       'email': email,
       'password': password,
     };
-    final loginResponse = await _api.post('login', jsonEncode(params));
+    final loginResponse = await _api.post('Auth/login', jsonEncode(params));
 
     return loginResponse.when(success: (success) async {
       final token = Token(token: success.toString());
@@ -54,7 +56,7 @@ class AuthRepository implements AuthRepositoryProtocol {
   Future<AuthState> signUp(String name, String email, String password) async {
     if (!Validator.isValidPassWord(password)) {
       return const AuthState.error(
-        AppException.errorWithMessage('Minimum 8 characters required'),
+        AppException.errorWithMessage('Minimum 5 characters required'),
       );
     }
     if (!Validator.isValidEmail(email)) {
@@ -67,7 +69,7 @@ class AuthRepository implements AuthRepositoryProtocol {
       'email': email,
       'password': password,
     };
-    final loginResponse = await _api.post('sign_up', jsonEncode(params));
+    final loginResponse = await _api.post('Auth/register', jsonEncode(params));
 
     return loginResponse.when(success: (success) async {
       final tokenRepository = _ref.read(tokenRepositoryProvider);
