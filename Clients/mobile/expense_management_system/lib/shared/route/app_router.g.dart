@@ -11,6 +11,7 @@ List<RouteBase> get $appRoutes => [
       $signInRoute,
       $signUpRoute,
       $chatRoute,
+      $walletRoute,
     ];
 
 RouteBase get $appRoute => GoRouteData.$route(
@@ -89,6 +90,28 @@ extension $ChatRouteExtension on ChatRoute {
 
   String get location => GoRouteData.$location(
         '/chat',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $walletRoute => GoRouteData.$route(
+      path: '/wallet',
+      factory: $WalletRouteExtension._fromState,
+    );
+
+extension $WalletRouteExtension on WalletRoute {
+  static WalletRoute _fromState(GoRouterState state) => const WalletRoute();
+
+  String get location => GoRouteData.$location(
+        '/wallet',
       );
 
   void go(BuildContext context) => context.go(location);

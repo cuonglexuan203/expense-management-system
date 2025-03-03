@@ -3,6 +3,7 @@ import 'package:flutter_boilerplate/app/widget/bottom_nav_bar.dart';
 import 'package:flutter_boilerplate/gen/colors.gen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:flutter_boilerplate/feature/wallet/widget/wallet_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -82,50 +83,53 @@ class _HomePageState extends State<HomePage> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      color: ColorName.blue.withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(15),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color:
-                                              ColorName.blue.withOpacity(0.3),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Icon(
-                                          Iconsax.wallet,
-                                          color: Colors.white,
-                                          size: 24,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          "Wallet's name",
-                                          style: TextStyle(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      context.go('/wallet');
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        color: ColorName.blue.withOpacity(0.5),
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: [
+                                          BoxShadow(
                                             color:
-                                                Colors.white.withOpacity(0.7),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'Nunito',
+                                                ColorName.blue.withOpacity(0.3),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 4),
                                           ),
-                                        ),
-                                        const Text(
-                                          '\$2,548.00',
-                                          style: TextStyle(
+                                        ],
+                                      ),
+                                      child: const Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            Iconsax.wallet,
                                             color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Nunito',
+                                            size: 24,
                                           ),
-                                        ),
-                                      ],
+                                          SizedBox(height: 8),
+                                          Text(
+                                            "Wallet's name",
+                                            style: TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 14,
+                                              fontFamily: 'Nunito',
+                                            ),
+                                          ),
+                                          Text(
+                                            '\$2,548.00',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Nunito',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
