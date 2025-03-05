@@ -78,16 +78,16 @@ namespace EMS.Infrastructure.Persistence.DbContext
                     ("admin2@gmail.com", "123456")
                 };
 
-                foreach(var admin in admins)
+                foreach (var admin in admins)
                 {
-                    var (result , adminId) = await _identityService.CreateUserAsync(admin.userName, admin.pwd);
+                    var (result, adminId) = await _identityService.CreateUserAsync(admin.userName, admin.pwd);
 
                     if (!result.Succeeded)
                     {
                         _logger.LogError("Failed to seed the admin {0}: {1}", admin.userName, string.Join(", ", result.Errors));
                         continue;
                     }
-                 
+
                     await _identityService.AddToRoleAsync(adminId, Roles.Administrator);
                 }
 
