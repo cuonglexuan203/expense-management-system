@@ -4,6 +4,7 @@ using EMS.Core.Entities;
 using EMS.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace EMS.Infrastructure.Persistence.DbContext
 {
@@ -78,16 +79,16 @@ namespace EMS.Infrastructure.Persistence.DbContext
                     ("admin2@gmail.com", "123456")
                 };
 
-                foreach(var admin in admins)
+                foreach (var admin in admins)
                 {
-                    var (result , adminId) = await _identityService.CreateUserAsync(admin.userName, admin.pwd);
+                    var (result, adminId) = await _identityService.CreateUserAsync(admin.userName, admin.pwd);
 
                     if (!result.Succeeded)
                     {
                         _logger.LogError("Failed to seed the admin {0}: {1}", admin.userName, string.Join(", ", result.Errors));
                         continue;
                     }
-                 
+
                     await _identityService.AddToRoleAsync(adminId, Roles.Administrator);
                 }
 
@@ -153,6 +154,79 @@ namespace EMS.Infrastructure.Persistence.DbContext
                 _logger.LogInformation("Seeded default system settings.");
             }
             #endregion
+
+            #region Sync UserPreferences with SystemSettings dynamically
+            var usersWithoutPreferences = await _context.Users
+                .Where(u => !_context.UserPreferences.Any(p => p.UserId == u.Id))
+                .ToListAsync();
+
+            if (usersWithoutPreferences.Any())
+            {
+                var systemSettings = await _context.SystemSettings.ToListAsync();
+
+                foreach (var user in usersWithoutPreferences)
+                {
+                    var userPreference = new UserPreference
+                    {
+                        UserId = user.Id
+                    };
+
+                    var userPrefProperties = typeof(UserPreference).GetProperties()
+                        .Where(p => p.CanWrite && p.Name != "Id" && p.Name != "UserId" && p.Name != "User")
+                        .ToList();
+
+                    foreach (var property in userPrefProperties)
+                    {
+                        var setting = systemSettings.FirstOrDefault(s => s.SettingKey.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
+
+                        if (setting != null && !string.IsNullOrEmpty(setting.SettingValue))
+                        {
+                            SetPropertyValue(userPreference, property, setting.SettingValue, setting.DataType);
+                        }
+                    }
+
+                    _context.UserPreferences.Add(userPreference);
+                }
+
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Created preferences for {count} new users.", usersWithoutPreferences.Count);
+            }
+            #endregion
+        }
+
+        private void SetPropertyValue(UserPreference userPreference, PropertyInfo property, string valueStr, DataType dataType)
+        {
+            try
+            {
+                object? value = null;
+
+                switch (dataType)
+                {
+                    case DataType.String:
+                        value = valueStr;
+                        break;
+                    case DataType.Boolean:
+                        if (bool.TryParse(valueStr, out var boolValue))
+                            value = boolValue;
+                        break;
+                    default:
+                        if (property.PropertyType.IsEnum)
+                        {
+                            if (Enum.TryParse(property.PropertyType, valueStr, true, out var enumValue))
+                                value = enumValue;
+                        }
+                        break;
+                }
+
+                if (value != null)
+                {
+                    property.SetValue(userPreference, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to set {property.Name} to value {valueStr}: {ex.Message}");
+            }
         }
     }
 }
