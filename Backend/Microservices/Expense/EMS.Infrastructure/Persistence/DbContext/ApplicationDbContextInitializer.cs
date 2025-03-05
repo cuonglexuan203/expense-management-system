@@ -143,7 +143,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
                         DataType = DataType.Boolean,
                         Description = "Indicates whether user actions require confirmation",
                         Type = SettingType.General,
-                        UserConfigurable = false
+                        UserConfigurable = true
                     }
                 };
 
