@@ -1,5 +1,7 @@
 ﻿using EMS.Application.Common.Interfaces.Services;
 using EMS.Core.Constants;
+using EMS.Core.Entities;
+using EMS.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -109,8 +111,48 @@ namespace EMS.Infrastructure.Persistence.DbContext
                     await _identityService.AddToRoleAsync(userId, Roles.User);
                 }
                 #endregion
-
             }
+
+            #region Seed System Settings
+            if (!_context.SystemSettings.Any())
+            {
+                var systemSettings = new List<SystemSetting>
+                {
+                    new SystemSetting
+                    {
+                        SettingKey = "Currency",
+                        SettingValue = Currency.USD.ToString(),
+                        DataType = DataType.String,
+                        Description = "Default currency used in transactions",
+                        Type = SettingType.General,
+                        UserConfigurable = true
+                    },
+                    new SystemSetting
+                    {
+                        SettingKey = "Language",
+                        SettingValue = Language.EN.ToString(),
+                        DataType = DataType.String,
+                        Description = "Default application language",
+                        Type = SettingType.General,
+                        UserConfigurable = true
+                    },
+                    new SystemSetting
+                    {
+                        SettingKey = "RequiresConfirmation",
+                        SettingValue = "true",
+                        DataType = DataType.Boolean,
+                        Description = "Indicates whether user actions require confirmation",
+                        Type = SettingType.General,
+                        UserConfigurable = true
+                    }
+                };
+
+                _context.SystemSettings.AddRange(systemSettings);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Seeded default system settings.");
+            }
+            #endregion
         }
     }
 }

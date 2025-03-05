@@ -1,4 +1,6 @@
 # Note:
+# Migration tool setting command: dotnet tool install --global dotnet-ef
+
 # Terminal at: \Backend\Microservices\Expense
 
 # Add migration
