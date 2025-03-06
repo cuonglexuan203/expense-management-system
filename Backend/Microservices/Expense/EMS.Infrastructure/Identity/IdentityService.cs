@@ -1,5 +1,4 @@
-﻿using EMS.Application.Common.Interfaces.DbContext;
-using EMS.Application.Common.Interfaces.Services;
+﻿using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Models;
 using EMS.Infrastructure.Common.Options;
 using EMS.Infrastructure.Identity.Models;
@@ -16,8 +15,8 @@ namespace EMS.Infrastructure.Identity
         private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
         private readonly IAuthorizationService _authorizationService;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, IApplicationDbContext context,
-            ITokenService tokenService, IOptions<JwtSettings> jwtSettings, RoleManager<ApplicationRole> roleManager,
+        public IdentityService(UserManager<ApplicationUser> userManager, ITokenService tokenService,
+            IOptions<JwtSettings> jwtSettings, RoleManager<ApplicationRole> roleManager,
             IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory, IAuthorizationService authorizationService
             )
         {
@@ -162,7 +161,7 @@ namespace EMS.Infrastructure.Identity
             }
 
             var result = await _userManager.CheckPasswordAsync(user, password);
-            
+
             return result ?
                 (Result.Success(), user.Id) :
                 (Result.Failure(["Invalid password"]), null);
