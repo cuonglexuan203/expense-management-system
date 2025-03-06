@@ -1,4 +1,5 @@
 import uvicorn
+from core.logging import configure_logging
 from core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
@@ -29,6 +30,7 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 # Configure logging
+configure_logging()
 
 if __name__ == "__main__":
     uvicorn.run(
