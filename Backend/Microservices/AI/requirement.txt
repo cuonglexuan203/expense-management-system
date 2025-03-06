@@ -1,6 +1,0 @@
-fastapi[standard]
-pydantic
-uvicorn
-pydantic-settings
-python-dotenv
-python-multipart
