@@ -5,5 +5,6 @@
         String,
         Number,
         Boolean,
+        Enum,
     }
 }
