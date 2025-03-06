@@ -5,14 +5,14 @@ namespace EMS.Application.Common.Mappings.Profiles
 {
     public class MappingProfile : Profile
     {
+        public MappingProfile()
+        {
+
+        }
+
         public MappingProfile(params Assembly[] assemblies)
         {
             ApplyMappingsFromAssemblies(assemblies);
-        }
-
-        public MappingProfile()
-        {
-            
         }
 
         private void ApplyMappingsFromAssemblies(Assembly[] assemblies)
