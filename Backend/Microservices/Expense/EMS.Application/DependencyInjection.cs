@@ -1,4 +1,5 @@
 ﻿using EMS.Application.Common.Behaviors;
+using EMS.Application.Common.Extensions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -9,7 +10,10 @@ namespace EMS.Application
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapperConfiguration(
+                Assembly.GetExecutingAssembly()
+                //, Assembly.Load("EMS.Infrastructure")
+                );
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
