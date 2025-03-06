@@ -1,13 +1,12 @@
-﻿using EMS.Application.Common.Exceptions;
+﻿using AutoMapper;
+using EMS.Application.Common.Exceptions;
+using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Core.Constants;
 using EMS.Core.Entities;
-using EMS.Core.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
-using EMS.Application.Common.Interfaces.DbContext;
 
 namespace EMS.Application.Features.Auth.Commands.Register
 {
@@ -22,15 +21,18 @@ namespace EMS.Application.Features.Auth.Commands.Register
         private readonly ILogger<RegisterCommandHandler> _logger;
         private readonly IIdentityService _identityService;
         private readonly IApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
         public RegisterCommandHandler(
             ILogger<RegisterCommandHandler> logger,
             IIdentityService identityService,
-            IApplicationDbContext dbContext)
+            IApplicationDbContext dbContext,
+            IMapper mapper)
         {
             _logger = logger;
             _identityService = identityService;
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<RegisterDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -63,23 +65,8 @@ namespace EMS.Application.Features.Auth.Commands.Register
                 var systemSettings = await _dbContext.SystemSettings
                     .ToDictionaryAsync(s => s.SettingKey, s => s, cancellationToken);
 
-                var userPreference = new UserPreference
-                {
-                    UserId = userId
-                };
-
-                var userPrefPropertiesInfo = typeof(UserPreference).GetProperties()
-                    .Where(p => p.CanWrite && p.Name != "Id" && p.Name != "UserId" && p.Name != "User")
-                    .ToList();
-
-                foreach (var property in userPrefPropertiesInfo)
-                {
-                    if (systemSettings.TryGetValue(property.Name, out var setting) &&
-                        !string.IsNullOrEmpty(setting.SettingValue))
-                    {
-                        SetPropertyValue(userPreference, property, setting.SettingValue, setting.DataType);
-                    }
-                }
+                var userPreference = _mapper.Map<UserPreference>(systemSettings);
+                userPreference.UserId = userId;
 
                 _dbContext.UserPreferences.Add(userPreference);
                 await _dbContext.SaveChangesAsync(cancellationToken);
@@ -89,41 +76,6 @@ namespace EMS.Application.Features.Auth.Commands.Register
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating default preferences for user {userId}", userId);
-            }
-        }
-
-        private void SetPropertyValue(UserPreference userPreference, PropertyInfo property, string valueStr, DataType dataType)
-        {
-            try
-            {
-                object value = null;
-
-                switch (dataType)
-                {
-                    case DataType.String:
-                        value = valueStr;
-                        break;
-                    case DataType.Boolean:
-                        if (bool.TryParse(valueStr, out var boolValue))
-                            value = boolValue;
-                        break;
-                    default:
-                        if (property.PropertyType.IsEnum)
-                        {
-                            if (Enum.TryParse(property.PropertyType, valueStr, true, out var enumValue))
-                                value = enumValue;
-                        }
-                        break;
-                }
-
-                if (value != null)
-                {
-                    property.SetValue(userPreference, value);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to set {property.Name} to value {valueStr}: {ex.Message}");
             }
         }
     }
