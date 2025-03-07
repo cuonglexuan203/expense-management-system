@@ -5,8 +5,8 @@
 ```sh
 # Create virtual env
 python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
-.venv/Script/activate
 # Run app
 uvicorn main:app --reload
 ```
