@@ -24,6 +24,9 @@
     <Folder Include="Common\Utils\" />
     <Folder Include="Features\Transaction\Commands\" />
     <Folder Include="Features\Transaction\Queries\" />
+    <Folder Include="Features\Wallet\Commands\CreateWallet\" />
+    <Folder Include="Features\Wallet\Commands\UpdateWallet\" />
+    <Folder Include="Features\Wallet\Queries\" />
   </ItemGroup>
 
 </Project>

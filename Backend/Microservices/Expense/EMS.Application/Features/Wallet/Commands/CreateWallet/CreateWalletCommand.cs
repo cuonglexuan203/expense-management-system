@@ -37,11 +37,6 @@ namespace EMS.Application.Features.Wallet.Commands.CreateWallet
 
         public async Task<WalletDto> Handle(CreateWalletCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Creating new wallet. Name: {WalletName}, Balance: {Balance}, UserId: {UserId}",
-                request.Name,
-                request.Balance,
-                _currentUserService.Id);
-
             var userId = _currentUserService.Id;
 
             var wallet = new Core.Entities.Wallet
