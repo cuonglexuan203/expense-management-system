@@ -40,7 +40,6 @@ namespace EMS.Application.Features.Category.Queries.GetCategory
 
             if (category == null)
             {
-                _logger.LogWarning("Category with ID: {CategoryId} not found for user: {UserId}", request.Id, userId);
                 throw new NotFoundException($"{nameof(Core.Entities.Category)} with ID {request.Id} not found");
             }
 

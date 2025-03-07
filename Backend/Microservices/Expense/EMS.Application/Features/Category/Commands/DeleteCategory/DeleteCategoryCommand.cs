@@ -35,22 +35,15 @@ namespace EMS.Application.Features.Category.Commands.DeleteCategory
 
             if (category == null)
             {
-                _logger.LogError("Attempted to delete non-existent category. ID: {CategoryId}, UserId: {UserId}",
-                    request.Id, userId);
                 throw new NotFoundException($"{nameof(Core.Entities.Category)} with ID {request.Id} not found");
             }
 
             if (category.Transactions.Any())
             {
-                _logger.LogError("Attempted to delete category with transactions. ID: {CategoryId}, Name: {CategoryName}, TransactionCount: {TransactionCount}",
-                    category.Id, category.Name, category.Transactions.Count);
                 throw new InvalidOperationException("Cannot delete a category that has transactions. Please remove or reassign the transactions first.");
             }
 
-            // Soft delete
-            category.IsDeleted = true;
-            category.DeletedAt = DateTimeOffset.UtcNow;
-            category.DeletedBy = userId;
+            _context.Categories.Remove(category);
 
             await _context.SaveChangesAsync(cancellationToken);
 
