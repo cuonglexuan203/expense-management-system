@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import sys
 from loguru import logger
-from core.config import settings
+from app.core.config import settings
 
 
 class IntercepHandler(logging.Handler):

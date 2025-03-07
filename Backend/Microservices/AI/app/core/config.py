@@ -17,5 +17,9 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     ALLOWED_HOSTS: List[str] = ["http://localhost:3000"]
 
+    OPENAI_API_KEY: str = ""
+    GROQ_API_KEY: str = ""
+    GOOGLE_API_KEY: str = ""
+
 
 settings = Settings()
