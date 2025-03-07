@@ -3,6 +3,7 @@ using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.Category.Commands.UpdateCategory
 {
@@ -10,16 +11,21 @@ namespace EMS.Application.Features.Category.Commands.UpdateCategory
     {
         public int Id { get; init; }
         public string Name { get; init; } = default!;
-        public int? IconId { get; init; }
+        public Guid? IconId { get; init; }
     }
 
     public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, int>
     {
+        private readonly ILogger<UpdateCategoryCommandHandler> _logger;
         private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
 
-        public UpdateCategoryCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
+        public UpdateCategoryCommandHandler(
+            ILogger<UpdateCategoryCommandHandler> logger,
+            IApplicationDbContext context,
+            ICurrentUserService currentUserService)
         {
+            _logger = logger;
             _context = context;
             _currentUserService = currentUserService;
         }
@@ -33,13 +39,18 @@ namespace EMS.Application.Features.Category.Commands.UpdateCategory
 
             if (category == null)
             {
+                _logger.LogWarning("Category with ID: {CategoryId} not found for user: {UserId}",
+                    request.Id, userId);
                 throw new NotFoundException($"{nameof(Core.Entities.Category)} with ID {request.Id} not found");
             }
 
             category.Name = request.Name;
-            // Update IconId property when implemented
+            category.IconId = request.IconId;
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Category updated successfully - ID: {CategoryId}, Name: {NewName}, IconId: {NewIconId}",
+                category.Id, category.Name, category.IconId);
 
             return category.Id;
         }

@@ -32,7 +32,7 @@ namespace EMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> Create(CreateCategoryCommand command)
+        public async Task<ActionResult<CategoryDto>> Create(CreateCategoryCommand command)
         {
             return await _sender.Send(command);
         }

@@ -5,6 +5,7 @@ using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Features.Category.Queries.GetCategory;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.Category.Queries.GetCategories
 {
@@ -12,12 +13,18 @@ namespace EMS.Application.Features.Category.Queries.GetCategories
 
     public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, List<CategoryDto>>
     {
+        private readonly ILogger<GetCategoriesQueryHandler> _logger;
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
 
-        public GetCategoriesQueryHandler(IApplicationDbContext context, IMapper mapper, ICurrentUserService currentUserService)
+        public GetCategoriesQueryHandler(
+            ILogger<GetCategoriesQueryHandler> logger,
+            IApplicationDbContext context,
+            IMapper mapper,
+            ICurrentUserService currentUserService)
         {
+            _logger = logger;
             _context = context;
             _mapper = mapper;
             _currentUserService = currentUserService;
@@ -27,11 +34,18 @@ namespace EMS.Application.Features.Category.Queries.GetCategories
         {
             var userId = _currentUserService.Id;
 
-            return await _context.Categories
+            var categories = await _context.Categories
                 .Include(c => c.Transactions)
+                .Include(c => c.Icon)
                 .Where(c => c.UserId == userId && !c.IsDeleted)
                 .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
+
+            _logger.LogInformation("Successfully retrieved {CategoryCount} categories for user: {UserId}",
+                categories.Count,
+                userId);
+
+            return categories;
         }
     }
 }

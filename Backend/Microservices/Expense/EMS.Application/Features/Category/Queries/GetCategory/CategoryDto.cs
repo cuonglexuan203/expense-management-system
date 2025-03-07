@@ -11,13 +11,15 @@ namespace EMS.Application.Features.Category.Queries.GetCategory
         public int TransactionCount { get; set; }
         public bool IsDefault { get; set; }
         public TransactionType? TransactionType { get; set; }
-        public int? IconId { get; set; }
+        public Guid? IconId { get; set; }
+        public string? IconUrl { get; set; }
 
         public void Mapping(AutoMapper.Profile profile)
         {
             profile.CreateMap<Core.Entities.Category, CategoryDto>()
                 .ForMember(d => d.TransactionCount, opt => opt.MapFrom(s => s.Transactions.Count))
-                .ForMember(d => d.IsDefault, opt => opt.MapFrom(s => s.Type == CategoryType.Default));
+                .ForMember(d => d.IsDefault, opt => opt.MapFrom(s => s.Type == CategoryType.Default))
+                .ForMember(d => d.IconUrl, opt => opt.MapFrom(s => s.Icon != null ? s.Icon.Url : null));
         }
     }
 }
