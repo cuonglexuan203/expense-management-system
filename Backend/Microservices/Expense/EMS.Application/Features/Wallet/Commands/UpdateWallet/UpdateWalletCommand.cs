@@ -39,9 +39,6 @@ namespace EMS.Application.Features.Wallet.Commands.UpdateWallet
 
         public async Task<WalletDto> Handle(UpdateWalletCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Updating wallet with ID: {WalletId} for user: {UserId}",
-                request.Id, _currentUserService.Id);
-
             var userId = _currentUserService.Id;
 
             var wallet = await _context.Wallets
@@ -50,17 +47,11 @@ namespace EMS.Application.Features.Wallet.Commands.UpdateWallet
 
             if (wallet == null)
             {
-                _logger.LogWarning("Wallet with ID: {WalletId} not found for user: {UserId}",
-                    request.Id, userId);
                 throw new NotFoundException($"{nameof(Core.Entities.Wallet)} with ID {request.Id} not found");
             }
 
             try
             {
-                // Log old values before update
-                _logger.LogInformation("Wallet before update - ID: {WalletId}, Name: {OldName}, Balance: {OldBalance}, Description: {OldDescription}",
-                    wallet.Id, wallet.Name, wallet.Balance, wallet.Description);
-
                 wallet.Name = request.Name;
                 wallet.Balance = request.Balance;
                 wallet.Description = request.Description;

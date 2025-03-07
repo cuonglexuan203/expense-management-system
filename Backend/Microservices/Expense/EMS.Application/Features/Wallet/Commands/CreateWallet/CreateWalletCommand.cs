@@ -57,10 +57,9 @@ namespace EMS.Application.Features.Wallet.Commands.CreateWallet
                 _context.Wallets.Add(wallet);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                _logger.LogDebug("Wallet saved to database with ID: {WalletId}", wallet.Id);
-
                 var createdWallet = await _context.Wallets
                     .Include(w => w.Transactions)
+                    .AsNoTracking()
                     .FirstAsync(w => w.Id == wallet.Id, cancellationToken);
 
                 _logger.LogInformation("Wallet created successfully. ID: {WalletId}, Name: {WalletName}, Balance: {Balance}, UserId: {UserId}",
