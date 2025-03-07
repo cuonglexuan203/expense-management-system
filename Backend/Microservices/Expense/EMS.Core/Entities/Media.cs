@@ -18,5 +18,6 @@ namespace EMS.Core.Entities
 
         // Navigations
         public ChatMessage? ChatMessage { get; set; }
+        public ICollection<Category> Categories { get; set; } = [];
     }
 }
