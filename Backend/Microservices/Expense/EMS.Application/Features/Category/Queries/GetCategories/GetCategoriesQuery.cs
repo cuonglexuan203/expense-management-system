@@ -39,6 +39,7 @@ namespace EMS.Application.Features.Category.Queries.GetCategories
                 .Include(c => c.Icon)
                 .Where(c => c.UserId == userId && !c.IsDeleted)
                 .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             _logger.LogInformation("Successfully retrieved {CategoryCount} categories for user: {UserId}",

@@ -36,6 +36,7 @@ namespace EMS.Application.Features.Category.Queries.GetCategory
             var category = await _context.Categories
                 .Include(c => c.Transactions)
                 .Include(c => c.Icon)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == userId && !c.IsDeleted, cancellationToken);
 
             if (category == null)

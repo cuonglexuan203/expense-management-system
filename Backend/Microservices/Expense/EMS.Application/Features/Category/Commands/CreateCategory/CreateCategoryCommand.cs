@@ -52,6 +52,7 @@ namespace EMS.Application.Features.Category.Commands.CreateCategory
                 var createdCategory = await _context.Categories
                     .Include(c => c.Transactions)
                     .Include(c => c.Icon)
+                    .AsNoTracking()
                     .FirstAsync(c => c.Id == category.Id, cancellationToken);
 
                 _logger.LogInformation("Category created successfully. ID: {CategoryId}, Name: {CategoryName}, Type: {CategoryType}, UserId: {UserId}, IconId: {IconId}, HasIcon: {HasIcon}",
