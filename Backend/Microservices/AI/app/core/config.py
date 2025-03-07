@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     OPENAI_API_KEY: str = ""
     GROQ_API_KEY: str = ""
-    GEMINI_API_KEY: str = ""
+    GOOGLE_API_KEY: str = ""
 
 
 settings = Settings()

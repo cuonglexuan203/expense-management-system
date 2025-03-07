@@ -12,7 +12,7 @@ class GroqProvider(BaseLLMProvider):
     # Available models mapping
     AVAILABLE_MODELS = LLMModel.for_provider(LLMProvider.GROQ)
 
-    def get_model(self, model_type, temprature=0.7, max_tokens=None, **kwargs) -> ChatGroq:
+    def get_model(self, model_type, temperature=0.7, max_tokens=None, **kwargs) -> ChatGroq:
         """Get a Groq model instance with specified parameters."""
         api_key = settings.GROQ_API_KEY
 
@@ -24,7 +24,7 @@ class GroqProvider(BaseLLMProvider):
 
         return ChatGroq(
             model_name=model_type.value,
-            temperature=temprature,
+            temperature=temperature,
             groq_api_key=api_key,
             model_kwargs=model_kwargs,
         )

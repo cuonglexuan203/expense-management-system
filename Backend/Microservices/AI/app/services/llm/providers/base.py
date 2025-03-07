@@ -12,7 +12,7 @@ class BaseLLMProvider(ABC):
     def get_model(
         self,
         model_type: LLMModel,
-        temprature: float = 0.7,
+        temperature: float = 0.7,
         max_tokens: Optional[int] = None,
         **kwargs,
     ) -> BaseLanguageModel:

@@ -1,8 +1,9 @@
 from app.core.exceptions import LLMProviderNotFoundError
-from app.schemas.llm import LLMConfig
-from app.services.llm import LLMRegistry
+from app.schemas.llm_config import LLMConfig
+from app.services.llm.registry import LLMRegistry
 from app.services.llm.enums import LLMProvider
 from app.services.llm.providers.base import BaseLLMProvider
+from langchain.schema.language_model import BaseLanguageModel
 
 
 class LLMFactory:
@@ -12,7 +13,7 @@ class LLMFactory:
     """
 
     @staticmethod
-    def create(config: LLMConfig) -> any:
+    def create(config: LLMConfig) -> BaseLanguageModel:
         """
         Create an LLM instance based on the provided configuration.
 
@@ -42,7 +43,7 @@ class LLMFactory:
 
         return provider.get_model(
             model_type=config.model,
-            temprature=config.temperature,
+            temperature=config.temperature,
             max_tokens=config.max_tokens,
             **config.extra_params,
         )
@@ -53,7 +54,7 @@ class LLMFactory:
         return list(LLMRegistry.providers.keys())
 
     @staticmethod
-    def list_available_models(provider_name: LLMProvider) -> list:
+    def list_available_models(provider_name: LLMProvider):
         """
         Tuple all available models for a specific provider.
 

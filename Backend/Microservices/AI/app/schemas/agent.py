@@ -46,7 +46,7 @@ class AgentConfig(BaseModel):
         """Pydantic config."""
 
         extra = "forbid"  # Forbid extra attributes
-        schema_extra = {
+        json_schema_extra = {
             "examples": [
                 {
                     "verbose": True,
