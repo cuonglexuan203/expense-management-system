@@ -24,6 +24,10 @@ namespace EMS.Application
                 config.AddOpenBehavior(typeof(UnhandledExceptionBehavior<,>));
                 config.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 config.AddOpenBehavior(typeof(PerformanceBehavior<,>));
+
+                // Redis caching behaviors
+                config.AddOpenBehavior(typeof(CachingBehavior<,>));
+                config.AddOpenBehavior(typeof(CacheInvalidationBehavior<,>));
             });
 
             return services;

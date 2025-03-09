@@ -35,7 +35,7 @@ namespace EMS.Infrastructure.Cache
             try
             {
                 var fullKey = GetFullKey(key);
-                string? cachedValue = await _db.StringGetAsync(key);
+                string? cachedValue = await _db.StringGetAsync(fullKey);
 
                 if (string.IsNullOrEmpty(cachedValue))
                 {
@@ -73,7 +73,7 @@ namespace EMS.Infrastructure.Cache
                 string serializedValue = JsonSerializer.Serialize(value, _options);
                 var expiry = expiryTime ?? TimeSpan.FromMinutes(_cacheOptions.DefaultExpiryTimeInMinutes);
 
-                await _db.StringSetAsync(key, serializedValue, expiry);
+                await _db.StringSetAsync(fullKey, serializedValue, expiry);
 
                 LogCacheInfo($"Value cached for key: {fullKey} with expiry: {expiry}");
             }
@@ -83,11 +83,11 @@ namespace EMS.Infrastructure.Cache
             }
         }
 
-        public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
+        public async Task RemoveAsync(string key, bool isFullKey = false, CancellationToken cancellationToken = default)
         {
             try
             {
-                string fullKey = GetFullKey(key);
+                string fullKey = isFullKey ? key : GetFullKey(key);
                 await _db.KeyDeleteAsync(fullKey);
 
                 LogCacheInfo($"Cache entry removed: {fullKey}");
@@ -148,9 +148,8 @@ namespace EMS.Infrastructure.Cache
             }
         }
 
-
-        private string GetFullKey(string key)
-            => string.IsNullOrEmpty(_cacheOptions.InstanceName) ? key : $"{_cacheOptions.InstanceName}:key";
+        public string GetFullKey(string key)
+            => string.IsNullOrEmpty(_cacheOptions.InstanceName) ? key : $"{_cacheOptions.InstanceName}:{key}";
 
         private void LogCacheHit(string key)
         {
@@ -190,6 +189,19 @@ namespace EMS.Infrastructure.Cache
             {
                 _logger.LogError(ex, "Redis cache error for key {Key}: {msg}", key, ex.Message);
             }
+        }
+
+        public async Task<IEnumerable<string>> GetKeysByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            var keys = new List<string>();
+            var server = _redis.GetServer(_redis.GetEndPoints()[0]);
+
+            await foreach(var key in server.KeysAsync(pattern: pattern))
+            {
+                keys.Add(key.ToString());
+            }
+
+            return keys;
         }
     }
 }

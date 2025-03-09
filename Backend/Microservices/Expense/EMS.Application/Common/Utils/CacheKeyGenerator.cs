@@ -1,0 +1,15 @@
+﻿namespace EMS.Application.Common.Utils
+{
+    public static class CacheKeyGenerator
+    {
+        public static string Generate(string prefix, params object[] parameters)
+        {
+            return $"{prefix}:{string.Join(":", parameters)}";
+        }
+
+        public static class QueryKeys
+        {
+            public const string WalletByUser = "wallet_by_user";
+        }
+    }
+}
