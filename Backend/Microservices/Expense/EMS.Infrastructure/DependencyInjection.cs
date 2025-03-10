@@ -1,5 +1,6 @@
 ﻿using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Infrastructure.Common.Extensions;
 using EMS.Infrastructure.Identity;
 using EMS.Infrastructure.Identity.Models;
 using EMS.Infrastructure.Persistence.DbContext;
@@ -22,7 +23,9 @@ namespace EMS.Infrastructure
             services.TryAddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
             services.TryAddScoped<ITokenService, TokenService>();
             services.TryAddScoped<IIdentityService, IdentityService>();
-            
+
+            services.AddRedisCaching(configuration);
+
             #region Adding DbContext
             services
                 .AddDbContext<ApplicationDbContext>((sp, ob) =>
