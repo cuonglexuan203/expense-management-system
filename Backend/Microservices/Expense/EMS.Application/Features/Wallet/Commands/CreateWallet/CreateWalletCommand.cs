@@ -5,7 +5,6 @@ using EMS.Application.Features.Wallet.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace EMS.Application.Features.Wallet.Commands.CreateWallet
 {
@@ -53,7 +52,7 @@ namespace EMS.Application.Features.Wallet.Commands.CreateWallet
                 await _context.SaveChangesAsync(cancellationToken);
 
                 var createdWallet = await _context.Wallets
-                    .Include(w => w.Transactions)
+                    //.Include(w => w.Transactions)
                     .AsNoTracking()
                     .FirstAsync(w => w.Id == wallet.Id, cancellationToken);
 

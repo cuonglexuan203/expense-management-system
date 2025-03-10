@@ -9,10 +9,12 @@ namespace EMS.Application.Common.Behaviors
         where TRequest : IRequest<TResponse>
     {
         private readonly IDistributedCacheService _cacheService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public CachingBehavior(IDistributedCacheService cacheService)
+        public CachingBehavior(IDistributedCacheService cacheService, ICurrentUserService currentUserService)
         {
             _cacheService = cacheService;
+            _currentUserService = currentUserService;
         }
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
@@ -22,6 +24,11 @@ namespace EMS.Application.Common.Behaviors
             if (cacheAttribute == null)
             {
                 return await next();
+            }
+
+            if(cacheAttribute is UserCacheableQueryAttribute userCacheAttribute)
+            {
+                userCacheAttribute.UserId = _currentUserService.Id!;
             }
 
             var cacheKey = cacheAttribute.GenerateCacheKey(request);

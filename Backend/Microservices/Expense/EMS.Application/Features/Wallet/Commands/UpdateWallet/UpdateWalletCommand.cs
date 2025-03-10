@@ -6,7 +6,6 @@ using EMS.Application.Features.Wallet.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace EMS.Application.Features.Wallet.Commands.UpdateWallet
 {
@@ -42,7 +41,7 @@ namespace EMS.Application.Features.Wallet.Commands.UpdateWallet
             var userId = _currentUserService.Id;
 
             var wallet = await _context.Wallets
-                .Include(w => w.Transactions)
+                //.Include(w => w.Transactions)
                 .FirstOrDefaultAsync(w => w.Id == request.Id && w.UserId == userId && !w.IsDeleted, cancellationToken);
 
             if (wallet == null)
