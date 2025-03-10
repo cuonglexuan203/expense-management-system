@@ -1,6 +1,6 @@
 ﻿using EMS.Core.Enums;
 
-namespace EMS.Application.Features.Wallet.Queries
+namespace EMS.Application.Features.Wallet.Queries.GetWalletSummary
 {
     public class WalletBalanceSummary
     {
