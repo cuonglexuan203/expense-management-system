@@ -8,6 +8,9 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import '../provider/password_visibility_provider.dart';
 
+// Provider để theo dõi trạng thái loading của quá trình đăng nhập
+final isLoadingProvider = StateProvider<bool>((ref) => false);
+
 class SignInPage extends ConsumerWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -15,6 +18,9 @@ class SignInPage extends ConsumerWidget {
   SignInPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Lấy trạng thái loading
+    final isLoading = ref.watch(isLoadingProvider);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -186,11 +192,29 @@ class SignInPage extends ConsumerWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  ref.read(authNotifierProvider.notifier).login(
-                                      _emailController.text,
-                                      _passwordController.text);
-                                },
+                                // Vô hiệu hóa nút khi đang loading
+                                onPressed: isLoading
+                                    ? null
+                                    : () async {
+                                        // Đặt trạng thái loading thành true khi bắt đầu đăng nhập
+                                        ref
+                                            .read(isLoadingProvider.notifier)
+                                            .state = true;
+
+                                        try {
+                                          // Gọi hàm login
+                                          await ref
+                                              .read(
+                                                  authNotifierProvider.notifier)
+                                              .login(_emailController.text,
+                                                  _passwordController.text);
+                                        } finally {
+                                          // Đặt trạng thái loading thành false khi đã xử lý xong
+                                          ref
+                                              .read(isLoadingProvider.notifier)
+                                              .state = false;
+                                        }
+                                      },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF386BF6),
                                   padding:
@@ -199,17 +223,30 @@ class SignInPage extends ConsumerWidget {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   elevation: 0,
+                                  // Làm mờ nút khi đang loading
+                                  disabledBackgroundColor:
+                                      const Color(0xFF386BF6).withOpacity(0.7),
                                 ),
-                                child: const Text(
-                                  "LOG IN",
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.3,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                // Hiển thị biểu tượng loading hoặc text tùy thuộc vào trạng thái
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "LOG IN",
+                                        style: TextStyle(
+                                          fontFamily: 'Nunito',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.3,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                               ),
                             ),
                             const SizedBox(height: 16),

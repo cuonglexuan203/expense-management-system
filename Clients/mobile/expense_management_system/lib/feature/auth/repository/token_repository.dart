@@ -7,10 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class TokenRepositoryProtocol {
   Future<void> remove();
-
   Future<void> saveToken(Token token);
-
   Future<Token?> fetchToken();
+  Future<String?> getAccessToken();
 }
 
 final tokenRepositoryProvider = Provider(TokenRepository.new);
@@ -60,9 +59,9 @@ class TokenRepository implements TokenRepositoryProtocol {
 
   @override
   Future<Token?> fetchToken() async {
-    // if (_token != null) {
-    //   return _token;
-    // }
+    if (_token != null) {
+      return _token;
+    }
 
     String? tokenValue;
 
@@ -84,5 +83,11 @@ class TokenRepository implements TokenRepositoryProtocol {
     }
 
     return _token;
+  }
+
+  @override
+  Future<String?> getAccessToken() async {
+    final token = await fetchToken();
+    return token?.accessToken;
   }
 }

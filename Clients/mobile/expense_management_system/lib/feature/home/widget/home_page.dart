@@ -141,21 +141,25 @@ class _HomePageState extends State<HomePage> {
                                     color: Colors.white.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(15),
                                   ),
-                                  child: Column(
-                                    children: [
-                                      const Icon(Iconsax.add,
-                                          color: Colors.white),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'New wallet',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.7),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Nunito',
+                                  child: GestureDetector(
+                                    onTap: () => context.push('/wallet/create'),
+                                    child: Column(
+                                      children: [
+                                        const Icon(Iconsax.add,
+                                            color: Colors.white),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'New wallet',
+                                          style: TextStyle(
+                                            color:
+                                                Colors.white.withOpacity(0.7),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'Nunito',
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

@@ -10,7 +10,6 @@ import 'package:flutter_boilerplate/shared/util/validator.dart';
 
 abstract class AuthRepositoryProtocol {
   Future<AuthState> login(String email, String password);
-
   Future<AuthState> signUp(String name, String email, String password);
 }
 
@@ -41,7 +40,32 @@ class AuthRepository implements AuthRepositoryProtocol {
     final loginResponse = await _api.post('Auth/login', jsonEncode(params));
 
     return loginResponse.when(success: (success) async {
-      final token = Token(token: success.toString());
+      Map<String, dynamic> tokenData;
+      if (success is Map<String, dynamic>) {
+        tokenData = success;
+      } else if (success is String) {
+        try {
+          tokenData = json.decode(success) as Map<String, dynamic>;
+        } catch (e) {
+          return const AuthState.error(
+            AppException.errorWithMessage('Invalid token format received'),
+          );
+        }
+      } else {
+        return const AuthState.error(
+          AppException.errorWithMessage('Invalid response format'),
+        );
+      }
+
+      final token = Token(
+        token: json.encode(tokenData),
+        accessToken: tokenData['accessToken']?.toString() ?? '',
+        refreshToken: tokenData['refreshToken']?.toString() ?? '',
+        accessTokenExpiration:
+            tokenData['accessTokenExpiration']?.toString() ?? '',
+        refreshTokenExpiration:
+            tokenData['refreshTokenExpiration']?.toString() ?? '',
+      );
 
       final tokenRepository = _ref.read(tokenRepositoryProvider);
       await tokenRepository.saveToken(token);
@@ -74,8 +98,44 @@ class AuthRepository implements AuthRepositoryProtocol {
     return loginResponse.when(success: (success) async {
       final tokenRepository = _ref.read(tokenRepositoryProvider);
 
-      final token = Token.fromJson(success as Map<String, dynamic>);
+      // Convert dynamic to Map<String, dynamic>
+      Map<String, dynamic> tokenData;
+      if (success is Map<String, dynamic>) {
+        tokenData = success;
+      } else if (success is String) {
+        try {
+          tokenData = json.decode(success) as Map<String, dynamic>;
+        } catch (e) {
+          // If the string is not valid JSON, use it directly as a token
+          final token = Token(
+              token: success.toString(),
+              accessToken: '',
+              refreshToken: '',
+              accessTokenExpiration: '',
+              refreshTokenExpiration: '');
+          await tokenRepository.saveToken(token);
+          return const AuthState.loggedIn();
+        }
+      } else {
+        // For other types, convert to string
+        final token = Token(
+            token: success.toString(),
+            accessToken: '',
+            refreshToken: '',
+            accessTokenExpiration: '',
+            refreshTokenExpiration: '');
+        await tokenRepository.saveToken(token);
+        return const AuthState.loggedIn();
+      }
 
+      final token = Token(
+          token: json.encode(tokenData),
+          accessToken: tokenData['accessToken']?.toString() ?? '',
+          refreshToken: tokenData['refreshToken']?.toString() ?? '',
+          accessTokenExpiration:
+              tokenData['accessTokenExpiration']?.toString() ?? '',
+          refreshTokenExpiration:
+              tokenData['refreshTokenExpiration']?.toString() ?? '');
       await tokenRepository.saveToken(token);
 
       return const AuthState.loggedIn();

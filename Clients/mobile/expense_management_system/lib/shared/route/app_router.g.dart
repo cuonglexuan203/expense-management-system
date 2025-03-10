@@ -105,6 +105,12 @@ extension $ChatRouteExtension on ChatRoute {
 RouteBase get $walletRoute => GoRouteData.$route(
       path: '/wallet',
       factory: $WalletRouteExtension._fromState,
+      routes: [
+        GoRouteData.$route(
+          path: 'create',
+          factory: $CreateWalletRouteExtension._fromState,
+        ),
+      ],
     );
 
 extension $WalletRouteExtension on WalletRoute {
@@ -112,6 +118,24 @@ extension $WalletRouteExtension on WalletRoute {
 
   String get location => GoRouteData.$location(
         '/wallet',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $CreateWalletRouteExtension on CreateWalletRoute {
+  static CreateWalletRoute _fromState(GoRouterState state) =>
+      const CreateWalletRoute();
+
+  String get location => GoRouteData.$location(
+        '/wallet/create',
       );
 
   void go(BuildContext context) => context.go(location);
