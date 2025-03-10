@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_boilerplate/feature/auth/repository/token_repository.dart';
 import 'package:flutter_boilerplate/shared/http/api_response.dart';
 import 'package:flutter_boilerplate/shared/http/app_exception.dart';
 import 'package:flutter_boilerplate/shared/http/interceptor/dio_connectivity_request_retrier.dart';
@@ -15,51 +13,155 @@ import 'package:flutter_boilerplate/shared/http/interceptor/retry_interceptor.da
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:flutter_boilerplate/shared/http/interceptor/auth_interceptor.dart';
 
+// Define a provider for the network configuration
+final networkConfigProvider = Provider<NetworkConfig>((ref) {
+  final baseUrl = dotenv.env['BASE_URL'] ?? 'https://default-api.com/';
+  return NetworkConfig(
+    baseUrl: baseUrl,
+    connectTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 5),
+    sendTimeout: const Duration(seconds: 5),
+  );
+});
+
+// Define a provider for the Dio instance
+final dioProvider = Provider<Dio>((ref) {
+  final config = ref.watch(networkConfigProvider);
+  final dio = Dio();
+
+  // Configure Dio with timeouts from NetworkConfig
+  dio.options.baseUrl = config.baseUrl;
+  dio.options.sendTimeout = config.sendTimeout;
+  dio.options.connectTimeout = config.connectTimeout;
+  dio.options.receiveTimeout = config.receiveTimeout;
+
+  // Add pretty logger for debug mode
+  if (kDebugMode) {
+    dio.interceptors.add(PrettyDioLogger(requestBody: true));
+  }
+
+  return dio;
+});
+
+// Create a network configuration class to centralize network settings
+class NetworkConfig {
+  final String baseUrl;
+  final Duration connectTimeout;
+  final Duration receiveTimeout;
+  final Duration sendTimeout;
+  final Map<String, String> defaultHeaders;
+
+  const NetworkConfig({
+    required this.baseUrl,
+    this.connectTimeout = const Duration(seconds: 5),
+    this.receiveTimeout = const Duration(seconds: 5),
+    this.sendTimeout = const Duration(seconds: 5),
+    this.defaultHeaders = const {},
+  });
+}
+
 enum ContentType { urlEncoded, json }
 
-final apiProvider = Provider<ApiProvider>(ApiProvider.new);
+final apiProvider = Provider<ApiProvider>((ref) {
+  final dio = ref.watch(dioProvider);
+
+  // Add auth interceptor
+  dio.interceptors.add(ref.read(authInterceptorProvider));
+
+  // Add retry interceptor
+  dio.interceptors.add(
+    RetryOnConnectionChangeInterceptor(
+      requestRetrier: DioConnectivityRequestRetrier(
+        dio: dio,
+        connectivity: Connectivity(),
+      ),
+    ),
+  );
+
+  return ApiProvider(ref, dio);
+});
 
 class ApiProvider {
-  ApiProvider(this._ref) {
-    _dio = Dio();
-    _dio.options.sendTimeout = const Duration(seconds: 5);
-    _dio.options.connectTimeout = const Duration(seconds: 5);
-    _dio.options.receiveTimeout = const Duration(seconds: 5);
+  ApiProvider(this._ref, this._dio);
 
-    // Add auth interceptor
-    _dio.interceptors.add(_ref.read(authInterceptorProvider));
+  final Ref _ref;
+  final Dio _dio;
 
-    // Add retry interceptor
-    _dio.interceptors.add(
-      RetryOnConnectionChangeInterceptor(
-        requestRetrier: DioConnectivityRequestRetrier(
-          dio: _dio,
-          connectivity: Connectivity(),
-        ),
-      ),
-    );
+  // Expose the baseUrl getter
+  String get baseUrl => _ref.read(networkConfigProvider).baseUrl;
 
-    if (kDebugMode) {
-      _dio.interceptors.add(PrettyDioLogger(requestBody: true));
+  // Helper method to check connectivity
+  Future<bool> _checkConnectivity() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  // Helper method to handle response
+  APIResponse _handleResponse(Response response) {
+    if (response.statusCode == null) {
+      return const APIResponse.error(AppException.connectivity());
     }
 
-    if (dotenv.env['BASE_URL'] != null) {
-      _baseUrl = dotenv.env['BASE_URL']!;
+    if (response.statusCode! < 300) {
+      if (response.data is Map && response.data['data'] != null) {
+        return APIResponse.success(response.data['data']);
+      } else {
+        return APIResponse.success(response.data);
+      }
+    } else {
+      return _handleErrorResponse(response);
     }
   }
 
-  final Ref _ref;
-  late Dio _dio;
-  late final TokenRepository _tokenRepository =
-      _ref.read(tokenRepositoryProvider);
-  late String _baseUrl;
+  // Helper method to handle error response
+  APIResponse _handleErrorResponse(Response response) {
+    final statusCode = response.statusCode;
 
-  // Future<String?> _getAccessToken() async {
-  //   final tokenObj = await _tokenRepository.fetchToken();
-  //   if (tokenObj == null) return null;
+    if (statusCode == 401) {
+      return APIResponse.error(AppException.unauthorized());
+    } else if (statusCode == 404) {
+      return const APIResponse.error(AppException.connectivity());
+    } else if (statusCode == 502) {
+      return const APIResponse.error(AppException.error());
+    } else {
+      if (response.data is Map) {
+        final message = response.data['message'] ??
+            response.data['error'] ??
+            'An error occurred';
+        return APIResponse.error(
+            AppException.errorWithMessage(message.toString()));
+      }
+      return const APIResponse.error(AppException.error());
+    }
+  }
 
-  //   return tokenObj.accessToken!.isNotEmpty ? tokenObj.accessToken : null;
-  // }
+  // Helper method to handle DioError
+  APIResponse _handleDioError(DioError e) {
+    if (e.error is SocketException) {
+      return const APIResponse.error(AppException.connectivity());
+    }
+
+    if (e.type == DioErrorType.connectionTimeout ||
+        e.type == DioErrorType.receiveTimeout ||
+        e.type == DioErrorType.sendTimeout) {
+      return const APIResponse.error(AppException.connectivity());
+    }
+
+    if (e.response != null) {
+      return _handleErrorResponse(e.response!);
+    }
+
+    return APIResponse.error(
+      AppException.errorWithMessage(e.message ?? 'An error occurred'),
+    );
+  }
+
+  // Helper method to create content type header
+  String _getContentTypeHeader(ContentType contentType) {
+    return contentType == ContentType.json
+        ? 'application/json; charset=utf-8'
+        : 'application/x-www-form-urlencoded';
+  }
 
   Future<APIResponse> post(
     String path,
@@ -69,34 +171,20 @@ class ApiProvider {
     Map<String, String?>? query,
     ContentType contentType = ContentType.json,
   }) async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
+    // Check connectivity first
+    if (!await _checkConnectivity()) {
       return const APIResponse.error(AppException.connectivity());
     }
-    String url;
-    if (newBaseUrl != null) {
-      url = newBaseUrl + path;
-    } else {
-      url = this._baseUrl + path;
-    }
-    var content = 'application/x-www-form-urlencoded';
 
-    if (contentType == ContentType.json) {
-      content = 'application/json';
-    }
+    final url = newBaseUrl != null ? newBaseUrl + path : baseUrl + path;
 
     try {
       final headers = {
         'accept': '*/*',
-        'Content-Type': content,
+        'Content-Type': _getContentTypeHeader(contentType),
       };
 
-      // // Use the helper method to get the access token
-      // String? accessToken = await _getAccessToken();
-      // if (accessToken != null) {
-      //   headers['Authorization'] = 'Bearer $accessToken';
-      // }
-
+      // Optional token override for specific endpoints
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
       }
@@ -108,51 +196,9 @@ class ApiProvider {
         options: Options(validateStatus: (status) => true, headers: headers),
       );
 
-      if (response.statusCode == null) {
-        return const APIResponse.error(AppException.connectivity());
-      }
-
-      if (response.statusCode! < 300) {
-        if (response.data is Map && response.data['data'] != null) {
-          return APIResponse.success(response.data['data']);
-        } else {
-          return APIResponse.success(response.data);
-        }
-      } else {
-        if (response.statusCode! == 401) {
-          return APIResponse.error(AppException.unauthorized());
-        } else if (response.statusCode! == 502) {
-          return const APIResponse.error(AppException.error());
-        } else {
-          if (response.data is Map && response.data['message'] != null) {
-            return APIResponse.error(
-              AppException.errorWithMessage(
-                  response.data['message'].toString()),
-            );
-          } else {
-            return const APIResponse.error(AppException.error());
-          }
-        }
-      }
+      return _handleResponse(response);
     } on DioError catch (e) {
-      if (e.error is SocketException) {
-        return const APIResponse.error(AppException.connectivity());
-      }
-      if (e.type == DioErrorType.connectionTimeout ||
-          e.type == DioErrorType.receiveTimeout ||
-          e.type == DioErrorType.sendTimeout) {
-        return const APIResponse.error(AppException.connectivity());
-      }
-
-      if (e.response != null && e.response!.data is Map) {
-        if (e.response!.data['message'] != null) {
-          return APIResponse.error(
-            AppException.errorWithMessage(
-                e.response!.data['message'].toString()),
-          );
-        }
-      }
-      return APIResponse.error(AppException.errorWithMessage(e.message ?? ''));
+      return _handleDioError(e);
     } on Error catch (e) {
       return APIResponse.error(
         AppException.errorWithMessage(e.stackTrace.toString()),
@@ -167,92 +213,39 @@ class ApiProvider {
     Map<String, dynamic>? query,
     ContentType contentType = ContentType.json,
   }) async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
+    // Check connectivity first
+    if (!await _checkConnectivity()) {
       return const APIResponse.error(AppException.connectivity());
     }
-    String url;
-    if (newBaseUrl != null) {
-      url = newBaseUrl + path;
-    } else {
-      url = this._baseUrl + path;
-    }
 
-    var content = 'application/x-www-form-urlencoded';
-
-    if (contentType == ContentType.json) {
-      content = 'application/json; charset=utf-8';
-    }
-
-    final headers = {
-      'accept': '*/*',
-      'Content-Type': content,
-    };
-
-    // // Use the helper method to get the access token
-    // String? accessToken = await _getAccessToken();
-    // if (accessToken != null) {
-    //   headers['Authorization'] = 'Bearer $accessToken';
-    // }
-
-    // Sometime for some specific endpoint it may require to use different Token
-    if (token != null) {
-      headers['Authorization'] = 'Bearer $token';
-    }
+    final url = newBaseUrl != null ? newBaseUrl + path : baseUrl + path;
 
     try {
+      final headers = {
+        'accept': '*/*',
+        'Content-Type': _getContentTypeHeader(contentType),
+      };
+
+      // Optional token override for specific endpoints
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
       final response = await _dio.get(
         url,
         queryParameters: query,
         options: Options(validateStatus: (status) => true, headers: headers),
       );
 
-      if (response.statusCode == null) {
-        return const APIResponse.error(AppException.connectivity());
-      }
-
-      if (response.statusCode! < 300) {
-        // Fixed: Check if response.data is a Map before accessing 'data' key
-        if (response.data is Map && response.data['data'] != null) {
-          return APIResponse.success(response.data['data']);
-        } else {
-          return APIResponse.success(response.data);
-        }
-      } else {
-        if (response.statusCode! == 404) {
-          return const APIResponse.error(AppException.connectivity());
-        } else if (response.statusCode! == 401) {
-          return APIResponse.error(AppException.unauthorized());
-        } else if (response.statusCode! == 502) {
-          return const APIResponse.error(AppException.error());
-        } else {
-          // Fixed: Check if response.data is a Map before accessing keys
-          if (response.data is Map) {
-            if (response.data['error'] != null) {
-              return APIResponse.error(
-                AppException.errorWithMessage(
-                    response.data['error'].toString()),
-              );
-            } else if (response.data['message'] != null) {
-              return APIResponse.error(
-                AppException.errorWithMessage(
-                    response.data['message'].toString()),
-              );
-            }
-          }
-          return const APIResponse.error(AppException.error());
-        }
-      }
+      return _handleResponse(response);
     } on DioError catch (e) {
-      if (e.error is SocketException) {
-        return const APIResponse.error(AppException.connectivity());
-      }
-      if (e.type == DioErrorType.connectionTimeout ||
-          e.type == DioErrorType.receiveTimeout ||
-          e.type == DioErrorType.sendTimeout) {
-        return const APIResponse.error(AppException.connectivity());
-      }
-      return const APIResponse.error(AppException.error());
+      return _handleDioError(e);
+    } catch (e) {
+      return APIResponse.error(
+        AppException.errorWithMessage(e.toString()),
+      );
     }
   }
+
+  // You can add other HTTP methods (put, delete, patch) following the same pattern
 }

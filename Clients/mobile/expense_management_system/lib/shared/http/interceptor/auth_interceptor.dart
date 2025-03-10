@@ -66,8 +66,7 @@ class AuthInterceptor extends Interceptor {
         return false;
       }
 
-      final apiProvider = ref.read(apiProvider);
-      final baseUrl = apiProvider._baseUrl;
+      final baseUrl = ref.read(apiProvider).baseUrl;
 
       final response = await dio.post(
         '${baseUrl}Auth/refresh-token',
