@@ -1,6 +1,7 @@
 using EMS.Application.Features.Wallet.Commands.CreateWallet;
 using EMS.Application.Features.Wallet.Commands.UpdateWallet;
 using EMS.Application.Features.Wallet.Dtos;
+using EMS.Application.Features.Wallet.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,14 @@ namespace EMS.API.Controllers
             }
 
             return await _sender.Send(command);
+        }
+
+        [HttpPost("wallet-summary")]
+        public async Task<IActionResult> GetWalletSummary(GetWalletSummaryQuery query)
+        {
+            var result = await _sender.Send(query);
+
+            return Ok(result);
         }
     }
 }
