@@ -27,7 +27,11 @@ namespace EMS.API
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "EMS.API v1"));
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "EMS.API v1");
+                    options.DisplayRequestDuration();
+                });
             }
 
             app.UseSerilogRequestLogging();

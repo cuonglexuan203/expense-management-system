@@ -21,7 +21,6 @@
   <ItemGroup>
     <Folder Include="Common\DTOs\" />
     <Folder Include="Common\Validators\" />
-    <Folder Include="Common\Utils\" />
     <Folder Include="Features\Transaction\Commands\" />
     <Folder Include="Features\Transaction\Queries\" />
     <Folder Include="Features\Wallet\Commands\CreateWallet\" />
