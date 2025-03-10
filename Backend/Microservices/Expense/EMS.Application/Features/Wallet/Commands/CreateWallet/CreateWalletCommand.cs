@@ -1,7 +1,7 @@
 using AutoMapper;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Wallet.Common;
+using EMS.Application.Features.Wallet.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

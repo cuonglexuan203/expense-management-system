@@ -1,6 +1,6 @@
 using EMS.Application.Features.Wallet.Commands.CreateWallet;
 using EMS.Application.Features.Wallet.Commands.UpdateWallet;
-using EMS.Application.Features.Wallet.Common;
+using EMS.Application.Features.Wallet.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
