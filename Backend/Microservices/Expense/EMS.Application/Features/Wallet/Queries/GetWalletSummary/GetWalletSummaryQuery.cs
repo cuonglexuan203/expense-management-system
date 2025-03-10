@@ -1,6 +1,8 @@
-﻿using EMS.Application.Common.Exceptions;
+﻿using EMS.Application.Common.Attributes;
+using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Common.Utils;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 using MediatR;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.Wallet.Queries.GetWalletSummary
 {
+    [UserCacheableQuery(CacheKeyGenerator.QueryKeys.WalletByUser)]
     public record GetWalletSummaryQuery(int WalletId, BalanceFilterPeriod period = BalanceFilterPeriod.AllTime) : IRequest<WalletBalanceSummary>;
 
     public class GetWalletSummaryQueryHandler : IRequestHandler<GetWalletSummaryQuery, WalletBalanceSummary>
@@ -27,9 +30,9 @@ namespace EMS.Application.Features.Wallet.Queries.GetWalletSummary
         public async Task<WalletBalanceSummary> Handle(GetWalletSummaryQuery request, CancellationToken cancellationToken)
         {
             var wallet = await _context.Wallets
-                .Where(e => e.UserId == _currentUserService.Id && e.Id == request.WalletId && !e.IsDeleted)
                 .AsNoTracking()
-                .FirstOrDefaultAsync() ?? throw new NotFoundException($"Wallet with id {request.WalletId} not found by user {_currentUserService.Id}");
+                .SingleOrDefaultAsync(e => e.UserId == _currentUserService.Id && e.Id == request.WalletId && !e.IsDeleted) 
+                ?? throw new NotFoundException($"Wallet with id {request.WalletId} not found by user {_currentUserService.Id}");
 
             var transactionQuery = _context.Transactions
                 .Where(e => e.WalletId == wallet.Id && !e.IsDeleted);
@@ -40,13 +43,13 @@ namespace EMS.Application.Features.Wallet.Queries.GetWalletSummary
                 .Where(e => e.Type == TransactionType.Income)
                 .GroupBy(e => 1)
                 .Select(g => new TransactionSummary(g.Sum(e => e.Amount), g.Count()))
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             var totalExpense = await transactionQuery
                 .Where(e => e.Type == TransactionType.Expense)
                 .GroupBy(e => 1)
                 .Select(g => new TransactionSummary(g.Sum(e => e.Amount), g.Count()))
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             var result = new WalletBalanceSummary
             {
