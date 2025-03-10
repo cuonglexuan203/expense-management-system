@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Wallet.Queries
+namespace EMS.Application.Features.Wallet.Queries.GetWalletSummary
 {
     public record GetWalletSummaryQuery(int WalletId, BalanceFilterPeriod period = BalanceFilterPeriod.AllTime) : IRequest<WalletBalanceSummary>;
 
