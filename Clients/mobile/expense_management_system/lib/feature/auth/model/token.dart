@@ -13,6 +13,10 @@ String tokenToJson(Token data) => json.encode(data.toJson());
 @freezed
 class Token with _$Token {
   const factory Token({
+    required String? accessToken,
+    required String? refreshToken,
+    required String? accessTokenExpiration,
+    required String? refreshTokenExpiration,
     required String token,
   }) = _Token;
 

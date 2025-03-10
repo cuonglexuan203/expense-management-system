@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_boilerplate/feature/chat/widget/chat_page.dart';
 import 'package:flutter_boilerplate/feature/wallet/widget/wallet_page.dart';
+import 'package:flutter_boilerplate/feature/wallet/widget/create_wallet_page.dart';
 
 part 'app_router.g.dart';
 
@@ -77,7 +78,14 @@ class ChatRoute extends GoRouteData {
   }
 }
 
-@TypedGoRoute<WalletRoute>(path: WalletRoute.path)
+@TypedGoRoute<WalletRoute>(
+  path: WalletRoute.path,
+  routes: [
+    TypedGoRoute<CreateWalletRoute>(
+      path: 'create',
+    ),
+  ],
+)
 class WalletRoute extends GoRouteData {
   const WalletRoute();
 
@@ -86,6 +94,15 @@ class WalletRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const WalletPage();
+  }
+}
+
+class CreateWalletRoute extends GoRouteData {
+  const CreateWalletRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return CreateWalletPage();
   }
 }
 

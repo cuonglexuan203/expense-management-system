@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
@@ -14,14 +15,7 @@ import 'package:flutter_boilerplate/shared/http/interceptor/retry_interceptor.da
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:flutter_boilerplate/shared/http/interceptor/auth_interceptor.dart';
 
-//part 'api_provider.g.dart';
-
 enum ContentType { urlEncoded, json }
-
-// @riverpod
-// ApiProvider apiProvider(ApiProviderRef ref) {
-//   return ApiProvider(ref);
-// }
 
 final apiProvider = Provider<ApiProvider>(ApiProvider.new);
 
@@ -55,13 +49,17 @@ class ApiProvider {
   }
 
   final Ref _ref;
-
   late Dio _dio;
-
   late final TokenRepository _tokenRepository =
       _ref.read(tokenRepositoryProvider);
-
   late String _baseUrl;
+
+  // Future<String?> _getAccessToken() async {
+  //   final tokenObj = await _tokenRepository.fetchToken();
+  //   if (tokenObj == null) return null;
+
+  //   return tokenObj.accessToken!.isNotEmpty ? tokenObj.accessToken : null;
+  // }
 
   Future<APIResponse> post(
     String path,
@@ -92,13 +90,15 @@ class ApiProvider {
         'accept': '*/*',
         'Content-Type': content,
       };
-      final _appToken = await _tokenRepository.fetchToken();
-      if (_appToken != null) {
-        headers['Authorization'] = 'Bearer ${_appToken}';
-      }
-      //Sometime for some specific endpoint it may require to use different Token
+
+      // // Use the helper method to get the access token
+      // String? accessToken = await _getAccessToken();
+      // if (accessToken != null) {
+      //   headers['Authorization'] = 'Bearer $accessToken';
+      // }
+
       if (token != null) {
-        headers['Authorization'] = 'Bearer ${token}';
+        headers['Authorization'] = 'Bearer $token';
       }
 
       final response = await _dio.post(
@@ -119,17 +119,16 @@ class ApiProvider {
           return APIResponse.success(response.data);
         }
       } else {
-        // if (response.statusCode! == 404) {
-        //   return const APIResponse.error(AppException.connectivity());
-        // } else
         if (response.statusCode! == 401) {
           return APIResponse.error(AppException.unauthorized());
         } else if (response.statusCode! == 502) {
           return const APIResponse.error(AppException.error());
         } else {
-          if (response.data['message'] != null) {
-            return APIResponse.error(AppException.errorWithMessage(
-                response.data['message'] as String ?? ''));
+          if (response.data is Map && response.data['message'] != null) {
+            return APIResponse.error(
+              AppException.errorWithMessage(
+                  response.data['message'].toString()),
+            );
           } else {
             return const APIResponse.error(AppException.error());
           }
@@ -145,16 +144,19 @@ class ApiProvider {
         return const APIResponse.error(AppException.connectivity());
       }
 
-      if (e.response != null) {
+      if (e.response != null && e.response!.data is Map) {
         if (e.response!.data['message'] != null) {
-          return APIResponse.error(AppException.errorWithMessage(
-              e.response!.data['message'] as String));
+          return APIResponse.error(
+            AppException.errorWithMessage(
+                e.response!.data['message'].toString()),
+          );
         }
       }
       return APIResponse.error(AppException.errorWithMessage(e.message ?? ''));
     } on Error catch (e) {
       return APIResponse.error(
-          AppException.errorWithMessage(e.stackTrace.toString()));
+        AppException.errorWithMessage(e.stackTrace.toString()),
+      );
     }
   }
 
@@ -187,9 +189,15 @@ class ApiProvider {
       'Content-Type': content,
     };
 
-    final _appToken = await _tokenRepository.fetchToken();
-    if (_appToken != null) {
-      headers['Authorization'] = 'Bearer ${_appToken}';
+    // // Use the helper method to get the access token
+    // String? accessToken = await _getAccessToken();
+    // if (accessToken != null) {
+    //   headers['Authorization'] = 'Bearer $accessToken';
+    // }
+
+    // Sometime for some specific endpoint it may require to use different Token
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
     }
 
     try {
@@ -198,15 +206,18 @@ class ApiProvider {
         queryParameters: query,
         options: Options(validateStatus: (status) => true, headers: headers),
       );
-      if (response == null) {
-        return const APIResponse.error(AppException.error());
-      }
+
       if (response.statusCode == null) {
         return const APIResponse.error(AppException.connectivity());
       }
 
       if (response.statusCode! < 300) {
-        return APIResponse.success(response.data['data']);
+        // Fixed: Check if response.data is a Map before accessing 'data' key
+        if (response.data is Map && response.data['data'] != null) {
+          return APIResponse.success(response.data['data']);
+        } else {
+          return APIResponse.success(response.data);
+        }
       } else {
         if (response.statusCode! == 404) {
           return const APIResponse.error(AppException.connectivity());
@@ -215,12 +226,21 @@ class ApiProvider {
         } else if (response.statusCode! == 502) {
           return const APIResponse.error(AppException.error());
         } else {
-          if (response.data['error'] != null) {
-            return APIResponse.error(AppException.errorWithMessage(
-                response.data['error'] as String ?? ''));
-          } else {
-            return const APIResponse.error(AppException.error());
+          // Fixed: Check if response.data is a Map before accessing keys
+          if (response.data is Map) {
+            if (response.data['error'] != null) {
+              return APIResponse.error(
+                AppException.errorWithMessage(
+                    response.data['error'].toString()),
+              );
+            } else if (response.data['message'] != null) {
+              return APIResponse.error(
+                AppException.errorWithMessage(
+                    response.data['message'].toString()),
+              );
+            }
           }
+          return const APIResponse.error(AppException.error());
         }
       }
     } on DioError catch (e) {
