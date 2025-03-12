@@ -10,11 +10,13 @@ namespace EMS.Application.Features.Developer.Queries
 
     public class GetSystemSettingsQueryHandler : IRequestHandler<GetSystemSettingsQuery, List<SystemSettingDto>>
     {
+        private readonly ILogger<GetSystemSettingsQueryHandler> logger;
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
 
         public GetSystemSettingsQueryHandler(ILogger<GetSystemSettingsQueryHandler> logger, IApplicationDbContext context, IMapper mapper)
         {
+            this.logger = logger;
             _context = context;
             _mapper = mapper;
         }

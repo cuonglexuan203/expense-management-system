@@ -14,7 +14,7 @@ namespace EMS.Application.Common.Extensions
         {
             logger.LogWarning(LogTemplates.AppStateChange, state, message);
         }
-        public static void LogStateError(this ILogger logger, string state, string message, Exception? exception = null)
+        public static void LogStateError(this ILogger logger, Exception? exception, string state, string message)
         {
             logger.LogError(exception, LogTemplates.AppStateChange, state, message);
         }

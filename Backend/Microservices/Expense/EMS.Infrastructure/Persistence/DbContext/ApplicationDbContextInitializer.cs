@@ -1,7 +1,7 @@
-﻿using EMS.Application.Common.Interfaces.Services;
+﻿using EMS.Application.Common.Extensions;
+using EMS.Application.Common.Interfaces.Services;
 using EMS.Core.Constants;
-using EMS.Core.Entities;
-using EMS.Core.Enums;
+using EMS.Infrastructure.Persistence.Seed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -24,12 +24,12 @@ namespace EMS.Infrastructure.Persistence.DbContext
         {
             try
             {
-                _logger.LogInformation("...Migrating database: {dbName}", _context.GetType().FullName);
+                _logger.LogStateInfo(AppStates.RunningMigrations, $"Migrating database: {_context.GetType().FullName}");
                 await _context.Database.MigrateAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occurred while initializing the database: {msg}", ex.Message);
+                _logger.LogStateError(ex, AppStates.RunningMigrations, "An error occurred while seeding the database.");
                 throw;
             }
         }
@@ -38,12 +38,13 @@ namespace EMS.Infrastructure.Persistence.DbContext
         {
             try
             {
-                _logger.LogInformation("...Seeding the database: {dbName}.", _context.GetType().FullName);
+                _logger.LogStateInfo(AppStates.SeedingData, $"Seeding database: {_context.GetType().FullName}");
                 await TrySeedAsync();
+                _logger.LogStateInfo(AppStates.SeedingData, $"Completed seeding database: {_context.GetType().FullName}");
             }
-            catch
+            catch (Exception ex )
             {
-                _logger.LogError("An error occurred while seeding the database.");
+                _logger.LogStateError(ex, AppStates.SeedingData, "An error occurred while seeding the database.");
                 throw;
             }
         }
@@ -53,13 +54,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
             if (!_context.Roles.Any())
             {
                 #region Add default roles
-                var roles = new[]
-                {
-                    Roles.Administrator,
-                    Roles.User
-                };
-
-                foreach (var role in roles)
+                foreach (var role in DefaultSeedData.GetDefaultRoles())
                 {
                     var result = await _identityService.CreateRoleAsync(role);
 
@@ -68,91 +63,42 @@ namespace EMS.Infrastructure.Persistence.DbContext
                         _logger.LogError("Failed to seed the role {0}: {1}", role, string.Join(", ", result.Errors));
                     }
                 }
+                _logger.LogStateInfo(AppStates.SeedingData, "Added default roles.");
                 #endregion
 
                 #region Add default users
-                // Add default admins
-                var admins = new (string userName, string pwd)[]
+                foreach (var user in DefaultSeedData.GetDefaultUsers())
                 {
-                    ("admin1@gmail.com", "123456"),
-                    ("admin2@gmail.com", "123456")
-                };
-
-                foreach (var admin in admins)
-                {
-                    var (result, adminId) = await _identityService.CreateUserAsync(admin.userName, admin.pwd);
+                    var (result, userId) = await _identityService.CreateUserAsync(user.UserName, user.Pwd);
 
                     if (!result.Succeeded)
                     {
-                        _logger.LogError("Failed to seed the admin {0}: {1}", admin.userName, string.Join(", ", result.Errors));
+                        _logger.LogError("Failed to seed the user {0}: {1}", user.UserName, string.Join(", ", result.Errors));
                         continue;
                     }
 
-                    await _identityService.AddToRoleAsync(adminId, Roles.Administrator);
-                }
-
-                // Add default users
-                var users = new (string userName, string pwd)[]
-                {
-                    ("user1@gmail.com", "123456"),
-                    ("user2@gmail.com", "123456")
-                };
-
-                foreach (var user in users)
-                {
-                    var (result, userId) = await _identityService.CreateUserAsync(user.userName, user.pwd);
-
-                    if (!result.Succeeded)
-                    {
-                        _logger.LogError("Failed to seed the user {0}: {1}", user.userName, string.Join(", ", result.Errors));
-                        continue;
-                    }
-
-                    await _identityService.AddToRoleAsync(userId, Roles.User);
+                    await _identityService.AddToRoleAsync(userId, user.Role);
                 }
                 #endregion
             }
 
-            #region Seed System Settings
+            #region Add default system settings
             if (!_context.SystemSettings.Any())
             {
-                var systemSettings = new List<SystemSetting>
-                {
-                    new SystemSetting
-                    {
-                        SettingKey = "Currency",
-                        SettingValue = Currency.USD.ToString(),
-                        DataType = DataType.String,
-                        Description = "Default currency used in transactions",
-                        Type = SettingType.General,
-                        UserConfigurable = true
-                    },
-                    new SystemSetting
-                    {
-                        SettingKey = "Language",
-                        SettingValue = Language.EN.ToString(),
-                        DataType = DataType.String,
-                        Description = "Default application language",
-                        Type = SettingType.General,
-                        UserConfigurable = true
-                    },
-                    new SystemSetting
-                    {
-                        SettingKey = "RequiresConfirmation",
-                        SettingValue = "true",
-                        DataType = DataType.Boolean,
-                        Description = "Indicates whether user actions require confirmation",
-                        Type = SettingType.General,
-                        UserConfigurable = true
-                    }
-                };
-
-                _context.SystemSettings.AddRange(systemSettings);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation("Seeded default system settings.");
+                _context.SystemSettings.AddRange(DefaultSeedData.GetDefaultSystemSettings());
+                _logger.LogStateInfo(AppStates.SeedingData, "Added default system settings.");
             }
             #endregion
+
+            #region Add default categories
+            if (!_context.Categories.Any())
+            {
+                _context.Categories.AddRange(DefaultSeedData.GetDefaultCategories());
+                _logger.LogStateInfo(AppStates.SeedingData, "Added default categories.");
+            }
+            #endregion
+
+            await _context.SaveChangesAsync();
         }
     }
 }
