@@ -17,6 +17,10 @@ namespace EMS.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Type)
                 .HasConversion<string>()
                 .HasMaxLength(15);
+
+            builder.Property(e => e.TransactionType)
+                .HasConversion<string>()
+                .HasMaxLength(15);
         }
         public override void ConfigureRelationships(EntityTypeBuilder<Category> builder)
         {
