@@ -15,109 +15,6 @@ class WalletPage extends StatefulWidget {
 class _WalletPageState extends State<WalletPage> {
   int _currentIndex = 0;
 
-  void _showAddBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Material(
-                color: Colors.transparent,
-                child: ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.red[50],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Iconsax.arrow_up_1, color: Colors.red[400]),
-                  ),
-                  title: const Text(
-                    'Add Expense',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Nunito',
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) => Padding(
-                        padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom,
-                        ),
-                        child: const AddTransactionPage(isExpense: true),
-                      ),
-                    );
-                  },
-                  hoverColor: Colors.grey[100],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Material(
-                color: Colors.transparent,
-                child: ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Iconsax.arrow_down_2, color: Colors.green[400]),
-                  ),
-                  title: const Text(
-                    'Add Income',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Nunito',
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) => Padding(
-                        padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom,
-                        ),
-                        child: const AddTransactionPage(isExpense: false),
-                      ),
-                    );
-                  },
-                  hoverColor: Colors.grey[100],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,10 +88,34 @@ class _WalletPageState extends State<WalletPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        _buildActionButton(
-                          icon: Iconsax.add_circle,
-                          label: 'Add',
-                          onTap: _showAddBottomSheet,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildActionButton(
+                              icon: Iconsax.arrow_up_1,
+                              label: 'Add Expense',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const AddTransactionPage(isExpense: true),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            _buildActionButton(
+                              icon: Iconsax.arrow_down_2,
+                              label: 'Add Income',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const AddTransactionPage(
+                                          isExpense: false),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20),
                         // Tabs

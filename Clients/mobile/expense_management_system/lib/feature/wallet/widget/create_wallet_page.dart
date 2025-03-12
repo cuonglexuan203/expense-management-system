@@ -1,7 +1,9 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_boilerplate/feature/wallet/provider/wallet_provider.dart';
 import 'package:flutter_boilerplate/gen/colors.gen.dart';
+import 'package:flutter_boilerplate/shared/util/number_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -11,12 +13,8 @@ class CreateWalletPage extends ConsumerWidget {
   final _nameController = TextEditingController();
   final _balanceController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _currencyFormatter = CurrencyTextInputFormatter.currency(
-    locale: 'en',
-    decimalDigits: 0,
-    symbol: '',
-    turnOffGrouping: false,
-  );
+
+  final _numberFormatter = NumberFormatter();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -181,11 +179,15 @@ class CreateWalletPage extends ConsumerWidget {
                 TextFormField(
                   controller: _balanceController,
                   keyboardType:
-                      const TextInputType.numberWithOptions(decimal: false),
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
-                    hintText: '0',
+                    hintText: '0.00',
                     prefixIcon:
                         const Icon(Iconsax.money, color: ColorName.blue),
+                    prefixStyle: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 16,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: Colors.grey),
@@ -204,7 +206,7 @@ class CreateWalletPage extends ConsumerWidget {
                     contentPadding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   inputFormatters: [
-                    _currencyFormatter,
+                    _numberFormatter,
                   ],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -239,7 +241,6 @@ class CreateWalletPage extends ConsumerWidget {
                           orElse: () => () {
                             if (_formKey.currentState!.validate()) {
                               final String inputText = _balanceController.text;
-
                               final double balance =
                                   double.parse(inputText.replaceAll(',', ''));
 

@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import '../provider/password_visibility_provider.dart';
 
+final isLoadingProvider = StateProvider<bool>((ref) => false);
+
 class SignUpPage extends ConsumerWidget {
   SignUpPage({super.key});
   final _nameController = TextEditingController();
@@ -15,6 +17,8 @@ class SignUpPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(isLoadingProvider);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -227,19 +231,35 @@ class SignUpPage extends ConsumerWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () async {
-                                  await ref
-                                      .read(authNotifierProvider.notifier)
-                                      .signUp(
-                                        _nameController.text,
-                                        _emailController.text,
-                                        _passwordController.text,
-                                      );
+                                onPressed: isLoading
+                                    ? null
+                                    : () async {
+                                        ref
+                                            .read(isLoadingProvider.notifier)
+                                            .state = true;
 
-                                  if (context.mounted) {
-                                    context.go('/signIn');
-                                  }
-                                },
+                                        try {
+                                          await ref
+                                              .read(
+                                                  authNotifierProvider.notifier)
+                                              .signUp(
+                                                _nameController.text,
+                                                _emailController.text,
+                                                _passwordController.text,
+                                              );
+
+                                          if (context.mounted) {
+                                            context.go('/signIn');
+                                          }
+                                        } finally {
+                                          if (context.mounted) {
+                                            ref
+                                                .read(
+                                                    isLoadingProvider.notifier)
+                                                .state = false;
+                                          }
+                                        }
+                                      },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: ColorName.blue,
                                   padding:
@@ -249,16 +269,25 @@ class SignUpPage extends ConsumerWidget {
                                   ),
                                   elevation: 0,
                                 ),
-                                child: const Text(
-                                  "SIGN UP",
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.3,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "SIGN UP",
+                                        style: TextStyle(
+                                          fontFamily: 'Nunito',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.3,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                               ),
                             ),
                             const SizedBox(height: 16),
