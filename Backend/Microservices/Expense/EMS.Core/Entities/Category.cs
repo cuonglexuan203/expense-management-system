@@ -5,9 +5,10 @@ namespace EMS.Core.Entities
 {
     public class Category : BaseAuditableEntity<int>
     {
-        public string UserId { get; set; } = default!;
+        public string? UserId { get; set; }
         public string Name { get; set; } = default!;
         public CategoryType Type { get; set; }
+        public TransactionType TransactionType { get; set; }
         public Guid? IconId { get; set; }
 
         // Navigations
