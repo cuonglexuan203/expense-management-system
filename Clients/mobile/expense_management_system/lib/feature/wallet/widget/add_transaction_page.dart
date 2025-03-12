@@ -127,184 +127,180 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
       ),
     );
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: ColorName.blue,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          widget.isExpense ? 'Add Expense' : 'Add Income',
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Nunito',
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExtendedTextField(
+              controller: _titleController,
+              decoration: inputDecoration.copyWith(
+                labelText: 'Title',
+                hintText: 'Enter title',
+              ),
+              style: const TextStyle(
+                fontSize: 14,
+                fontFamily: 'Nunito',
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            widget.isExpense ? 'Add Expense' : 'Add Income',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Nunito',
-            ),
-          ),
-          const SizedBox(height: 20),
-          ExtendedTextField(
-            controller: _titleController,
-            decoration: inputDecoration.copyWith(
-              labelText: 'Title',
-              hintText: 'Enter title',
-            ),
-            style: const TextStyle(
-              fontSize: 14,
-              fontFamily: 'Nunito',
-            ),
-          ),
-          const SizedBox(height: 16),
-          ExtendedTextField(
-            controller: _amountController,
-            keyboardType: TextInputType.number,
-            decoration: inputDecoration.copyWith(
-              labelText: 'Amount',
-              hintText: 'Enter amount',
-              prefixText: '\$ ',
-            ),
-            style: const TextStyle(
-              fontSize: 14,
-              fontFamily: 'Nunito',
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Date',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-              fontFamily: 'Nunito',
-            ),
-          ),
-          const SizedBox(height: 8),
-          GestureDetector(
-            onTap: () async {
-              final DateTime? picked = await showDatePicker(
-                context: context,
-                initialDate: _selectedDate,
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2100),
-              );
-              if (picked != null) {
-                setState(() {
-                  _selectedDate = picked;
-                });
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(12),
+            const SizedBox(height: 16),
+            ExtendedTextField(
+              controller: _amountController,
+              keyboardType: TextInputType.number,
+              decoration: inputDecoration.copyWith(
+                labelText: 'Amount',
+                hintText: 'Enter amount',
+                prefixText: '\$ ',
               ),
-              child: Row(
-                children: [
-                  Icon(Iconsax.calendar, color: Colors.grey.shade600),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+              style: const TextStyle(
+                fontSize: 14,
+                fontFamily: 'Nunito',
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Date',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+                fontFamily: 'Nunito',
+              ),
+            ),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: () async {
+                final DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: _selectedDate,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                );
+                if (picked != null) {
+                  setState(() {
+                    _selectedDate = picked;
+                  });
+                }
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Iconsax.calendar, color: Colors.grey.shade600),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Nunito',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedCategory,
+                    decoration: inputDecoration.copyWith(
+                      labelText: 'Category',
+                      hintText: 'Select category',
+                    ),
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Nunito',
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: _selectedCategory,
-                  decoration: inputDecoration.copyWith(
-                    labelText: 'Category',
-                    hintText: 'Select category',
-                  ),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'Nunito',
-                  ),
-                  items: categories.map((String category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(
-                        category,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontFamily: 'Nunito',
+                    items: categories.map((String category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(
+                          category,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Nunito',
+                          ),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedCategory = newValue;
-                    });
-                  },
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedCategory = newValue;
+                      });
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              TextButton.icon(
-                onPressed: _showAddCategoryDialog,
-                icon: const Icon(
-                  Iconsax.add_circle,
-                  color: ColorName.blue,
-                ),
-                label: const Text(
-                  'Add Category',
-                  style: TextStyle(
+                const SizedBox(width: 8),
+                TextButton.icon(
+                  onPressed: _showAddCategoryDialog,
+                  icon: const Icon(
+                    Iconsax.add_circle,
                     color: ColorName.blue,
+                  ),
+                  label: const Text(
+                    'Add Category',
+                    style: TextStyle(
+                      color: ColorName.blue,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle save transaction
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorName.blue,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  widget.isExpense ? 'Save Expense' : 'Save Income',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
-                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
                   ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                // Handle save transaction
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorName.blue,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                widget.isExpense ? 'Save Expense' : 'Save Income',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Nunito',
-                  color: Colors.white,
-                ),
-              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
