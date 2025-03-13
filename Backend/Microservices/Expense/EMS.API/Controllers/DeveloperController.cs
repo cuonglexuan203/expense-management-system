@@ -14,7 +14,7 @@ namespace EMS.API.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetPiCoin()
+        public IActionResult GetPiCoin()
         {
             return Ok(new { Message = "You get 10k PI coins", Coin = 10000 });
         }
