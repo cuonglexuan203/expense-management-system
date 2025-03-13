@@ -18,7 +18,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .HasConversion<string>()
                 .HasMaxLength(15);
 
-            builder.Property(e => e.TransactionType)
+            builder.Property(e => e.FinancialFlowType)
                 .HasConversion<string>()
                 .HasMaxLength(15);
         }

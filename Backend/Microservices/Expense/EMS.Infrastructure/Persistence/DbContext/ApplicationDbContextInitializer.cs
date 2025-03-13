@@ -54,16 +54,17 @@ namespace EMS.Infrastructure.Persistence.DbContext
             if (!_context.Roles.Any())
             {
                 #region Add default roles
-                foreach (var role in DefaultSeedData.GetDefaultRoles())
+                var defaultRoles = DefaultSeedData.GetDefaultRoles();
+                foreach (var role in defaultRoles)
                 {
                     var result = await _identityService.CreateRoleAsync(role);
 
                     if (!result.Succeeded)
                     {
-                        _logger.LogError("Failed to seed the role {0}: {1}", role, string.Join(", ", result.Errors));
+                        _logger.LogError("Failed to seed the role {0}: {1}", role, string.Join(", ", result.Errors!));
                     }
                 }
-                _logger.LogStateInfo(AppStates.SeedingData, "Added default roles.");
+                _logger.LogStateInfo(AppStates.SeedingData, $"Added default roles: {defaultRoles}");
                 #endregion
 
                 #region Add default users
@@ -73,11 +74,12 @@ namespace EMS.Infrastructure.Persistence.DbContext
 
                     if (!result.Succeeded)
                     {
-                        _logger.LogError("Failed to seed the user {0}: {1}", user.UserName, string.Join(", ", result.Errors));
+                        _logger.LogError("Failed to seed the user {0}: {1}", user.UserName, string.Join(", ", result.Errors!));
                         continue;
                     }
 
                     await _identityService.AddToRoleAsync(userId, user.Role);
+                    _logger.LogStateInfo(AppStates.SeedingData, $"Added a default user: userName {user.UserName}, role {user.Role}");
                 }
                 #endregion
             }
@@ -85,16 +87,18 @@ namespace EMS.Infrastructure.Persistence.DbContext
             #region Add default system settings
             if (!_context.SystemSettings.Any())
             {
-                _context.SystemSettings.AddRange(DefaultSeedData.GetDefaultSystemSettings());
-                _logger.LogStateInfo(AppStates.SeedingData, "Added default system settings.");
+                var defaultSystemSettings = DefaultSeedData.GetDefaultSystemSettings();
+                _context.SystemSettings.AddRange(defaultSystemSettings);
+                _logger.LogStateInfo(AppStates.SeedingData, $"Added {defaultSystemSettings.Length} default system settings.");
             }
             #endregion
 
             #region Add default categories
             if (!_context.Categories.Any())
             {
-                _context.Categories.AddRange(DefaultSeedData.GetDefaultCategories());
-                _logger.LogStateInfo(AppStates.SeedingData, "Added default categories.");
+                var defaultCategories = DefaultSeedData.GetDefaultCategories();
+                _context.Categories.AddRange(defaultCategories);
+                _logger.LogStateInfo(AppStates.SeedingData, $"Added {defaultCategories.Length} default categories.");
             }
             #endregion
 

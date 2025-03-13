@@ -5,11 +5,11 @@ namespace EMS.Core.Entities
 {
     public class Transaction : BaseAuditableEntity<int>
     {
+        public string Name { get; set; } = default!;
         public int WalletId { get; set; }
         public int? CategoryId { get; set; }
         public string UserId { get; set; } = default!;
         public float Amount { get; set; }
-        public string? Description { get; set; }
         public TransactionType Type { get; set; }
         public int? CalendarEventId { get; set; }
         //public string? Metadata { get; set; }

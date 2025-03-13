@@ -77,37 +77,37 @@ namespace EMS.Infrastructure.Persistence.Seed
                 new() {
                     Name = "Utilities",
                     Type = CategoryType.Custom,
-                    TransactionType = TransactionType.Expense,
+                    FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Transportation",
                     Type = CategoryType.Custom,
-                    TransactionType = TransactionType.Expense,
+                    FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Entertainment",
                     Type = CategoryType.Custom,
-                    TransactionType = TransactionType.Expense,
+                    FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Travel",
                     Type = CategoryType.Custom,
-                    TransactionType = TransactionType.Expense,
+                    FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Education",
                     Type = CategoryType.Custom,
-                    TransactionType = TransactionType.Expense,
+                    FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Health",
                     Type = CategoryType.Custom,
-                    TransactionType = TransactionType.Expense,
+                    FinancialFlowType = TransactionType.Expense,
                 },
             };
 
@@ -117,13 +117,13 @@ namespace EMS.Infrastructure.Persistence.Seed
                 {
                     Name = "Salary",
                     Type = CategoryType.Custom,
-                    TransactionType = TransactionType.Income,
+                    FinancialFlowType = TransactionType.Income,
                 },
                 new()
                 {
                     Name = "Investments",
                     Type = CategoryType.Custom,
-                    TransactionType = TransactionType.Income,
+                    FinancialFlowType = TransactionType.Income,
                 },
             };
 
