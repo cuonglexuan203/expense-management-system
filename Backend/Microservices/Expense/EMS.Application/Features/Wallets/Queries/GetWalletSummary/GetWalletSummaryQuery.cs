@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace EMS.Application.Features.Wallets.Queries.GetWalletSummary
 {
     [UserCacheableQuery(CacheKeyGenerator.QueryKeys.WalletByUser)]
-    public record GetWalletSummaryQuery(int WalletId, WalletSummaryPeriod period = WalletSummaryPeriod.AllTime) : IRequest<WalletBalanceSummary>;
+    public record GetWalletSummaryQuery(int WalletId, TimePeriod period = TimePeriod.AllTime) : IRequest<WalletBalanceSummary>;
 
     public class GetWalletSummaryQueryHandler : IRequestHandler<GetWalletSummaryQuery, WalletBalanceSummary>
     {

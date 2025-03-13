@@ -34,7 +34,7 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
         private readonly ITransactionService _transactionService;
 
         //
-        private static readonly WalletSummaryPeriod[] _walletSummaryPeriods = Enum.GetValues<WalletSummaryPeriod>();
+        private static readonly TimePeriod[] _walletSummaryPeriods = Enum.GetValues<TimePeriod>();
 
         public CreateTransactionCommandHandler(
             ILogger<CreateTransactionCommandHandler> logger,

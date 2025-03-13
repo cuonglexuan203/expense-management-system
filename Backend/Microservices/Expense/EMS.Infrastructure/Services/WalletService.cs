@@ -1,6 +1,8 @@
 ﻿using EMS.Application.Common.Exceptions;
+using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Common.Utils;
 using EMS.Application.Features.Wallets.Queries.GetWalletSummary;
 using EMS.Application.Features.Wallets.Services;
 using EMS.Core.Entities;
@@ -23,7 +25,7 @@ namespace EMS.Infrastructure.Services
             _currentUserService = currentUserService;
         }
 
-        public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(int walletId, WalletSummaryPeriod period, CancellationToken cancellationToken = default)
+        public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(int walletId, TimePeriod period, CancellationToken cancellationToken = default)
         {
             var wallet = await _context.Wallets
                 .AsNoTracking()
@@ -31,9 +33,8 @@ namespace EMS.Infrastructure.Services
                 ?? throw new NotFoundException($"Wallet with id {walletId} not found by user {_currentUserService.Id}");
 
             var transactionQuery = _context.Transactions
-            .Where(e => e.WalletId == wallet.Id && !e.IsDeleted);
-
-            transactionQuery = FilterTransactionsByPeriod(transactionQuery, period);
+            .Where(e => e.WalletId == wallet.Id && !e.IsDeleted)
+            .FilterTransactionsByPeriod(period);
 
             var totalIncome = await transactionQuery
                 .Where(e => e.Type == TransactionType.Income)
@@ -59,27 +60,6 @@ namespace EMS.Infrastructure.Services
             };
 
             return result;
-        }
-
-        private IQueryable<Transaction> FilterTransactionsByPeriod(IQueryable<Transaction> query, WalletSummaryPeriod period)
-        {
-            var now = DateTimeOffset.UtcNow;
-            return period switch
-            {
-                WalletSummaryPeriod.CurrentWeek => query.Where(e => e.CreatedAt > GetStartDateOfWeek(now)),
-                WalletSummaryPeriod.CurrentMonth => query.Where(e => e.CreatedAt > new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, TimeSpan.Zero)),
-                WalletSummaryPeriod.CurrentYear => query.Where(e => e.CreatedAt > new DateTimeOffset(now.Year, 1, 1, 0, 0, 0, TimeSpan.Zero)),
-                WalletSummaryPeriod.AllTime => query,
-                _ => throw new ArgumentOutOfRangeException(nameof(period), period, null),
-            };
-        }
-
-        private DateTimeOffset GetStartDateOfWeek(DateTimeOffset dt)
-        {
-            var diff = (7 + (dt.DayOfWeek - DayOfWeek.Monday)) % 7;
-
-            return new DateTimeOffset(dt.DateTime.AddDays(-diff).Date, dt.Offset);
-
         }
     }
 }

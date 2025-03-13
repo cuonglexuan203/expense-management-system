@@ -1,5 +1,7 @@
 ﻿using EMS.Application.Features.Transactions.Commands.CreateTransaction;
 using EMS.Application.Features.Transactions.Queries.GetTransaction;
+using EMS.Application.Features.Transactions.Queries.GetTransactions;
+using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +22,14 @@ namespace EMS.API.Controllers
         public async Task<IActionResult> GetTransaction(int id)
         {
             var result = await _sender.Send(new GetTransactionQuery(id));
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTransactions([FromQuery] TransactionSpecParams specParams)
+        {
+            var result = await _sender.Send(new GetTransactionsQuery(specParams));
 
             return Ok(result);
         }
