@@ -1,12 +1,12 @@
 using AutoMapper;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Wallet.Dtos;
+using EMS.Application.Features.Wallets.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Wallet.Commands.CreateWallet
+namespace EMS.Application.Features.Wallets.Commands.CreateWallet
 {
     public record CreateWalletCommand : IRequest<WalletDto>
     {

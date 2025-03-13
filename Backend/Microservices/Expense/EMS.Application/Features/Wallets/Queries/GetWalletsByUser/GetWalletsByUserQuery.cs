@@ -2,12 +2,12 @@
 using AutoMapper.QueryableExtensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Wallet.Dtos;
+using EMS.Application.Features.Wallets.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Wallet.Queries.GetWalletsByUser
+namespace EMS.Application.Features.Wallets.Queries.GetWalletsByUser
 {
     public record GetWalletsByUserQuery : IRequest<List<WalletDto>>;
 

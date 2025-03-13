@@ -1,4 +1,4 @@
-﻿namespace EMS.Application.Features.Wallet.Queries.GetWalletSummary
+﻿namespace EMS.Application.Features.Wallets.Queries.GetWalletSummary
 {
     public record TransactionSummary(float TotalAmount, int TransactionCount);
 }
