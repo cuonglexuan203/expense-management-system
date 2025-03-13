@@ -1,7 +1,10 @@
-﻿using EMS.Infrastructure.Persistence.DbContext;
+﻿using EMS.Application.Common.Extensions;
+using EMS.Core.Constants;
+using EMS.Infrastructure.Persistence.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Polly;
+using System;
 
 namespace EMS.API.Common.Extensions
 {
@@ -25,7 +28,7 @@ namespace EMS.API.Common.Extensions
             var context = serviceProvider.GetRequiredService<TContext>();
             try
             {
-                logger.LogInformation("Start Db Migration: {dbName}", typeof(TContext).Name);
+                logger.LogStateInfo(AppStates.RunningMigrations, $"Start Db Migration: {typeof(TContext).Name}");
                 // retry strategy
                 var retry = Policy.Handle<PostgresException>()
                                     .WaitAndRetry(
@@ -33,14 +36,14 @@ namespace EMS.API.Common.Extensions
                                     sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                                     onRetry: (exception, span, context) =>
                                     {
-                                        logger.LogError($"Retrying because of {exception} {span}");
+                                        logger.LogStateError(exception, AppStates.RunningMigrations, $"Retrying the migration {span}");
                                     });
                 retry.Execute(() => context.Database.Migrate());
-                logger.LogInformation("Migration completed: {dbName}", typeof(TContext).Name);
+                logger.LogStateInfo(AppStates.RunningMigrations, $"Migration completed: {typeof(TContext).Name}");
             }
             catch (Exception ex)
             {
-                logger.LogError("An error occurred while migrating db: {msg}", ex.Message);
+                logger.LogStateError(ex, AppStates.RunningMigrations, $"An error occurred while migrating db: {ex.Message}");
             }
             return host;
         }
