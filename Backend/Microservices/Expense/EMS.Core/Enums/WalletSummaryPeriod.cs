@@ -2,7 +2,7 @@
 
 namespace EMS.Core.Enums
 {
-    public enum BalanceFilterPeriod
+    public enum WalletSummaryPeriod
     {
         [Description("All Time")]
         AllTime,

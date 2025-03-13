@@ -7,6 +7,11 @@
             return $"{prefix}:{string.Join(":", parameters)}";
         }
 
+        public static string GenerateForUser(string prefix, string userId, params object[] parameters)
+        {
+            return Generate(prefix, [userId, .. parameters]);
+        }
+
         public static class QueryKeys
         {
             public const string WalletByUser = "wallet_by_user";

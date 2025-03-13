@@ -2,7 +2,10 @@
 using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Common.Utils;
 using EMS.Application.Features.Transactions.Commands.Dtos;
+using EMS.Application.Features.Transactions.Services;
+using EMS.Application.Features.Wallets.Services;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 using MediatR;
@@ -26,14 +29,29 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
         private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _user;
         private readonly IMapper _mapper;
+        private readonly IWalletService _walletService;
+        private readonly IDistributedCacheService _distributedCacheService;
+        private readonly ITransactionService _transactionService;
 
-        public CreateTransactionCommandHandler(ILogger<CreateTransactionCommandHandler> logger, IApplicationDbContext context,
-            ICurrentUserService user, IMapper mapper)
+        //
+        private static readonly WalletSummaryPeriod[] _walletSummaryPeriods = Enum.GetValues<WalletSummaryPeriod>();
+
+        public CreateTransactionCommandHandler(
+            ILogger<CreateTransactionCommandHandler> logger,
+            IApplicationDbContext context,
+            ICurrentUserService user,
+            IMapper mapper,
+            IWalletService walletService,
+            IDistributedCacheService distributedCacheService,
+            ITransactionService transactionService)
         {
             _logger = logger;
             _context = context;
             _user = user;
             _mapper = mapper;
+            _walletService = walletService;
+            _distributedCacheService = distributedCacheService;
+            _transactionService = transactionService;
         }
 
         public async Task<TransactionDto> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
@@ -57,7 +75,6 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
             if (request.Category != null)
             {
                 var category = await _context.Categories
-                    .AsNoTracking()
                     .SingleOrDefaultAsync(e => 
                 e.Name == request.Category && (e.UserId == userId || e.UserId == null) && !e.IsDeleted)
                 ?? throw new NotFoundException($"Category with name {request.Category} not found");
@@ -68,14 +85,26 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
                 transaction.CategoryId = category.Id;
             }
 
-            _context.Transactions.Add(transaction);
+            await _transactionService.CreateTransactionAsync(request.WalletId, transaction);
 
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Added a {Type} transaction: id {id}, wallet id {WalletId}, amount {Amount}, category {Category}", 
+            _logger.LogInformation("Added a {Type} transaction: id {id}, wallet id {WalletId}, amount {Amount}, category {Category}",
                 transaction.Type, transaction.Id, transaction.WalletId, transaction.Amount, request.Category);
 
+            await CacheWalletBalanceSummariesAsync(request.WalletId);
+
             return _mapper.Map<TransactionDto>(transaction);
+        }
+
+        private async Task CacheWalletBalanceSummariesAsync(int walletId)
+        {
+            foreach(var value in _walletSummaryPeriods)
+            {
+                var walletSummary = await _walletService.GetWalletBalanceSummaryAsync(walletId, value);
+
+                await _distributedCacheService.SetAsync(
+                    CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.QueryKeys.WalletByUser, _user.Id!, walletId, value), 
+                    walletSummary);
+            }
         }
     }
 }

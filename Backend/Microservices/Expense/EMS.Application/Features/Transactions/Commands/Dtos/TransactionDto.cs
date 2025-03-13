@@ -1,9 +1,11 @@
-﻿using EMS.Application.Common.Mappings;
+﻿using AutoMapper;
+using EMS.Application.Common.Mappings;
+using EMS.Core.Entities;
 using EMS.Core.Enums;
 
 namespace EMS.Application.Features.Transactions.Commands.Dtos
 {
-    public class TransactionDto : IMapFrom<EMS.Core.Entities.Transaction>
+    public class TransactionDto : IMapFrom<Transaction>
     {
         public int Id { get; set; }
         public int WalletId { get; set; }
@@ -12,5 +14,11 @@ namespace EMS.Application.Features.Transactions.Commands.Dtos
         public string? Description { get; set; }
         public TransactionType Type { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
+
+        public void Mapping(Profile profile)
+        {
+            profile.CreateMap<Transaction, TransactionDto>()
+                .ForMember(d => d.Category, opt => opt.MapFrom(s => s.Category!.Name));
+        }
     }
 }

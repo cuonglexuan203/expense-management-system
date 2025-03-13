@@ -22,8 +22,6 @@
     <Folder Include="Common\DTOs\" />
     <Folder Include="Common\Validators\" />
     <Folder Include="Features\Transactions\Queries\" />
-    <Folder Include="Features\Wallet\Commands\CreateWallet\" />
-    <Folder Include="Features\Wallet\Commands\UpdateWallet\" />
   </ItemGroup>
 
 </Project>

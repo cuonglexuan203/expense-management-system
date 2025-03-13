@@ -1,5 +1,7 @@
 ﻿using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Features.Transactions.Services;
+using EMS.Application.Features.Wallets.Services;
 using EMS.Infrastructure.Common.Extensions;
 using EMS.Infrastructure.Identity;
 using EMS.Infrastructure.Identity.Models;
@@ -23,6 +25,8 @@ namespace EMS.Infrastructure
             services.TryAddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
             services.TryAddScoped<ITokenService, TokenService>();
             services.TryAddScoped<IIdentityService, IdentityService>();
+            services.TryAddScoped<IWalletService, WalletService>();
+            services.TryAddScoped<ITransactionService, TransactionService>();
 
             services.AddRedisCaching(configuration);
 

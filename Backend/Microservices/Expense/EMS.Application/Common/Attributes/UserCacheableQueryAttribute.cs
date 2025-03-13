@@ -21,15 +21,14 @@ namespace EMS.Application.Common.Attributes
         public override string GenerateCacheKey(object request)
         {
             var properties = request.GetType().GetProperties();
-            var parameters = new object[properties.Length + 1];
+            var parameters = new object[properties.Length];
 
-            parameters[0] = UserId ?? "null";
-            for (var i = 0; i < properties.Length; i++)
+            for (int i = 0; i < properties.Length; i++)
             {
-                parameters[i + 1] = properties[i].GetValue(request, null) ?? "null";
+                parameters[i] = properties[i].GetValue(request, null) ?? "null";
             }
 
-            return CacheKeyGenerator.Generate(KeyPrefix, parameters);
+            return CacheKeyGenerator.GenerateForUser(KeyPrefix, UserId, parameters);
         }
     }
 }
