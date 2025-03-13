@@ -2,7 +2,7 @@ using EMS.Application.Common.Mappings;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 
-namespace EMS.Application.Features.Category.Queries.GetCategory
+namespace EMS.Application.Features.Categories.Queries.GetCategory
 {
     public class CategoryDto : IMapFrom<Core.Entities.Category>
     {

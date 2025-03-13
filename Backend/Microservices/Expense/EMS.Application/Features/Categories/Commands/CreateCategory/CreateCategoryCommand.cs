@@ -1,13 +1,13 @@
 using AutoMapper;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Category.Queries.GetCategory;
+using EMS.Application.Features.Categories.Queries.GetCategory;
 using EMS.Core.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Category.Commands.CreateCategory
+namespace EMS.Application.Features.Categories.Commands.CreateCategory
 {
     public record CreateCategoryCommand : IRequest<CategoryDto>
     {

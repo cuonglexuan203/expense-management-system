@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Category.Queries.GetCategory
+namespace EMS.Application.Features.Categories.Queries.GetCategory
 {
     public record GetCategoryQuery(int Id) : IRequest<CategoryDto>;
 

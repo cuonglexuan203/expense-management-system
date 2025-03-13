@@ -1,8 +1,8 @@
-using EMS.Application.Features.Category.Commands.CreateCategory;
-using EMS.Application.Features.Category.Commands.DeleteCategory;
-using EMS.Application.Features.Category.Commands.UpdateCategory;
-using EMS.Application.Features.Category.Queries.GetCategories;
-using EMS.Application.Features.Category.Queries.GetCategory;
+using EMS.Application.Features.Categories.Commands.CreateCategory;
+using EMS.Application.Features.Categories.Commands.DeleteCategory;
+using EMS.Application.Features.Categories.Commands.UpdateCategory;
+using EMS.Application.Features.Categories.Queries.GetCategories;
+using EMS.Application.Features.Categories.Queries.GetCategory;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

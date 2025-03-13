@@ -2,12 +2,12 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Category.Queries.GetCategory;
+using EMS.Application.Features.Categories.Queries.GetCategory;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Category.Queries.GetCategories
+namespace EMS.Application.Features.Categories.Queries.GetCategories
 {
     public record GetCategoriesQuery : IRequest<List<CategoryDto>>;
 
