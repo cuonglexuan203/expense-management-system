@@ -57,5 +57,15 @@ namespace EMS.Infrastructure.Services
 
             return wallet.Balance - transaction.Amount >= 0;
         }
+        public async Task<TransactionDto?> GetTransaction(int transactionId, CancellationToken cancellationToken = default)
+        {
+            var transaction = await _context.Transactions
+                .Include(e => e.Category)
+                .Include(e => e.Wallet)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == transactionId && !e.IsDeleted);
+
+            return _mapper.Map<TransactionDto>(transaction);
+        }
     }
 }

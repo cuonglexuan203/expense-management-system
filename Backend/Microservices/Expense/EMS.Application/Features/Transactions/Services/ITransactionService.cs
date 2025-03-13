@@ -7,5 +7,6 @@ namespace EMS.Application.Features.Transactions.Services
     {
         Task<TransactionDto> CreateTransactionAsync(int walletId, Transaction transaction, CancellationToken cancellationToken = default);
         Task<bool> HasSufficientBalance(int walletId, Transaction transaction, CancellationToken cancellationToken = default);
+        Task<TransactionDto?> GetTransaction(int transactionId,  CancellationToken cancellationToken = default);
     }
 }

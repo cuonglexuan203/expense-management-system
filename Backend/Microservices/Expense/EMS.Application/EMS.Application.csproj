@@ -21,7 +21,6 @@
   <ItemGroup>
     <Folder Include="Common\DTOs\" />
     <Folder Include="Common\Validators\" />
-    <Folder Include="Features\Transactions\Queries\" />
   </ItemGroup>
 
 </Project>
