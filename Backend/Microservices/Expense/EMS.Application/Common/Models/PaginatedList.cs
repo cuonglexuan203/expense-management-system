@@ -6,6 +6,7 @@ namespace EMS.Application.Common.Models
     {
         public IReadOnlyCollection<T> Items { get; } = default!;
         public int PageNumber { get; }
+        public int PageSize { get; }
         public int TotalPages { get; }
         public int TotalCount { get; }
 
@@ -13,6 +14,7 @@ namespace EMS.Application.Common.Models
         {
             Items = items;
             PageNumber = pageNumber;
+            PageSize = pageSize;
             TotalPages = (int)Math.Ceiling(count / (pageSize * 1.0));
             TotalCount = count;
         }
