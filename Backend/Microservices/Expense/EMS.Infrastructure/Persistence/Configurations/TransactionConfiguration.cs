@@ -8,6 +8,9 @@ namespace EMS.Infrastructure.Persistence.Configurations
     {
         public override void ConfigureProperties(EntityTypeBuilder<Transaction> builder)
         {
+            builder.Property(e => e.Name)
+                .HasMaxLength(255);
+
             builder.Property(e => e.UserId)
                 .HasMaxLength(36);
 

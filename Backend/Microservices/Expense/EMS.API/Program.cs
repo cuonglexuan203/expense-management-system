@@ -1,4 +1,5 @@
 using EMS.API.Common.Extensions;
+using EMS.Core.Constants;
 using EMS.Infrastructure.Persistence.DbContext;
 using Serilog;
 
@@ -12,7 +13,7 @@ namespace EMS.API
                 .WriteTo.Console()
                 .CreateLogger();
 
-            Log.Information("Starting Server...");
+            Log.Information(LogTemplates.AppStateChange, AppStates.Starting, "Starting server ...");
 
             try
             {

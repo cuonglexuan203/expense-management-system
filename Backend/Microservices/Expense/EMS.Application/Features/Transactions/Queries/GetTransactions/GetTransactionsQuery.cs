@@ -1,0 +1,80 @@
+﻿using AutoMapper;
+using EMS.Application.Common.Extensions;
+using EMS.Application.Common.Interfaces.DbContext;
+using EMS.Application.Common.Models;
+using EMS.Application.Features.Transactions.Dtos;
+using EMS.Core.Enums;
+using EMS.Core.Specifications;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace EMS.Application.Features.Transactions.Queries.GetTransactions
+{
+    public record GetTransactionsQuery(TransactionSpecParams SpecParams) : IRequest<PaginatedList<TransactionDto>>;
+
+    public class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuery, PaginatedList<TransactionDto>>
+    {
+        private readonly ILogger<GetTransactionsQueryHandler> _logger;
+        private readonly IApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public GetTransactionsQueryHandler(
+            ILogger<GetTransactionsQueryHandler> logger,
+            IApplicationDbContext context,
+            IMapper mapper)
+        {
+            _logger = logger;
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<PaginatedList<TransactionDto>> Handle(GetTransactionsQuery request, CancellationToken cancellationToken)
+        {
+            var specParams = request.SpecParams;
+
+            var query = _context.Transactions
+                .AsNoTracking();
+
+            if (specParams.Period != null)
+            {
+                query = query.FilterTransactionsByPeriod((TimePeriod)specParams.Period);
+            }
+
+            if (!string.IsNullOrEmpty(specParams.Name))
+            {
+                query = query.Where(e => e.Name.Contains(specParams.Name));
+            }
+
+            if (!string.IsNullOrEmpty(specParams.Wallet))
+            {
+                query = query.Where(e => e.Wallet.Name.Contains(specParams.Wallet));
+            }
+
+            if (!string.IsNullOrEmpty(specParams.Category))
+            {
+                query = query.Where(e => e.Category != null && e.Category.Name.Contains(specParams.Category));
+            }
+
+            if(specParams.Type != null)
+            {
+                query = query.Where(e => e.Type == specParams.Type);
+            }
+
+            if(specParams.Sort == SortDirection.ASC)
+            {
+                query = query.OrderBy(e => e.CreatedAt);
+            }
+            else
+            {
+                query = query.OrderByDescending(e => e.CreatedAt);
+            }
+
+            var dtoQuery = _mapper.ProjectTo<TransactionDto>(query);
+
+            var result = await dtoQuery.ToPaginatedList(specParams.PageNumber, specParams.PageSize);
+
+            return result;
+        }
+    }
+}

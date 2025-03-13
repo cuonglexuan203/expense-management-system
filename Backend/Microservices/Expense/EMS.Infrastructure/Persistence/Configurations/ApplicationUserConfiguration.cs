@@ -55,8 +55,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
 
             builder.HasMany(e => e.Categories)
                 .WithOne()
-                .HasForeignKey(e => e.UserId)
-                .IsRequired();
+                .HasForeignKey(e => e.UserId);
 
             builder.HasMany(e => e.Transactions)
                 .WithOne()

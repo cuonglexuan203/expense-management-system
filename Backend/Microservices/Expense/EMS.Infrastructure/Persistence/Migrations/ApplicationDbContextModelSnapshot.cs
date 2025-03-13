@@ -177,6 +177,11 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
 
+                    b.Property<string>("FinancialFlowType")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
                     b.Property<Guid?>("IconId")
                         .HasColumnType("uuid");
 
@@ -201,7 +206,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(15)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
 
@@ -678,9 +682,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -690,6 +691,11 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -1118,9 +1124,7 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
                     b.HasOne("EMS.Infrastructure.Identity.Models.ApplicationUser", null)
                         .WithMany("Categories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Icon");
                 });
