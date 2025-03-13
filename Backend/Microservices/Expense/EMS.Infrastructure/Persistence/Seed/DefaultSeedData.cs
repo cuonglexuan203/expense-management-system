@@ -76,37 +76,37 @@ namespace EMS.Infrastructure.Persistence.Seed
             {
                 new() {
                     Name = "Utilities",
-                    Type = CategoryType.Custom,
+                    Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Transportation",
-                    Type = CategoryType.Custom,
+                    Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Entertainment",
-                    Type = CategoryType.Custom,
+                    Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Travel",
-                    Type = CategoryType.Custom,
+                    Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Education",
-                    Type = CategoryType.Custom,
+                    Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Expense,
                 },
                 new()
                 {
                     Name = "Health",
-                    Type = CategoryType.Custom,
+                    Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Expense,
                 },
             };
@@ -116,13 +116,13 @@ namespace EMS.Infrastructure.Persistence.Seed
                 new()
                 {
                     Name = "Salary",
-                    Type = CategoryType.Custom,
+                    Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Income,
                 },
                 new()
                 {
                     Name = "Investments",
-                    Type = CategoryType.Custom,
+                    Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Income,
                 },
             };
