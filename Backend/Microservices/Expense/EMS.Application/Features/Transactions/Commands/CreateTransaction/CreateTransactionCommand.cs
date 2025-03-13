@@ -3,7 +3,7 @@ using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Utils;
-using EMS.Application.Features.Transactions.Commands.Dtos;
+using EMS.Application.Features.Transactions.Dtos;
 using EMS.Application.Features.Transactions.Services;
 using EMS.Application.Features.Wallets.Services;
 using EMS.Core.Entities;

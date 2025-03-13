@@ -1,4 +1,4 @@
-﻿using EMS.Application.Features.Transactions.Commands.Dtos;
+﻿using EMS.Application.Features.Transactions.Dtos;
 using EMS.Core.Entities;
 
 namespace EMS.Application.Features.Transactions.Services

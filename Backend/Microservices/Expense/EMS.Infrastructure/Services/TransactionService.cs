@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.DbContext;
-using EMS.Application.Features.Transactions.Commands.Dtos;
+using EMS.Application.Features.Transactions.Dtos;
 using EMS.Application.Features.Transactions.Services;
 using EMS.Core.Entities;
 using EMS.Core.Exceptions;

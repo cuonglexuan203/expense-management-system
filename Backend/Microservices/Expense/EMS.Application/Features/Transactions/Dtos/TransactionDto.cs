@@ -3,7 +3,7 @@ using EMS.Application.Common.Mappings;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 
-namespace EMS.Application.Features.Transactions.Commands.Dtos
+namespace EMS.Application.Features.Transactions.Dtos
 {
     public class TransactionDto : IMapFrom<Transaction>
     {
