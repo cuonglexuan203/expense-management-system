@@ -75,7 +75,17 @@ namespace EMS.Infrastructure.Persistence.Seed
             var expenseCategories = new Category[]
             {
                 new() {
-                    Name = "Utilities",
+                    Name = "Food & Drinks",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
+                new() {
+                    Name = "Home",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
+                new() {
+                    Name = "Shopping",
                     Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Expense,
                 },
@@ -109,6 +119,36 @@ namespace EMS.Infrastructure.Persistence.Seed
                     Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Expense,
                 },
+                new()
+                {
+                    Name = "Grocery",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
+                new()
+                {
+                    Name = "Pet",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
+                new()
+                {
+                    Name = "Electronics",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
+                new()
+                {
+                    Name = "Beauty",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
+                new()
+                {
+                    Name = "Sports",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
             };
 
             var incomeCategories = new Category[]
@@ -122,6 +162,18 @@ namespace EMS.Infrastructure.Persistence.Seed
                 new()
                 {
                     Name = "Investments",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Income,
+                },
+                new()
+                {
+                    Name = "Bonus",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Income,
+                },
+                new()
+                {
+                    Name = "Business",
                     Type = CategoryType.Default,
                     FinancialFlowType = TransactionType.Income,
                 },
