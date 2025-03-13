@@ -4,7 +4,6 @@ using EMS.Infrastructure.Persistence.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Polly;
-using System;
 
 namespace EMS.API.Common.Extensions
 {
