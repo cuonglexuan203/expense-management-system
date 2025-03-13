@@ -1,4 +1,5 @@
 ﻿using EMS.Application.Common.Exceptions;
+using EMS.Core.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -20,8 +21,42 @@ namespace EMS.API.Common.Middleware
              UnauthorizedAccessException ex => await HandleUnauthorizedAccessException(httpContext, ex),
              SecurityTokenException ex => await HandleSecurityTokenException(httpContext, ex),
              ForbiddenAccessException ex => await HandleForbiddenAccessException(httpContext, ex),
+             InvalidTransactionOperationException ex => await HandleInvalidTransactionOperationException(httpContext, ex),
+             InvalidOperationException ex => await HandleInvalidOperationException(httpContext, ex),
              _ => false
          };
+
+        private async Task<bool> HandleInvalidOperationException(HttpContext httpContext, InvalidOperationException ex)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+            var problemDetails = new ProblemDetails
+            {
+                Title = "Invalid operation",
+                Status = StatusCodes.Status409Conflict,
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.8",
+                Detail = ex.Message,
+            };
+
+            await httpContext.Response.WriteAsJsonAsync(problemDetails).ConfigureAwait(false);
+
+            return true;
+        }
+
+        private async Task<bool> HandleInvalidTransactionOperationException(HttpContext httpContext, InvalidTransactionOperationException ex)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+            var problemDetails = new ProblemDetails
+            {
+                Title = "Invalid transaction operation",
+                Status = StatusCodes.Status409Conflict,
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.8",
+                Detail = ex.Message,
+            };
+
+            await httpContext.Response.WriteAsJsonAsync(problemDetails).ConfigureAwait(false);
+
+            return true;
+        }
 
         private async Task<bool> HandleForbiddenAccessException(HttpContext httpContext, ForbiddenAccessException ex)
         {
@@ -30,7 +65,8 @@ namespace EMS.API.Common.Middleware
             {
                 Title = "Forbidden",
                 Status = StatusCodes.Status403Forbidden,
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+                Detail = ex.Message,
             };
 
             await httpContext.Response.WriteAsJsonAsync(problemDetails).ConfigureAwait(false);
@@ -45,7 +81,7 @@ namespace EMS.API.Common.Middleware
             {
                 Title = "Unauthorized",
                 Status = StatusCodes.Status401Unauthorized,
-                Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
+                Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
             };
 
             await httpContext.Response.WriteAsJsonAsync(problemDetails).ConfigureAwait(false);
@@ -60,7 +96,7 @@ namespace EMS.API.Common.Middleware
             {
                 Title = "Invalid token",
                 Status = StatusCodes.Status401Unauthorized,
-                Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
+                Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
             };
 
             await httpContext.Response.WriteAsJsonAsync(problemDetails).ConfigureAwait(false);
