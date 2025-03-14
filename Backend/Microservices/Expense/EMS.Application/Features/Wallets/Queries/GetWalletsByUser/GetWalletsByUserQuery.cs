@@ -31,6 +31,7 @@ namespace EMS.Application.Features.Wallets.Queries.GetWalletsByUser
             var userId = _user.Id;
 
             var wallets = await _context.Wallets
+                .AsNoTracking()
                 .Where(e => e.UserId == userId && !e.IsDeleted)
                 .OrderBy(e => e.CreatedAt)
                 //.Select(e => new

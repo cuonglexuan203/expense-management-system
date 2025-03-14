@@ -1,8 +1,9 @@
 using EMS.Application.Common.Mappings;
+using EMS.Core.Entities;
 
 namespace EMS.Application.Features.Wallets.Dtos
 {
-    public class WalletDto : IMapFrom<Core.Entities.Wallet>
+    public class WalletDto : IMapFrom<Wallet>
     {
         public int Id { get; set; }
         public string Name { get; set; } = default!;

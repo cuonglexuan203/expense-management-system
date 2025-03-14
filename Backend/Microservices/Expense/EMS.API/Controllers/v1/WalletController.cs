@@ -2,6 +2,7 @@ using EMS.API.Common.Attributes;
 using EMS.Application.Features.Wallets.Commands.CreateWallet;
 using EMS.Application.Features.Wallets.Commands.UpdateWallet;
 using EMS.Application.Features.Wallets.Dtos;
+using EMS.Application.Features.Wallets.Queries.GetWalletById;
 using EMS.Application.Features.Wallets.Queries.GetWalletsByUser;
 using EMS.Application.Features.Wallets.Queries.GetWalletSummary;
 using MediatR;
@@ -42,6 +43,14 @@ namespace EMS.API.Controllers.v1
         public async Task<IActionResult> GetWalletsByUser()
         {
             var result = await _sender.Send(new GetWalletsByUserQuery());
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetWalletById(int id)
+        {
+            var result = await _sender.Send(new GetWalletByIdQuery(id));
 
             return Ok(result);
         }
