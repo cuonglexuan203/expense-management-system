@@ -15,13 +15,13 @@ namespace EMS.API.Controllers.v1
             _sender = sender;
         }
 
-        [HttpGet("[action]")]
-        public IActionResult GetPiCoin()
+        [HttpGet("ping")]
+        public IActionResult Ping()
         {
-            return Ok(new { Message = "You get 10k PI coins", Coin = 10000 });
+            return Ok(new { Message = "Pong"});
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("system-settings")]
         public async Task<IActionResult> GetSystemSettings()
         {
             var result = await _sender.Send(new GetSystemSettingsQuery());
