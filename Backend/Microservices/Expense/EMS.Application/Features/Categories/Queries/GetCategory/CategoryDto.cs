@@ -10,7 +10,7 @@ namespace EMS.Application.Features.Categories.Queries.GetCategory
         public string Name { get; set; } = default!;
         public int TransactionCount { get; set; }
         public bool IsDefault { get; set; }
-        public TransactionType? FinancialFlowType { get; set; }
+        public TransactionType FinancialFlowType { get; set; }
         public Guid? IconId { get; set; }
         public string? IconUrl { get; set; }
 
