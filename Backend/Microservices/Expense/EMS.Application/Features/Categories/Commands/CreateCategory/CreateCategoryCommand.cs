@@ -2,6 +2,7 @@ using AutoMapper;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Features.Categories.Queries.GetCategory;
+using EMS.Core.Entities;
 using EMS.Core.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace EMS.Application.Features.Categories.Commands.CreateCategory
     {
         public string Name { get; init; } = default!;
         public bool IsDefault { get; init; }
-        public TransactionType TransactionType { get; init; }
+        public TransactionType FinancialFlowType { get; init; }
         public Guid? IconId { get; init; }
     }
 
@@ -36,10 +37,11 @@ namespace EMS.Application.Features.Categories.Commands.CreateCategory
         {
             var userId = _currentUserService.Id;
 
-            var category = new Core.Entities.Category
+            var category = new Category
             {
                 Name = request.Name,
                 Type = request.IsDefault ? CategoryType.Default : CategoryType.Custom,
+                FinancialFlowType = request.FinancialFlowType,
                 UserId = userId!,
                 IconId = request.IconId
             };
