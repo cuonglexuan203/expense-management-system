@@ -15,6 +15,7 @@ namespace EMS.Application.Features.Transactions.Dtos
         public float Amount { get; set; }
         public string? Description { get; set; }
         public TransactionType Type { get; set; }
+        public DateTimeOffset? OccurredAt { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
 
         public void Mapping(Profile profile)
