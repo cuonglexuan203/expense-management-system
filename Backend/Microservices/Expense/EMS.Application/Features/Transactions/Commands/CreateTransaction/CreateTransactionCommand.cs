@@ -21,6 +21,7 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
         public string? Category { get; set; }
         public float Amount { get; set; }
         public TransactionType Type { get; set; }
+        public DateTimeOffset? OccurredAt { get; set; } // Nullable because there are cases where the user may not remember the transaction time.
     }
 
     public class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, TransactionDto>
@@ -70,12 +71,13 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
                 Amount = request.Amount,
                 Type = request.Type,
                 UserId = userId,
+                OccurredAt = request.OccurredAt,
             };
 
             if (request.Category != null)
             {
                 var category = await _context.Categories
-                    .SingleOrDefaultAsync(e => 
+                    .SingleOrDefaultAsync(e =>
                 e.Name == request.Category && (e.UserId == userId || e.UserId == null) && !e.IsDeleted)
                 ?? throw new NotFoundException($"Category with name {request.Category} not found");
 
@@ -97,12 +99,12 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
 
         private async Task CacheWalletBalanceSummariesAsync(int walletId)
         {
-            foreach(var value in _walletSummaryPeriods)
+            foreach (var value in _walletSummaryPeriods)
             {
                 var walletSummary = await _walletService.GetWalletBalanceSummaryAsync(walletId, value);
 
                 await _distributedCacheService.SetAsync(
-                    CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.QueryKeys.WalletByUser, _user.Id!, walletId, value), 
+                    CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.QueryKeys.WalletByUser, _user.Id!, walletId, value),
                     walletSummary);
             }
         }
