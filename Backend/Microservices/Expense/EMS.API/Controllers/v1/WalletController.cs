@@ -1,3 +1,4 @@
+using EMS.API.Common.Attributes;
 using EMS.Application.Features.Wallets.Commands.CreateWallet;
 using EMS.Application.Features.Wallets.Commands.UpdateWallet;
 using EMS.Application.Features.Wallets.Dtos;
@@ -7,9 +8,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EMS.API.Controllers
+namespace EMS.API.Controllers.v1
 {
     [Authorize]
+    [ApiRoute("wallets")]
     public class WalletController : ApiControllerBase
     {
         private readonly ISender _sender;

@@ -1,11 +1,10 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EMS.API.Controllers
+namespace EMS.API.Controllers.v1
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
     public abstract class ApiControllerBase : ControllerBase
     {
 

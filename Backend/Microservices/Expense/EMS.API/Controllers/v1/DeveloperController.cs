@@ -1,9 +1,11 @@
-﻿using EMS.Application.Features.Developer.Queries;
+﻿using EMS.API.Common.Attributes;
+using EMS.Application.Features.Developer.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EMS.API.Controllers
+namespace EMS.API.Controllers.v1
 {
+    [ApiRoute("developer")]
     public class DeveloperController : ApiControllerBase
     {
         private readonly ISender _sender;

@@ -1,4 +1,5 @@
-﻿using EMS.Application.Features.Auth.Commands.RefreshToken;
+﻿using EMS.API.Common.Attributes;
+using EMS.Application.Features.Auth.Commands.RefreshToken;
 using EMS.Application.Features.Auth.Commands.Register;
 using EMS.Application.Features.Auth.Queries.Login;
 using EMS.Application.Features.Auth.Queries.Logout;
@@ -6,8 +7,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EMS.API.Controllers
+namespace EMS.API.Controllers.v1
 {
+    [ApiRoute("auth")]
     public class AuthController : ApiControllerBase
     {
         private readonly ISender _sender;
