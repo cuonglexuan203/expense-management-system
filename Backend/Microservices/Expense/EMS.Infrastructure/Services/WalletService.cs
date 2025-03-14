@@ -1,11 +1,12 @@
-﻿using EMS.Application.Common.Exceptions;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Common.Utils;
+using EMS.Application.Features.Wallets.Dtos;
 using EMS.Application.Features.Wallets.Queries.GetWalletSummary;
 using EMS.Application.Features.Wallets.Services;
-using EMS.Core.Entities;
 using EMS.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,12 +18,18 @@ namespace EMS.Infrastructure.Services
         private readonly ILogger<WalletService> _logger;
         private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IMapper _mapper;
 
-        public WalletService(ILogger<WalletService> logger, IApplicationDbContext context, ICurrentUserService currentUserService)
+        public WalletService(
+            ILogger<WalletService> logger,
+            IApplicationDbContext context,
+            ICurrentUserService currentUserService,
+            IMapper mapper)
         {
             _logger = logger;
             _context = context;
             _currentUserService = currentUserService;
+            _mapper = mapper;
         }
 
         public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(int walletId, TimePeriod period, CancellationToken cancellationToken = default)
@@ -60,6 +67,19 @@ namespace EMS.Infrastructure.Services
             };
 
             return result;
+        }
+
+        public async Task<WalletDto?> GetWalletByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var userId = _currentUserService.Id;
+
+            var walletDto = await _context.Wallets
+                .AsNoTracking()
+                .Where(e => e.Id == id && e.UserId == userId && !e.IsDeleted)
+                .ProjectTo<WalletDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+
+            return walletDto;
         }
     }
 }

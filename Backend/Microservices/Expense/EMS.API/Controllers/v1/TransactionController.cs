@@ -1,14 +1,16 @@
-﻿using EMS.Application.Features.Transactions.Commands.CreateTransaction;
-using EMS.Application.Features.Transactions.Queries.GetTransaction;
+﻿using EMS.API.Common.Attributes;
+using EMS.Application.Features.Transactions.Commands.CreateTransaction;
+using EMS.Application.Features.Transactions.Queries.GetTransactionById;
 using EMS.Application.Features.Transactions.Queries.GetTransactions;
 using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EMS.API.Controllers
+namespace EMS.API.Controllers.v1
 {
     [Authorize]
+    [ApiRoute("transactions")]
     public class TransactionController : ApiControllerBase
     {
         private readonly ISender _sender;
@@ -21,7 +23,7 @@ namespace EMS.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetTransaction(int id)
         {
-            var result = await _sender.Send(new GetTransactionQuery(id));
+            var result = await _sender.Send(new GetTransactionByIdQuery(id));
 
             return Ok(result);
         }

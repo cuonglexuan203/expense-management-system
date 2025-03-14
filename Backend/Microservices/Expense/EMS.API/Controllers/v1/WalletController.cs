@@ -1,15 +1,18 @@
+using EMS.API.Common.Attributes;
 using EMS.Application.Features.Wallets.Commands.CreateWallet;
 using EMS.Application.Features.Wallets.Commands.UpdateWallet;
 using EMS.Application.Features.Wallets.Dtos;
+using EMS.Application.Features.Wallets.Queries.GetWalletById;
 using EMS.Application.Features.Wallets.Queries.GetWalletsByUser;
 using EMS.Application.Features.Wallets.Queries.GetWalletSummary;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EMS.API.Controllers
+namespace EMS.API.Controllers.v1
 {
     [Authorize]
+    [ApiRoute("wallets")]
     public class WalletController : ApiControllerBase
     {
         private readonly ISender _sender;
@@ -40,6 +43,14 @@ namespace EMS.API.Controllers
         public async Task<IActionResult> GetWalletsByUser()
         {
             var result = await _sender.Send(new GetWalletsByUserQuery());
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetWalletById(int id)
+        {
+            var result = await _sender.Send(new GetWalletByIdQuery(id));
 
             return Ok(result);
         }
