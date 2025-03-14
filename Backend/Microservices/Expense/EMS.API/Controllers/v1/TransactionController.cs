@@ -1,6 +1,6 @@
 ﻿using EMS.API.Common.Attributes;
 using EMS.Application.Features.Transactions.Commands.CreateTransaction;
-using EMS.Application.Features.Transactions.Queries.GetTransaction;
+using EMS.Application.Features.Transactions.Queries.GetTransactionById;
 using EMS.Application.Features.Transactions.Queries.GetTransactions;
 using EMS.Core.Specifications;
 using MediatR;
@@ -23,7 +23,7 @@ namespace EMS.API.Controllers.v1
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetTransaction(int id)
         {
-            var result = await _sender.Send(new GetTransactionQuery(id));
+            var result = await _sender.Send(new GetTransactionByIdQuery(id));
 
             return Ok(result);
         }

@@ -26,7 +26,7 @@ namespace EMS.Infrastructure.Services
         public async Task<TransactionDto> CreateTransactionAsync(int walletId, Transaction transaction, CancellationToken cancellationToken = default)
         {
             InvalidTransactionOperationException.ThrowIf(
-                !await HasSufficientBalance(walletId, transaction, cancellationToken),
+                !await HasSufficientBalanceAsync(walletId, transaction, cancellationToken),
                 $"Wallet {walletId} has insufficient balance for transaction amount {transaction.Amount}");
 
             transaction.WalletId = walletId;
@@ -46,7 +46,7 @@ namespace EMS.Infrastructure.Services
             return _mapper.Map<TransactionDto>(transaction);
         }
 
-        public async Task<bool> HasSufficientBalance(int walletId, Transaction transaction, CancellationToken cancellationToken = default)
+        public async Task<bool> HasSufficientBalanceAsync(int walletId, Transaction transaction, CancellationToken cancellationToken = default)
         {
             var wallet = await _context.Wallets
                 .AsNoTracking()
@@ -57,7 +57,7 @@ namespace EMS.Infrastructure.Services
 
             return wallet.Balance - transaction.Amount >= 0;
         }
-        public async Task<TransactionDto?> GetTransaction(int transactionId, CancellationToken cancellationToken = default)
+        public async Task<TransactionDto?> GetTransactionByIdAsync(int transactionId, CancellationToken cancellationToken = default)
         {
             var transaction = await _context.Transactions
                 .Include(e => e.Category)
