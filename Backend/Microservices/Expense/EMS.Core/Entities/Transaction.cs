@@ -11,6 +11,7 @@ namespace EMS.Core.Entities
         public string UserId { get; set; } = default!;
         public float Amount { get; set; }
         public TransactionType Type { get; set; }
+        public DateTimeOffset? OccurredAt { get; set; }
         public int? CalendarEventId { get; set; }
         //public string? Metadata { get; set; }
         public int? ChatMessageId { get; set; }
