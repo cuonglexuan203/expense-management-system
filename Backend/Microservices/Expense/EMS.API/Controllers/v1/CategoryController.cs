@@ -2,8 +2,10 @@ using EMS.API.Common.Attributes;
 using EMS.Application.Features.Categories.Commands.CreateCategory;
 using EMS.Application.Features.Categories.Commands.DeleteCategory;
 using EMS.Application.Features.Categories.Commands.UpdateCategory;
+using EMS.Application.Features.Categories.Dtos;
 using EMS.Application.Features.Categories.Queries.GetCategories;
-using EMS.Application.Features.Categories.Queries.GetCategory;
+using EMS.Application.Features.Categories.Queries.GetCategoryById;
+using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,15 +24,17 @@ namespace EMS.API.Controllers.v1
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CategoryDto>>> GetCategories()
+        public async Task<IActionResult> GetCategories([FromQuery] CategorySpecParams specParams)
         {
-            return await _sender.Send(new GetCategoriesQuery());
+            var result = await _sender.Send(new GetCategoriesQuery(specParams));
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetCategory(int id)
         {
-            return await _sender.Send(new GetCategoryQuery(id));
+            return await _sender.Send(new GetCategoryByIdQuery(id));
         }
 
         [HttpPost]
