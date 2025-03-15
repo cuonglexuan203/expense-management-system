@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:flutter_boilerplate/feature/auth/repository/token_repository.dart';
 import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
+import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
 import 'package:flutter_boilerplate/shared/http/api_provider.dart';
 import 'package:flutter_boilerplate/shared/http/api_response.dart';
 import 'package:flutter_boilerplate/shared/http/app_exception.dart';
@@ -13,8 +13,11 @@ class WalletRepository {
   final Ref _ref;
   late final ApiProvider _api = _ref.read(apiProvider);
 
-  Future<APIResponse<Wallet>> createWallet(String name, double balance,
-      {String? description}) async {
+  Future<APIResponse<Wallet>> createWallet(
+    String name,
+    double balance, {
+    String? description,
+  }) async {
     try {
       final params = {
         'name': name,
@@ -23,7 +26,7 @@ class WalletRepository {
       };
 
       final response = await _api.post(
-        'Wallet',
+        ApiEndpoints.wallet.create,
         jsonEncode(params),
       );
 
@@ -42,7 +45,7 @@ class WalletRepository {
   Future<APIResponse<List<Wallet>>> getWallets() async {
     try {
       final response = await _api.get(
-        'Wallet',
+        ApiEndpoints.wallet.getAll,
       );
 
       return response.when(
@@ -52,12 +55,15 @@ class WalletRepository {
               if (item is Map<String, dynamic>) {
                 return Wallet.fromJson(item);
               }
-              return Wallet(id: 0, name: 'Unknown');
+              return const Wallet(id: 0, name: 'Unknown');
             }).toList();
             return APIResponse.success(wallets);
           } else {
-            return const APIResponse.error(AppException.errorWithMessage(
-                'Invalid data format: Data is not a list'));
+            return const APIResponse.error(
+              AppException.errorWithMessage(
+                'Invalid data format: Data is not a list',
+              ),
+            );
           }
         },
         error: APIResponse.error,
@@ -68,14 +74,15 @@ class WalletRepository {
   }
 
   Future<APIResponse<Wallet>> getWalletSummary(
-      int walletId, String period) async {
+    int walletId,
+    String period,
+  ) async {
     try {
-      final params = {"walletId": walletId, "period": period};
+      final params = {'walletId': walletId, 'period': period};
 
       final response = await _api.post(
-        'Wallet/wallet-summary',
+        ApiEndpoints.wallet.walletSummary,
         jsonEncode(params),
-        contentType: ContentType.json,
       );
 
       return response.when(
