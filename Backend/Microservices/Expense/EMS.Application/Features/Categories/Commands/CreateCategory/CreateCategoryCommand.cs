@@ -1,7 +1,7 @@
 using AutoMapper;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Categories.Queries.GetCategory;
+using EMS.Application.Features.Categories.Dtos;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 using MediatR;

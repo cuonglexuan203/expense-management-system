@@ -1,17 +1,20 @@
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Categories.Queries.GetCategory;
+using EMS.Application.Common.Models;
+using EMS.Application.Features.Categories.Dtos;
+using EMS.Core.Enums;
+using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.Categories.Queries.GetCategories
 {
-    public record GetCategoriesQuery : IRequest<List<CategoryDto>>;
+    public record GetCategoriesQuery(CategorySpecParams SpecParams) : IRequest<PaginatedList<CategoryDto>>;
 
-    public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, List<CategoryDto>>
+    public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, PaginatedList<CategoryDto>>
     {
         private readonly ILogger<GetCategoriesQueryHandler> _logger;
         private readonly IApplicationDbContext _context;
@@ -30,23 +33,44 @@ namespace EMS.Application.Features.Categories.Queries.GetCategories
             _currentUserService = currentUserService;
         }
 
-        public async Task<List<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {
             var userId = _currentUserService.Id;
+            var specParams = request.SpecParams;
 
-            var categories = await _context.Categories
-                .Include(c => c.Transactions)
-                .Include(c => c.Icon)
-                .Where(c => c.UserId == userId && !c.IsDeleted)
-                .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+            var query = _context.Categories
+                .Where(e => (e.UserId == userId || e.UserId == null) && !e.IsDeleted)
+                .AsNoTracking();
 
-            _logger.LogInformation("Successfully retrieved {CategoryCount} categories for user: {UserId}",
-                categories.Count,
-                userId);
+            if (!string.IsNullOrEmpty(specParams.Name))
+            {
+                query = query.Where(e => e.Name.Contains(specParams.Name));
+            }
 
-            return categories;
+            if(specParams.Type != null)
+            {
+                query = query.Where(e => e.Type == specParams.Type);
+            }
+
+            if(specParams.FinancialFlowType != null)
+            {
+                query = query.Where(e => e.FinancialFlowType == specParams.FinancialFlowType);
+            }
+
+            if (specParams.Sort == SortDirection.ASC)
+            {
+                query = query.OrderBy(e => e.CreatedAt);
+            }
+            else
+            {
+                query = query.OrderByDescending(e => e.CreatedAt);
+            }
+
+            var dtoQuery = _mapper.ProjectTo<CategoryDto>(query);
+
+            var result = await dtoQuery.ToPaginatedList(specParams.PageNumber, specParams.PageSize);
+
+            return result;
         }
     }
 }
