@@ -70,10 +70,14 @@ class AuthInterceptor extends Interceptor {
 
       final response = await dio.post(
         '${baseUrl}Auth/refresh-token',
-        data: {'refreshToken': token.refreshToken},
+        data: {
+          'accessToken': token.accessToken,
+          'refreshToken': token.refreshToken,
+        },
         options: Options(
           headers: {'Content-Type': 'application/json'},
-          validateStatus: (status) => true,
+          validateStatus: (status) =>
+              status != null && status >= 200 && status < 300,
         ),
       );
 
@@ -101,6 +105,6 @@ class AuthInterceptor extends Interceptor {
 
 final authInterceptorProvider = Provider((ref) {
   final tokenRepository = ref.watch(tokenRepositoryProvider);
-  final dio = Dio();
+  final dio = ref.watch(dioProvider);
   return AuthInterceptor(tokenRepository, dio, ref);
 });

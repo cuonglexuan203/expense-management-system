@@ -193,7 +193,7 @@ class ApiProvider {
         url,
         data: body,
         queryParameters: query,
-        options: Options(validateStatus: (status) => true, headers: headers),
+        options: Options(headers: headers),
       );
 
       return _handleResponse(response);
@@ -234,7 +234,7 @@ class ApiProvider {
       final response = await _dio.get(
         url,
         queryParameters: query,
-        options: Options(validateStatus: (status) => true, headers: headers),
+        options: Options(headers: headers),
       );
 
       return _handleResponse(response);
