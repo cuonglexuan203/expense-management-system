@@ -4,14 +4,14 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_boilerplate/shared/http/api_response.dart';
 import 'package:flutter_boilerplate/shared/http/app_exception.dart';
+import 'package:flutter_boilerplate/shared/http/interceptor/auth_interceptor.dart';
 import 'package:flutter_boilerplate/shared/http/interceptor/dio_connectivity_request_retrier.dart';
 import 'package:flutter_boilerplate/shared/http/interceptor/retry_interceptor.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:flutter_boilerplate/shared/http/interceptor/auth_interceptor.dart';
 
 // Define a provider for the network configuration
 final networkConfigProvider = Provider<NetworkConfig>((ref) {
@@ -129,7 +129,8 @@ class ApiProvider {
             response.data['error'] ??
             'An error occurred';
         return APIResponse.error(
-            AppException.errorWithMessage(message.toString()));
+          AppException.errorWithMessage(message.toString()),
+        );
       }
       return const APIResponse.error(AppException.error());
     }

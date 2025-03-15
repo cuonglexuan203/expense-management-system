@@ -1,5 +1,6 @@
 import 'package:flutter_boilerplate/feature/home/state/home_state.dart';
 import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
+import 'package:flutter_boilerplate/feature/wallet/provider/wallet_provider.dart';
 import 'package:flutter_boilerplate/feature/wallet/repository/wallet_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -7,10 +8,22 @@ part 'home_provider.g.dart';
 
 @riverpod
 class HomeNotifier extends _$HomeNotifier {
+  bool _initialFetchDone = false;
+
   @override
   HomeState build() {
-    _fetchWallets();
-    return const HomeState.loading();
+    ref
+      ..keepAlive()
+      ..listen(walletChangesProvider, (_, __) {
+        refreshWallets();
+      });
+
+    if (!_initialFetchDone) {
+      _initialFetchDone = true;
+      Future.microtask(_fetchWallets);
+    }
+
+    return state;
   }
 
   Future<void> _fetchWallets() async {

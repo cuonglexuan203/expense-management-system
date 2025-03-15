@@ -6,7 +6,23 @@ part of 'wallet_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$walletNotifierHash() => r'660651d05deeff3ac26bbc1f518b2e52982682b3';
+String _$walletChangesHash() => r'db9634d208f64e1a836592832d2d209f24bf28a4';
+
+/// See also [WalletChanges].
+@ProviderFor(WalletChanges)
+final walletChangesProvider =
+    AutoDisposeNotifierProvider<WalletChanges, int>.internal(
+  WalletChanges.new,
+  name: r'walletChangesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$walletChangesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$WalletChanges = AutoDisposeNotifier<int>;
+String _$walletNotifierHash() => r'545338571b0a7553d6b0bbbfb35be3e9883ee547';
 
 /// See also [WalletNotifier].
 @ProviderFor(WalletNotifier)
