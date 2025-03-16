@@ -96,4 +96,22 @@ class WalletRepository {
       return APIResponse.error(AppException.errorWithMessage(e.toString()));
     }
   }
+
+  Future<APIResponse<Wallet>> getWalletById(int id) async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.wallet.getById(id.toString()),
+      );
+
+      return response.when(
+        success: (data) {
+          final wallet = Wallet.fromJson(data as Map<String, dynamic>);
+          return APIResponse.success(wallet);
+        },
+        error: APIResponse.error,
+      );
+    } catch (e) {
+      return APIResponse.error(AppException.errorWithMessage(e.toString()));
+    }
+  }
 }

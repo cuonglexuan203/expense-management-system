@@ -38,3 +38,24 @@ class WalletNotifier extends _$WalletNotifier {
     );
   }
 }
+
+@riverpod
+class WalletDetailNotifier extends _$WalletDetailNotifier {
+  late final WalletRepository _repository = ref.read(walletRepositoryProvider);
+
+  @override
+  WalletState build(int walletId) {
+    _fetchWalletById(walletId);
+    return const WalletState.loading();
+  }
+
+  Future<void> _fetchWalletById(int id) async {
+    state = const WalletState.loading();
+    final response = await _repository.getWalletById(id);
+
+    state = response.when(
+      success: (wallet) => WalletState.success(wallet),
+      error: (error) => WalletState.error(error),
+    );
+  }
+}
