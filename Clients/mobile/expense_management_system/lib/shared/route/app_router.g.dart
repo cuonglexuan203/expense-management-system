@@ -110,6 +110,10 @@ RouteBase get $walletRoute => GoRouteData.$route(
           path: 'create',
           factory: $CreateWalletRouteExtension._fromState,
         ),
+        GoRouteData.$route(
+          path: ':id',
+          factory: $WalletDetailRouteExtension._fromState,
+        ),
       ],
     );
 
@@ -136,6 +140,25 @@ extension $CreateWalletRouteExtension on CreateWalletRoute {
 
   String get location => GoRouteData.$location(
         '/wallet/create',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $WalletDetailRouteExtension on WalletDetailRoute {
+  static WalletDetailRoute _fromState(GoRouterState state) => WalletDetailRoute(
+        id: int.parse(state.pathParameters['id']!)!,
+      );
+
+  String get location => GoRouteData.$location(
+        '/wallet/${Uri.encodeComponent(id.toString())}',
       );
 
   void go(BuildContext context) => context.go(location);

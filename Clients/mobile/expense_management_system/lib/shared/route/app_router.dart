@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boilerplate/app/widget/app_start_page.dart';
 import 'package:flutter_boilerplate/feature/auth/widget/sign_in_page.dart';
 import 'package:flutter_boilerplate/feature/auth/widget/sign_up_page.dart';
+import 'package:flutter_boilerplate/feature/wallet/widget/wallet_detail_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_boilerplate/feature/chat/widget/chat_page.dart';
@@ -82,7 +83,10 @@ class ChatRoute extends GoRouteData {
   path: WalletRoute.path,
   routes: [
     TypedGoRoute<CreateWalletRoute>(
-      path: 'create',
+      path: CreateWalletRoute.path,
+    ),
+    TypedGoRoute<WalletDetailRoute>(
+      path: WalletDetailRoute.path,
     ),
   ],
 )
@@ -91,18 +95,32 @@ class WalletRoute extends GoRouteData {
 
   static const path = '/wallet';
 
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return const WalletPage();
-  }
+  // @override
+  // Widget build(BuildContext context, GoRouterState state) {
+  //   return ;
+  // }
 }
 
 class CreateWalletRoute extends GoRouteData {
   const CreateWalletRoute();
 
+  static const path = 'create';
+
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return CreateWalletPage();
+  }
+}
+
+class WalletDetailRoute extends GoRouteData {
+  const WalletDetailRoute({required this.id});
+
+  final int id;
+  static const path = ':id';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return WalletDetailPage(walletId: id);
   }
 }
 
