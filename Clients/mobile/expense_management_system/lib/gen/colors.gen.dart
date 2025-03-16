@@ -42,4 +42,7 @@ class ColorName {
 
   /// Color: #139960
   static const Color primaryColor = Color(0xFF139960);
+
+  /// Color: #FFFFFF
+  static const Color white = Color(0xFFFFFFFF);
 }
