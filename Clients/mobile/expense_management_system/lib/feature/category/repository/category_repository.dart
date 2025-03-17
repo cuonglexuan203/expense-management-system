@@ -32,30 +32,31 @@ class CategoryRepository {
 
       return response.when(
         success: (data) {
-          if (data is Map<String, dynamic> && data.containsKey('items')) {
-            final items = data['items'] as List<dynamic>;
+          if (data is Map<String, dynamic> && data.containsKey("items")) {
+            final items = data["items"] as List<dynamic>;
+
             final categories = items
-                .map((item) => Category.fromJson(item as Map<String, dynamic>))
+                .whereType<Map<String, dynamic>>()
+                .map((e) => Category.fromJson(e))
                 .toList();
 
-            // Extract pagination info
-            final paginationInfo = PaginationInfo.fromJson({
-              'pageNumber': data['pageNumber'] as int? ?? 1,
-              'pageSize': data['pageSize'] as int? ?? items.length,
-              'totalPages': data['totalPages'] as int? ?? 1,
-              'totalCount': data['totalCount'] as int? ?? items.length,
-              'hasNextPage': data['hasNextPage'] as bool? ?? false,
-            });
+            final pagination = PaginationInfo(
+              pageNumber: data["pageNumber"] as int,
+              pageSize: data["pageSize"] as int,
+              totalPages: data["totalPages"] as int,
+              totalCount: data["totalCount"] as int,
+              hasPreviousPage: data["hasPreviousPage"] as bool,
+              hasNextPage: data["hasNextPage"] as bool,
+            );
 
             return APIResponse.success({
-              'categories': categories,
-              'pagination': paginationInfo,
+              "categories": categories,
+              "pagination": pagination,
             });
+          } else {
+            return const APIResponse.error(
+                AppException.errorWithMessage("Invalid response format"));
           }
-
-          return const APIResponse.error(
-            AppException.errorWithMessage('Invalid response format'),
-          );
         },
         error: APIResponse.error,
       );

@@ -37,7 +37,7 @@ class CategoryNotifier extends _$CategoryNotifier {
 
   @override
   Future<CategoryState> build(String flowType) async {
-    // Initial empty state
+    // Initial empty state with properly initialized PaginationInfo
     final initialState = CategoryState(
       categories: [],
       pagination: PaginationInfo(
@@ -46,6 +46,7 @@ class CategoryNotifier extends _$CategoryNotifier {
         totalPages: 1,
         totalCount: 0,
         hasNextPage: true,
+        hasPreviousPage: false,
       ),
       isLoading: true,
     );
@@ -65,6 +66,7 @@ class CategoryNotifier extends _$CategoryNotifier {
             totalPages: 1,
             totalCount: 0,
             hasNextPage: true,
+            hasPreviousPage: false,
           ),
         );
 
@@ -83,28 +85,28 @@ class CategoryNotifier extends _$CategoryNotifier {
 
     return response.when(
       success: (data) {
-        final newCategories = (data['categories'] as List<dynamic>)
-            .map((e) => Category.fromJson(e as Map<String, dynamic>))
-            .toList();
+        // FIX: Don't try to convert Category objects again
+        final categories = data['categories'] as List<Category>;
         final pagination = data['pagination'] as PaginationInfo;
 
         if (pageNumber == 1) {
           // First page - replace existing data
           return CategoryState(
-            categories: newCategories,
+            categories: categories,
             pagination: pagination,
             isLoading: false,
           );
         } else {
           // Append to existing data
           return CategoryState(
-            categories: [...currentState.categories, ...newCategories],
+            categories: [...currentState.categories, ...categories],
             pagination: pagination,
             isLoading: false,
           );
         }
       },
       error: (error) {
+        print("Error loading categories: ${error}");
         return currentState.copyWith(isLoading: false);
       },
     );
@@ -118,12 +120,8 @@ class CategoryNotifier extends _$CategoryNotifier {
       final nextPage = currentState.pagination.pageNumber + 1;
       final result = await _loadCategories(flowType, page: nextPage);
 
-      if (result.categories.isEmpty) {
-        state = AsyncData(currentState.copyWith(
-            pagination: result.pagination, isLoading: false));
-      } else {
-        state = AsyncData(result);
-      }
+      // Update state with new results
+      state = AsyncData(result);
     }
   }
 
@@ -135,15 +133,30 @@ class CategoryNotifier extends _$CategoryNotifier {
         if (category != null) {
           final currentState = state.valueOrNull;
           if (currentState != null) {
+            // Calculate new totalCount for pagination
+            final newTotalCount = currentState.pagination.totalCount + 1;
+
+            // Update pagination with increased count
+            final updatedPagination = currentState.pagination.copyWith(
+              totalCount: newTotalCount,
+              // Recalculate total pages if needed
+              totalPages:
+                  (newTotalCount / currentState.pagination.pageSize).ceil(),
+            );
+
+            // Add new category to the beginning of the list
             final updatedState = currentState.copyWith(
               categories: [category, ...currentState.categories],
+              pagination: updatedPagination,
             );
+
             state = AsyncData(updatedState);
           }
         }
         return category;
       },
       error: (error) {
+        // Consider using a proper logging mechanism
         print("Error creating category: $error");
         return null;
       },
