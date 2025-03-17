@@ -40,6 +40,7 @@ namespace EMS.Infrastructure.Services
                 ?? throw new NotFoundException($"Wallet with id {walletId} not found by user {_currentUserService.Id}");
 
             var transactionQuery = _context.Transactions
+            .AsNoTracking()
             .Where(e => e.WalletId == wallet.Id && !e.IsDeleted)
             .FilterTransactionsByPeriod(period);
 
@@ -47,13 +48,13 @@ namespace EMS.Infrastructure.Services
                 .Where(e => e.Type == TransactionType.Income)
                 .GroupBy(e => 1)
                 .Select(g => new TransactionSummary(g.Sum(e => e.Amount), g.Count()))
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync() ?? new TransactionSummary(0, 0);
 
             var totalExpense = await transactionQuery
                 .Where(e => e.Type == TransactionType.Expense)
                 .GroupBy(e => 1)
                 .Select(g => new TransactionSummary(g.Sum(e => e.Amount), g.Count()))
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync() ?? new TransactionSummary(0, 0);
 
             var result = new WalletBalanceSummary
             {
