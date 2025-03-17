@@ -23,6 +23,7 @@ mixin _$AppStartState {
     required TResult Function() internetUnAvailable,
     required TResult Function() authenticated,
     required TResult Function() authenticatedAnonymous,
+    required TResult Function() needsSetup,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -32,6 +33,7 @@ mixin _$AppStartState {
     TResult? Function()? internetUnAvailable,
     TResult? Function()? authenticated,
     TResult? Function()? authenticatedAnonymous,
+    TResult? Function()? needsSetup,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -41,6 +43,7 @@ mixin _$AppStartState {
     TResult Function()? internetUnAvailable,
     TResult Function()? authenticated,
     TResult Function()? authenticatedAnonymous,
+    TResult Function()? needsSetup,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -52,6 +55,7 @@ mixin _$AppStartState {
     required TResult Function(AppAuthenticated value) authenticated,
     required TResult Function(AppAuthenticatedAnonymous value)
         authenticatedAnonymous,
+    required TResult Function(NeedsSetup value) needsSetup,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -61,6 +65,7 @@ mixin _$AppStartState {
     TResult? Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult? Function(AppAuthenticated value)? authenticated,
     TResult? Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult? Function(NeedsSetup value)? needsSetup,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -70,6 +75,7 @@ mixin _$AppStartState {
     TResult Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult Function(AppAuthenticated value)? authenticated,
     TResult Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult Function(NeedsSetup value)? needsSetup,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -142,6 +148,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function() internetUnAvailable,
     required TResult Function() authenticated,
     required TResult Function() authenticatedAnonymous,
+    required TResult Function() needsSetup,
   }) {
     return initial();
   }
@@ -154,6 +161,7 @@ class _$InitialImpl implements _Initial {
     TResult? Function()? internetUnAvailable,
     TResult? Function()? authenticated,
     TResult? Function()? authenticatedAnonymous,
+    TResult? Function()? needsSetup,
   }) {
     return initial?.call();
   }
@@ -166,6 +174,7 @@ class _$InitialImpl implements _Initial {
     TResult Function()? internetUnAvailable,
     TResult Function()? authenticated,
     TResult Function()? authenticatedAnonymous,
+    TResult Function()? needsSetup,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -183,6 +192,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function(AppAuthenticated value) authenticated,
     required TResult Function(AppAuthenticatedAnonymous value)
         authenticatedAnonymous,
+    required TResult Function(NeedsSetup value) needsSetup,
   }) {
     return initial(this);
   }
@@ -195,6 +205,7 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult? Function(AppAuthenticated value)? authenticated,
     TResult? Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult? Function(NeedsSetup value)? needsSetup,
   }) {
     return initial?.call(this);
   }
@@ -207,6 +218,7 @@ class _$InitialImpl implements _Initial {
     TResult Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult Function(AppAuthenticated value)? authenticated,
     TResult Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult Function(NeedsSetup value)? needsSetup,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -266,6 +278,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
     required TResult Function() internetUnAvailable,
     required TResult Function() authenticated,
     required TResult Function() authenticatedAnonymous,
+    required TResult Function() needsSetup,
   }) {
     return unauthenticated();
   }
@@ -278,6 +291,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
     TResult? Function()? internetUnAvailable,
     TResult? Function()? authenticated,
     TResult? Function()? authenticatedAnonymous,
+    TResult? Function()? needsSetup,
   }) {
     return unauthenticated?.call();
   }
@@ -290,6 +304,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
     TResult Function()? internetUnAvailable,
     TResult Function()? authenticated,
     TResult Function()? authenticatedAnonymous,
+    TResult Function()? needsSetup,
     required TResult orElse(),
   }) {
     if (unauthenticated != null) {
@@ -307,6 +322,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
     required TResult Function(AppAuthenticated value) authenticated,
     required TResult Function(AppAuthenticatedAnonymous value)
         authenticatedAnonymous,
+    required TResult Function(NeedsSetup value) needsSetup,
   }) {
     return unauthenticated(this);
   }
@@ -319,6 +335,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
     TResult? Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult? Function(AppAuthenticated value)? authenticated,
     TResult? Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult? Function(NeedsSetup value)? needsSetup,
   }) {
     return unauthenticated?.call(this);
   }
@@ -331,6 +348,7 @@ class _$UnauthenticatedImpl implements Unauthenticated {
     TResult Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult Function(AppAuthenticated value)? authenticated,
     TResult Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult Function(NeedsSetup value)? needsSetup,
     required TResult orElse(),
   }) {
     if (unauthenticated != null) {
@@ -391,6 +409,7 @@ class _$InternetUnAvailableImpl implements _InternetUnAvailable {
     required TResult Function() internetUnAvailable,
     required TResult Function() authenticated,
     required TResult Function() authenticatedAnonymous,
+    required TResult Function() needsSetup,
   }) {
     return internetUnAvailable();
   }
@@ -403,6 +422,7 @@ class _$InternetUnAvailableImpl implements _InternetUnAvailable {
     TResult? Function()? internetUnAvailable,
     TResult? Function()? authenticated,
     TResult? Function()? authenticatedAnonymous,
+    TResult? Function()? needsSetup,
   }) {
     return internetUnAvailable?.call();
   }
@@ -415,6 +435,7 @@ class _$InternetUnAvailableImpl implements _InternetUnAvailable {
     TResult Function()? internetUnAvailable,
     TResult Function()? authenticated,
     TResult Function()? authenticatedAnonymous,
+    TResult Function()? needsSetup,
     required TResult orElse(),
   }) {
     if (internetUnAvailable != null) {
@@ -432,6 +453,7 @@ class _$InternetUnAvailableImpl implements _InternetUnAvailable {
     required TResult Function(AppAuthenticated value) authenticated,
     required TResult Function(AppAuthenticatedAnonymous value)
         authenticatedAnonymous,
+    required TResult Function(NeedsSetup value) needsSetup,
   }) {
     return internetUnAvailable(this);
   }
@@ -444,6 +466,7 @@ class _$InternetUnAvailableImpl implements _InternetUnAvailable {
     TResult? Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult? Function(AppAuthenticated value)? authenticated,
     TResult? Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult? Function(NeedsSetup value)? needsSetup,
   }) {
     return internetUnAvailable?.call(this);
   }
@@ -456,6 +479,7 @@ class _$InternetUnAvailableImpl implements _InternetUnAvailable {
     TResult Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult Function(AppAuthenticated value)? authenticated,
     TResult Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult Function(NeedsSetup value)? needsSetup,
     required TResult orElse(),
   }) {
     if (internetUnAvailable != null) {
@@ -515,6 +539,7 @@ class _$AppAuthenticatedImpl implements AppAuthenticated {
     required TResult Function() internetUnAvailable,
     required TResult Function() authenticated,
     required TResult Function() authenticatedAnonymous,
+    required TResult Function() needsSetup,
   }) {
     return authenticated();
   }
@@ -527,6 +552,7 @@ class _$AppAuthenticatedImpl implements AppAuthenticated {
     TResult? Function()? internetUnAvailable,
     TResult? Function()? authenticated,
     TResult? Function()? authenticatedAnonymous,
+    TResult? Function()? needsSetup,
   }) {
     return authenticated?.call();
   }
@@ -539,6 +565,7 @@ class _$AppAuthenticatedImpl implements AppAuthenticated {
     TResult Function()? internetUnAvailable,
     TResult Function()? authenticated,
     TResult Function()? authenticatedAnonymous,
+    TResult Function()? needsSetup,
     required TResult orElse(),
   }) {
     if (authenticated != null) {
@@ -556,6 +583,7 @@ class _$AppAuthenticatedImpl implements AppAuthenticated {
     required TResult Function(AppAuthenticated value) authenticated,
     required TResult Function(AppAuthenticatedAnonymous value)
         authenticatedAnonymous,
+    required TResult Function(NeedsSetup value) needsSetup,
   }) {
     return authenticated(this);
   }
@@ -568,6 +596,7 @@ class _$AppAuthenticatedImpl implements AppAuthenticated {
     TResult? Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult? Function(AppAuthenticated value)? authenticated,
     TResult? Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult? Function(NeedsSetup value)? needsSetup,
   }) {
     return authenticated?.call(this);
   }
@@ -580,6 +609,7 @@ class _$AppAuthenticatedImpl implements AppAuthenticated {
     TResult Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult Function(AppAuthenticated value)? authenticated,
     TResult Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult Function(NeedsSetup value)? needsSetup,
     required TResult orElse(),
   }) {
     if (authenticated != null) {
@@ -642,6 +672,7 @@ class _$AppAuthenticatedAnonymousImpl implements AppAuthenticatedAnonymous {
     required TResult Function() internetUnAvailable,
     required TResult Function() authenticated,
     required TResult Function() authenticatedAnonymous,
+    required TResult Function() needsSetup,
   }) {
     return authenticatedAnonymous();
   }
@@ -654,6 +685,7 @@ class _$AppAuthenticatedAnonymousImpl implements AppAuthenticatedAnonymous {
     TResult? Function()? internetUnAvailable,
     TResult? Function()? authenticated,
     TResult? Function()? authenticatedAnonymous,
+    TResult? Function()? needsSetup,
   }) {
     return authenticatedAnonymous?.call();
   }
@@ -666,6 +698,7 @@ class _$AppAuthenticatedAnonymousImpl implements AppAuthenticatedAnonymous {
     TResult Function()? internetUnAvailable,
     TResult Function()? authenticated,
     TResult Function()? authenticatedAnonymous,
+    TResult Function()? needsSetup,
     required TResult orElse(),
   }) {
     if (authenticatedAnonymous != null) {
@@ -683,6 +716,7 @@ class _$AppAuthenticatedAnonymousImpl implements AppAuthenticatedAnonymous {
     required TResult Function(AppAuthenticated value) authenticated,
     required TResult Function(AppAuthenticatedAnonymous value)
         authenticatedAnonymous,
+    required TResult Function(NeedsSetup value) needsSetup,
   }) {
     return authenticatedAnonymous(this);
   }
@@ -695,6 +729,7 @@ class _$AppAuthenticatedAnonymousImpl implements AppAuthenticatedAnonymous {
     TResult? Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult? Function(AppAuthenticated value)? authenticated,
     TResult? Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult? Function(NeedsSetup value)? needsSetup,
   }) {
     return authenticatedAnonymous?.call(this);
   }
@@ -707,6 +742,7 @@ class _$AppAuthenticatedAnonymousImpl implements AppAuthenticatedAnonymous {
     TResult Function(_InternetUnAvailable value)? internetUnAvailable,
     TResult Function(AppAuthenticated value)? authenticated,
     TResult Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult Function(NeedsSetup value)? needsSetup,
     required TResult orElse(),
   }) {
     if (authenticatedAnonymous != null) {
@@ -718,4 +754,134 @@ class _$AppAuthenticatedAnonymousImpl implements AppAuthenticatedAnonymous {
 
 abstract class AppAuthenticatedAnonymous implements AppStartState {
   const factory AppAuthenticatedAnonymous() = _$AppAuthenticatedAnonymousImpl;
+}
+
+/// @nodoc
+abstract class _$$NeedsSetupImplCopyWith<$Res> {
+  factory _$$NeedsSetupImplCopyWith(
+          _$NeedsSetupImpl value, $Res Function(_$NeedsSetupImpl) then) =
+      __$$NeedsSetupImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$NeedsSetupImplCopyWithImpl<$Res>
+    extends _$AppStartStateCopyWithImpl<$Res, _$NeedsSetupImpl>
+    implements _$$NeedsSetupImplCopyWith<$Res> {
+  __$$NeedsSetupImplCopyWithImpl(
+      _$NeedsSetupImpl _value, $Res Function(_$NeedsSetupImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of AppStartState
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$NeedsSetupImpl implements NeedsSetup {
+  const _$NeedsSetupImpl();
+
+  @override
+  String toString() {
+    return 'AppStartState.needsSetup()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$NeedsSetupImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() unauthenticated,
+    required TResult Function() internetUnAvailable,
+    required TResult Function() authenticated,
+    required TResult Function() authenticatedAnonymous,
+    required TResult Function() needsSetup,
+  }) {
+    return needsSetup();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? unauthenticated,
+    TResult? Function()? internetUnAvailable,
+    TResult? Function()? authenticated,
+    TResult? Function()? authenticatedAnonymous,
+    TResult? Function()? needsSetup,
+  }) {
+    return needsSetup?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? unauthenticated,
+    TResult Function()? internetUnAvailable,
+    TResult Function()? authenticated,
+    TResult Function()? authenticatedAnonymous,
+    TResult Function()? needsSetup,
+    required TResult orElse(),
+  }) {
+    if (needsSetup != null) {
+      return needsSetup();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(Unauthenticated value) unauthenticated,
+    required TResult Function(_InternetUnAvailable value) internetUnAvailable,
+    required TResult Function(AppAuthenticated value) authenticated,
+    required TResult Function(AppAuthenticatedAnonymous value)
+        authenticatedAnonymous,
+    required TResult Function(NeedsSetup value) needsSetup,
+  }) {
+    return needsSetup(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(Unauthenticated value)? unauthenticated,
+    TResult? Function(_InternetUnAvailable value)? internetUnAvailable,
+    TResult? Function(AppAuthenticated value)? authenticated,
+    TResult? Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult? Function(NeedsSetup value)? needsSetup,
+  }) {
+    return needsSetup?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(Unauthenticated value)? unauthenticated,
+    TResult Function(_InternetUnAvailable value)? internetUnAvailable,
+    TResult Function(AppAuthenticated value)? authenticated,
+    TResult Function(AppAuthenticatedAnonymous value)? authenticatedAnonymous,
+    TResult Function(NeedsSetup value)? needsSetup,
+    required TResult orElse(),
+  }) {
+    if (needsSetup != null) {
+      return needsSetup(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class NeedsSetup implements AppStartState {
+  const factory NeedsSetup() = _$NeedsSetupImpl;
 }

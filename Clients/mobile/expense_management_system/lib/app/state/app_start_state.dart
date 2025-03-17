@@ -14,4 +14,6 @@ class AppStartState with _$AppStartState {
 
   const factory AppStartState.authenticatedAnonymous() =
       AppAuthenticatedAnonymous;
+
+  const factory AppStartState.needsSetup() = NeedsSetup;
 }

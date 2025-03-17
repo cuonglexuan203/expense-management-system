@@ -7,6 +7,7 @@ import 'package:flutter_boilerplate/feature/home/widget/empty_balance_card.dart'
 import 'package:flutter_boilerplate/feature/home/widget/transactions_section.dart';
 import 'package:flutter_boilerplate/feature/home/widget/wallet_balance_card.dart';
 import 'package:flutter_boilerplate/feature/home/widget/wallet_list.dart';
+import 'package:flutter_boilerplate/feature/wallet/provider/wallet_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
@@ -204,11 +205,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 
         final selectedWallet = wallets[selectedIndex];
         return WalletBalanceCard(
-          wallet: selectedWallet,
+          walletId: selectedWallet.id,
           onPeriodChanged: (period) {
-            ref
-                .read(homeNotifierProvider.notifier)
-                .updateWalletWithFilter(selectedWallet.id, period);
+            ref.invalidate(filteredWalletProvider(
+                FilterParams(walletId: selectedWallet.id, period: period)));
           },
         );
       },
