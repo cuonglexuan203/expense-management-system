@@ -332,9 +332,9 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                       const Icon(Icons.error_outline,
                           color: Colors.red, size: 32),
                       const SizedBox(height: 16),
-                      Text(
+                      const Text(
                         'Error loading transactions',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.red,
                           fontSize: 16,
                           fontFamily: 'Nunito',

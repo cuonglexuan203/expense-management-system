@@ -7,7 +7,7 @@ part of 'transaction_provider.dart';
 // **************************************************************************
 
 String _$walletTransactionsHash() =>
-    r'0fffb6f08d032241daebbd83c2f80b4af8322327';
+    r'28d36e4482dc08f68391e74f5034c9ccbff8938e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -41,10 +41,10 @@ class WalletTransactionsFamily extends Family<AsyncValue<List<Transaction>>> {
 
   /// See also [walletTransactions].
   WalletTransactionsProvider call(
-    String walletName,
+    int walletId,
   ) {
     return WalletTransactionsProvider(
-      walletName,
+      walletId,
     );
   }
 
@@ -53,7 +53,7 @@ class WalletTransactionsFamily extends Family<AsyncValue<List<Transaction>>> {
     covariant WalletTransactionsProvider provider,
   ) {
     return call(
-      provider.walletName,
+      provider.walletId,
     );
   }
 
@@ -77,11 +77,11 @@ class WalletTransactionsProvider
     extends AutoDisposeFutureProvider<List<Transaction>> {
   /// See also [walletTransactions].
   WalletTransactionsProvider(
-    String walletName,
+    int walletId,
   ) : this._internal(
           (ref) => walletTransactions(
             ref as WalletTransactionsRef,
-            walletName,
+            walletId,
           ),
           from: walletTransactionsProvider,
           name: r'walletTransactionsProvider',
@@ -92,7 +92,7 @@ class WalletTransactionsProvider
           dependencies: WalletTransactionsFamily._dependencies,
           allTransitiveDependencies:
               WalletTransactionsFamily._allTransitiveDependencies,
-          walletName: walletName,
+          walletId: walletId,
         );
 
   WalletTransactionsProvider._internal(
@@ -102,10 +102,10 @@ class WalletTransactionsProvider
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.walletName,
+    required this.walletId,
   }) : super.internal();
 
-  final String walletName;
+  final int walletId;
 
   @override
   Override overrideWith(
@@ -120,7 +120,7 @@ class WalletTransactionsProvider
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        walletName: walletName,
+        walletId: walletId,
       ),
     );
   }
@@ -132,14 +132,13 @@ class WalletTransactionsProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WalletTransactionsProvider &&
-        other.walletName == walletName;
+    return other is WalletTransactionsProvider && other.walletId == walletId;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, walletName.hashCode);
+    hash = _SystemHash.combine(hash, walletId.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -148,8 +147,8 @@ class WalletTransactionsProvider
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 mixin WalletTransactionsRef on AutoDisposeFutureProviderRef<List<Transaction>> {
-  /// The parameter `walletName` of this provider.
-  String get walletName;
+  /// The parameter `walletId` of this provider.
+  int get walletId;
 }
 
 class _WalletTransactionsProviderElement
@@ -158,7 +157,7 @@ class _WalletTransactionsProviderElement
   _WalletTransactionsProviderElement(super.provider);
 
   @override
-  String get walletName => (origin as WalletTransactionsProvider).walletName;
+  int get walletId => (origin as WalletTransactionsProvider).walletId;
 }
 
 String _$transactionNotifierHash() =>

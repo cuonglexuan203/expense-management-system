@@ -1,8 +1,28 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../repository/wallet_repository.dart';
 import '../state/wallet_state.dart';
+import '../model/wallet.dart';
 
 part 'wallet_provider.g.dart';
+
+// Filter parameters class for wallet summary
+class FilterParams {
+  final int walletId;
+  final String period;
+
+  FilterParams({required this.walletId, required this.period});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FilterParams &&
+          runtimeType == other.runtimeType &&
+          walletId == other.walletId &&
+          period == other.period;
+
+  @override
+  int get hashCode => walletId.hashCode ^ period.hashCode;
+}
 
 @riverpod
 class WalletChanges extends _$WalletChanges {
@@ -58,4 +78,25 @@ class WalletDetailNotifier extends _$WalletDetailNotifier {
       error: (error) => WalletState.error(error),
     );
   }
+}
+
+// New provider that returns filtered wallet data with proper income/expense totals
+@riverpod
+Future<Wallet> filteredWallet(
+    FilteredWalletRef ref, FilterParams params) async {
+  // Listen for wallet changes to refresh when transactions are added/modified
+  ref.listen(walletChangesProvider, (_, __) {
+    ref.invalidateSelf();
+  });
+
+  final repository = ref.read(walletRepositoryProvider);
+  final response = await repository.getWalletSummary(
+    params.walletId,
+    params.period,
+  );
+
+  return response.when(
+    success: (wallet) => wallet,
+    error: (error) => throw error,
+  );
 }
