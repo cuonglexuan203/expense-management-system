@@ -1,6 +1,4 @@
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_boilerplate/feature/wallet/provider/wallet_provider.dart';
 import 'package:flutter_boilerplate/gen/colors.gen.dart';
 import 'package:flutter_boilerplate/shared/util/number_formatter.dart';

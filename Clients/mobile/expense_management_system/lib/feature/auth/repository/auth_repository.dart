@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_boilerplate/feature/auth/model/token.dart';
 import 'package:flutter_boilerplate/feature/auth/repository/token_repository.dart';
@@ -37,7 +38,8 @@ class AuthRepository implements AuthRepositoryProtocol {
       'email': email,
       'password': password,
     };
-    final loginResponse = await _api.post('Auth/login', jsonEncode(params));
+    final loginResponse =
+        await _api.post(ApiEndpoints.auth.login, jsonEncode(params));
 
     return loginResponse.when(success: (success) async {
       Map<String, dynamic> tokenData;
@@ -93,7 +95,8 @@ class AuthRepository implements AuthRepositoryProtocol {
       'email': email,
       'password': password,
     };
-    final loginResponse = await _api.post('Auth/register', jsonEncode(params));
+    final loginResponse =
+        await _api.post(ApiEndpoints.auth.register, jsonEncode(params));
 
     return loginResponse.when(success: (success) async {
       final tokenRepository = _ref.read(tokenRepositoryProvider);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
 import 'package:flutter_boilerplate/gen/colors.gen.dart';
+import 'package:flutter_boilerplate/shared/route/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -149,7 +150,7 @@ class WalletList extends StatelessWidget {
                           size: 18,
                         ),
                         onPressed: () {
-                          context.go('/wallet');
+                          WalletDetailRoute(id: wallet.id).go(context);
                         },
                       ),
                     ],

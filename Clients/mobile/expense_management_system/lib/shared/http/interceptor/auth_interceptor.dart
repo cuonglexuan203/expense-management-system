@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_boilerplate/feature/auth/model/token.dart';
 import 'package:flutter_boilerplate/feature/auth/repository/token_repository.dart';
+import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
 import 'package:flutter_boilerplate/shared/http/api_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthInterceptor extends Interceptor {
+  AuthInterceptor(this.tokenRepository, this.dio, this.ref);
   final TokenRepository tokenRepository;
   final Dio dio;
   final Ref ref;
   bool _isRefreshing = false;
-
-  AuthInterceptor(this.tokenRepository, this.dio, this.ref);
 
   @override
   void onRequest(
@@ -69,11 +69,15 @@ class AuthInterceptor extends Interceptor {
       final baseUrl = ref.read(apiProvider).baseUrl;
 
       final response = await dio.post(
-        '${baseUrl}Auth/refresh-token',
-        data: {'refreshToken': token.refreshToken},
+        '${baseUrl}${ApiEndpoints.auth.refreshToken}',
+        data: {
+          'accessToken': token.accessToken,
+          'refreshToken': token.refreshToken,
+        },
         options: Options(
           headers: {'Content-Type': 'application/json'},
-          validateStatus: (status) => true,
+          validateStatus: (status) =>
+              status != null && status >= 200 && status < 300,
         ),
       );
 
@@ -93,7 +97,6 @@ class AuthInterceptor extends Interceptor {
       }
       return false;
     } catch (e) {
-      print("Error in _refreshToken: $e");
       return false;
     }
   }
@@ -101,6 +104,6 @@ class AuthInterceptor extends Interceptor {
 
 final authInterceptorProvider = Provider((ref) {
   final tokenRepository = ref.watch(tokenRepositoryProvider);
-  final dio = Dio();
+  final dio = ref.watch(dioProvider);
   return AuthInterceptor(tokenRepository, dio, ref);
 });
