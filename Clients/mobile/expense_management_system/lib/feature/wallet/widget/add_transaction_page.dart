@@ -4,6 +4,7 @@ import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boilerplate/feature/category/model/category.dart';
 import 'package:flutter_boilerplate/feature/category/provider/category_provider.dart';
+import 'package:flutter_boilerplate/feature/transaction/provider/transaction_provider.dart';
 import 'package:flutter_boilerplate/gen/colors.gen.dart';
 import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
 import 'package:flutter_boilerplate/shared/http/api_provider.dart';
@@ -41,12 +42,19 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     // Categories will be automatically loaded by the provider
   }
 
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
   Future<void> _saveTransaction() async {
     if (_titleController.text.isEmpty ||
         _amountController.text.isEmpty ||
-        _selectedCategoryId == null) {
+        _selectedCategoryName == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
+        const SnackBar(content: Text('Please fill all required fields')),
       );
       return;
     }
@@ -57,55 +65,52 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
 
     try {
       final amount = double.parse(_amountController.text);
-      final body = {
-        'name': _titleController.text,
-        'walletId': widget.walletId,
-        'categoryId': _selectedCategoryId,
-        'amount': amount,
-        'type': widget.isExpense ? 'Expense' : 'Income',
-        'occurredAt': _selectedDate.toIso8601String(),
-      };
 
-      final response = await ref.read(apiProvider).post(
-            ApiEndpoints.transaction.create,
-            jsonEncode(body),
+      // Use the transaction provider instead of direct API calls
+      final transaction = await ref
+          .read(transactionNotifierProvider.notifier)
+          .createTransaction(
+            name: _titleController.text,
+            walletId: widget.walletId,
+            categoryName: _selectedCategoryName!,
+            amount: amount,
+            isExpense: widget.isExpense,
+            occurredAt: _selectedDate,
           );
 
       setState(() {
         _isLoading = false;
       });
 
-      response.when(
-        success: (_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Transaction added successfully')),
-          );
-          Navigator.pop(context, true); // Return true to indicate success
-        },
-        error: (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $error')),
-          );
-        },
-      );
+      if (transaction != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaction added successfully')),
+        );
+        Navigator.pop(context, true); // Return true to indicate success
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to add transaction')),
+        );
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text('Error: ${e.toString()}')),
       );
     }
   }
 
   void _showAddCategoryDialog() {
-    FocusScope.of(context).unfocus(); // Bỏ focus trước khi mở Dialog
+    FocusScope.of(context).unfocus();
 
     final categoryController = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      barrierDismissible: true,
+      builder: (dialogContext) => AlertDialog(
         title: Text(
           'Add ${widget.isExpense ? 'Expense' : 'Income'} Category',
           style: const TextStyle(fontFamily: 'Nunito', fontSize: 18),
@@ -121,63 +126,72 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text(
               'Cancel',
               style: TextStyle(color: Colors.grey, fontFamily: 'Nunito'),
             ),
           ),
           ElevatedButton(
-            onPressed: () async {
-              print(categoryController.text);
-              if (categoryController.text.isNotEmpty) {
-                Navigator.pop(
-                    context); // Đảm bảo đóng Dialog trước khi mở Loading
+            onPressed: () {
+              if (categoryController.text.isEmpty) return;
 
-                // Show loading indicator
-                await showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) => const Center(
+              // Get the category name before closing dialog
+              final categoryName = categoryController.text;
+
+              // Close the category name dialog
+              Navigator.pop(dialogContext);
+
+              // Now show a separate loading dialog
+              BuildContext? loadingDialogContext;
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (ctx) {
+                  loadingDialogContext = ctx;
+                  return const Center(
                     child: CircularProgressIndicator(),
-                  ),
-                );
+                  );
+                },
+              );
 
-                print("Before try block");
+              // Create the category
+              ref
+                  .read(categoryNotifierProvider(_flowType).notifier)
+                  .createCategory(categoryName, _flowType)
+                  .then((category) {
+                // Always close the loading dialog first
+                if (loadingDialogContext != null &&
+                    Navigator.canPop(loadingDialogContext!)) {
+                  Navigator.pop(loadingDialogContext!);
+                }
 
-                try {
-                  final category = await ref
-                      .read(categoryNotifierProvider(_flowType).notifier)
-                      .createCategory(categoryController.text, _flowType);
+                if (category != null) {
+                  setState(() {
+                    _selectedCategoryId = category.id;
+                    _selectedCategoryName = category.name;
+                  });
 
-                  print("Category created: $category");
-
-                  if (context.mounted)
-                    Navigator.pop(context); // Đóng loading dialog
-
-                  if (category != null) {
-                    setState(() {
-                      _selectedCategoryId = category.id;
-                      _selectedCategoryName = category.name;
-                    });
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Category added successfully')),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Failed to add category')),
-                    );
-                  }
-                } catch (e) {
-                  print("Error caught: $e");
-                  if (context.mounted) Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
+                    const SnackBar(
+                        content: Text('Category added successfully')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to add category')),
                   );
                 }
-              }
+              }).catchError((e) {
+                // Always close the loading dialog on error
+                if (loadingDialogContext != null &&
+                    Navigator.canPop(loadingDialogContext!)) {
+                  Navigator.pop(loadingDialogContext!);
+                }
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error: $e')),
+                );
+              });
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorName.blue,
@@ -215,6 +229,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Rest of the widget build method remains the same
     final inputDecoration = InputDecoration(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       border: OutlineInputBorder(
@@ -338,8 +353,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Category Label and Field
             Text(
               'Category',
               style: TextStyle(
@@ -352,7 +365,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             Row(
               children: [
                 Expanded(
-                  // Custom Category Selector
                   child: InkWell(
                     onTap: _showCategorySelectorDialog,
                     child: Container(
@@ -445,7 +457,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   }
 }
 
-// New Category Selector Dialog with infinite scrolling
+// FIXED: Category Selector Dialog that properly handles the Category object
 class _CategorySelectorDialog extends ConsumerStatefulWidget {
   final String flowType;
   final Function(Category) onCategorySelected;
@@ -497,13 +509,19 @@ class _CategorySelectorDialogState
       _isLoadingMore = true;
     });
 
-    await ref
-        .read(categoryNotifierProvider(widget.flowType).notifier)
-        .loadMoreCategories(widget.flowType);
-
-    setState(() {
-      _isLoadingMore = false;
-    });
+    try {
+      await ref
+          .read(categoryNotifierProvider(widget.flowType).notifier)
+          .loadMoreCategories(widget.flowType);
+    } catch (e) {
+      print("Error loading more categories: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+        });
+      }
+    }
   }
 
   void _performSearch(String query) {
@@ -616,10 +634,10 @@ class _CategorySelectorDialogState
                               : Colors.grey[100],
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        // child: Icon(
-                        //   category.iconId != null ? Icons.category : Iconsax.category,
-                        //   color: isSelected ? ColorName.blue : Colors.grey,
-                        // ),
+                        child: Icon(
+                          Iconsax.category,
+                          color: isSelected ? ColorName.blue : Colors.grey,
+                        ),
                       ),
                       title: Text(
                         category.name,
