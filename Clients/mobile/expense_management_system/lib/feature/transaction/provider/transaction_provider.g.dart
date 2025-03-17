@@ -7,7 +7,7 @@ part of 'transaction_provider.dart';
 // **************************************************************************
 
 String _$walletTransactionsHash() =>
-    r'963128612b3ab8195c94cceb15fb008350196840';
+    r'0fffb6f08d032241daebbd83c2f80b4af8322327';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -41,10 +41,10 @@ class WalletTransactionsFamily extends Family<AsyncValue<List<Transaction>>> {
 
   /// See also [walletTransactions].
   WalletTransactionsProvider call(
-    int walletId,
+    String walletName,
   ) {
     return WalletTransactionsProvider(
-      walletId,
+      walletName,
     );
   }
 
@@ -53,7 +53,7 @@ class WalletTransactionsFamily extends Family<AsyncValue<List<Transaction>>> {
     covariant WalletTransactionsProvider provider,
   ) {
     return call(
-      provider.walletId,
+      provider.walletName,
     );
   }
 
@@ -77,11 +77,11 @@ class WalletTransactionsProvider
     extends AutoDisposeFutureProvider<List<Transaction>> {
   /// See also [walletTransactions].
   WalletTransactionsProvider(
-    int walletId,
+    String walletName,
   ) : this._internal(
           (ref) => walletTransactions(
             ref as WalletTransactionsRef,
-            walletId,
+            walletName,
           ),
           from: walletTransactionsProvider,
           name: r'walletTransactionsProvider',
@@ -92,7 +92,7 @@ class WalletTransactionsProvider
           dependencies: WalletTransactionsFamily._dependencies,
           allTransitiveDependencies:
               WalletTransactionsFamily._allTransitiveDependencies,
-          walletId: walletId,
+          walletName: walletName,
         );
 
   WalletTransactionsProvider._internal(
@@ -102,10 +102,10 @@ class WalletTransactionsProvider
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.walletId,
+    required this.walletName,
   }) : super.internal();
 
-  final int walletId;
+  final String walletName;
 
   @override
   Override overrideWith(
@@ -120,7 +120,7 @@ class WalletTransactionsProvider
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        walletId: walletId,
+        walletName: walletName,
       ),
     );
   }
@@ -132,13 +132,14 @@ class WalletTransactionsProvider
 
   @override
   bool operator ==(Object other) {
-    return other is WalletTransactionsProvider && other.walletId == walletId;
+    return other is WalletTransactionsProvider &&
+        other.walletName == walletName;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, walletId.hashCode);
+    hash = _SystemHash.combine(hash, walletName.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -147,8 +148,8 @@ class WalletTransactionsProvider
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 mixin WalletTransactionsRef on AutoDisposeFutureProviderRef<List<Transaction>> {
-  /// The parameter `walletId` of this provider.
-  int get walletId;
+  /// The parameter `walletName` of this provider.
+  String get walletName;
 }
 
 class _WalletTransactionsProviderElement
@@ -157,7 +158,25 @@ class _WalletTransactionsProviderElement
   _WalletTransactionsProviderElement(super.provider);
 
   @override
-  int get walletId => (origin as WalletTransactionsProvider).walletId;
+  String get walletName => (origin as WalletTransactionsProvider).walletName;
 }
+
+String _$transactionNotifierHash() =>
+    r'c4d77660d4e1513216a381fd77768a651be11288';
+
+/// See also [TransactionNotifier].
+@ProviderFor(TransactionNotifier)
+final transactionNotifierProvider = AutoDisposeAsyncNotifierProvider<
+    TransactionNotifier, Transaction?>.internal(
+  TransactionNotifier.new,
+  name: r'transactionNotifierProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$transactionNotifierHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$TransactionNotifier = AutoDisposeAsyncNotifier<Transaction?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
