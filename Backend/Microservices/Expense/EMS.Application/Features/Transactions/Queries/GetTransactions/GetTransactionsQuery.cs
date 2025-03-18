@@ -34,6 +34,7 @@ namespace EMS.Application.Features.Transactions.Queries.GetTransactions
             var specParams = request.SpecParams;
 
             var query = _context.Transactions
+                .Where(e => !e.IsDeleted && !e.Wallet.IsDeleted)
                 .AsNoTracking();
 
             if (specParams.Period != null)
@@ -46,14 +47,14 @@ namespace EMS.Application.Features.Transactions.Queries.GetTransactions
                 query = query.Where(e => e.Name.Contains(specParams.Name));
             }
 
-            if (!string.IsNullOrEmpty(specParams.Wallet))
+            if (specParams.WalletId != null)
             {
-                query = query.Where(e => e.Wallet.Name.Contains(specParams.Wallet));
+                query = query.Where(e => e.Wallet.Id == specParams.WalletId);
             }
 
-            if (!string.IsNullOrEmpty(specParams.Category))
+            if (specParams.CategoryId != null)
             {
-                query = query.Where(e => e.Category != null && e.Category.Name.Contains(specParams.Category));
+                query = query.Where(e => e.Category != null && !e.Category.IsDeleted && e.Category.Id == specParams.CategoryId);
             }
 
             if(specParams.Type != null)
