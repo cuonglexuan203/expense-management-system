@@ -31,6 +31,7 @@ dependencies:
   extended_text_field: ^16.0.2
   currency_text_input_formatter: ^2.2.9
   go_router_builder: ^2.8.2
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,13 @@ import_sorter:
   comments: false # Optional, defaults to true
   ignored_files: # Optional, defaults to []
     - \/lib\/*
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path_android: "assets/icon/android/android_icon.png" # Android icon
+  image_path_ios: "assets/icon/ios/ios_icon.png" # iOS icon
+
 flutter:
   uses-material-design: true
   generate: true
@@ -80,6 +88,7 @@ flutter:
     - assets/env/
     - assets/fonts/
     - assets/images/
+    - assets/icon/
   fonts:
     - family: Nunito
       fonts:

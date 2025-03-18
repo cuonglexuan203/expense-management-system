@@ -32,6 +32,7 @@ Future<void> start() async {
           Logger()
         ],
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           home: const App(),
         )),
