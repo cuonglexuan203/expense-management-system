@@ -76,6 +76,12 @@ namespace EMS.Infrastructure.Persistence.Seed
         {
             var expenseCategories = new Category[]
             {
+                new()
+                {
+                    Name = "Unknown",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
                 new() {
                     Name = "Food & Drinks",
                     Type = CategoryType.Default,
@@ -155,6 +161,12 @@ namespace EMS.Infrastructure.Persistence.Seed
 
             var incomeCategories = new Category[]
             {
+                new()
+                {
+                    Name = "Unknown",
+                    Type = CategoryType.Default,
+                    FinancialFlowType = TransactionType.Expense,
+                },
                 new()
                 {
                     Name = "Salary",
