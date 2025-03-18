@@ -39,7 +39,7 @@ namespace EMS.Application.Features.Categories.Commands.CreateCategory
             var category = new Category
             {
                 Name = request.Name,
-                Type = CategoryType.Default,
+                Type = CategoryType.Custom,
                 FinancialFlowType = request.FinancialFlowType,
                 UserId = userId!,
                 IconId = request.IconId

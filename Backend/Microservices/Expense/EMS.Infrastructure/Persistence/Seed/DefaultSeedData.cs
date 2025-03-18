@@ -165,7 +165,7 @@ namespace EMS.Infrastructure.Persistence.Seed
                 {
                     Name = "Unknown",
                     Type = CategoryType.Default,
-                    FinancialFlowType = TransactionType.Expense,
+                    FinancialFlowType = TransactionType.Income,
                 },
                 new()
                 {
