@@ -1,6 +1,8 @@
 ﻿using EMS.Core.Constants;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
+using EMS.Core.Extensions;
+using EMS.Core.ValueObjects;
 
 namespace EMS.Infrastructure.Persistence.Seed
 {
@@ -31,7 +33,7 @@ namespace EMS.Infrastructure.Persistence.Seed
                 ("user2@gmail.com", "123456", Roles.User)
             };
 
-            return [..admins, ..users];
+            return [.. admins, .. users];
         }
 
         public static SystemSetting[] GetDefaultSystemSettings()
@@ -180,6 +182,21 @@ namespace EMS.Infrastructure.Persistence.Seed
             };
 
             return [.. expenseCategories, .. incomeCategories];
+        }
+
+        public static Currency[] GetDefaultCurrencies()
+        {
+            var defaultCurrencies = new Currency[]
+            {
+                new() { Code = CurrencyCode.USD, Country = "United States of America", CurrencyName = CurrencyCode.USD.GetDescription() },
+                new() { Code = CurrencyCode.EUR, Country = "Euro Member Countries", CurrencyName = CurrencyCode.EUR.GetDescription() },
+                new() { Code = CurrencyCode.JPY, Country = "Japan", CurrencyName = CurrencyCode.JPY.GetDescription() },
+                new() { Code = CurrencyCode.CNY, Country = "China", CurrencyName = CurrencyCode.CNY.GetDescription() },
+                new() { Code = CurrencyCode.KRW, Country = "South Korea", CurrencyName = CurrencyCode.KRW.GetDescription() },
+                new() { Code = CurrencyCode.VND, Country = "Vietnam", CurrencyName = CurrencyCode.VND.GetDescription() }
+            };
+
+            return defaultCurrencies;
         }
     }
 }
