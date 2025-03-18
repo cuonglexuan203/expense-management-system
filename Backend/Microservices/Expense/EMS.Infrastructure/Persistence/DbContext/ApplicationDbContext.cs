@@ -1,5 +1,6 @@
 ﻿using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Core.Entities;
+using EMS.Core.ValueObjects;
 using EMS.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,9 @@ namespace EMS.Infrastructure.Persistence.DbContext
         public DbSet<UserPreference> UserPreferences { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<ChatExtraction> ChatExtractions { get; set; }
+        public DbSet<ExtractedTransaction> ExtractedTransactions { get; set; }
+        public DbSet<CurrencyCode> CurrencyCodes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

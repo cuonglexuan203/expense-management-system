@@ -18,6 +18,10 @@ namespace EMS.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Currency)
                 .HasConversion<string>()
                 .HasMaxLength(31);
+
+            builder.Property(e => e.ConfirmationMode)
+                .HasConversion<string>()
+                .HasMaxLength(15);
         }
     }
 }

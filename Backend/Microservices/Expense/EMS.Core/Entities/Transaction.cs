@@ -1,5 +1,6 @@
 ﻿using EMS.Core.Entities.Common;
 using EMS.Core.Enums;
+using EMS.Core.ValueObjects;
 
 namespace EMS.Core.Entities
 {
@@ -21,6 +22,7 @@ namespace EMS.Core.Entities
         public CalendarEvent? CalendarEvent { get; set; }
         public Category? Category { get; set; }
         public Wallet Wallet { get; set; } = default!;
+        public CurrencyCode CurrencyCode { get; set; } = default!;
 
     }
 }

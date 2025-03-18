@@ -2,10 +2,10 @@
 
 namespace EMS.Core.Enums
 {
-    public enum RecurrenceInterval
+    public enum RecurrenceType
     {
         [Description("No Recurrence")]
-        None,
+        Once,
 
         [Description("Daily")]
         Daily,

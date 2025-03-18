@@ -1,6 +1,5 @@
 ﻿using EMS.Core.Entities;
 using EMS.Infrastructure.Persistence.Configurations.Common;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
@@ -15,9 +14,6 @@ namespace EMS.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Role)
                 .HasConversion<string>()
                 .HasMaxLength(15);
-
-            builder.Property(e => e.DetectedItems)
-                .HasColumnType("jsonb");
         }
 
         public override void ConfigureRelationships(EntityTypeBuilder<ChatMessage> builder)
@@ -31,6 +27,15 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .WithOne(e => e.ChatMessage)
                 .HasForeignKey<Transaction>(e => e.ChatMessageId)
                 .IsRequired(false);
+
+            builder.HasOne(e => e.ChatExtraction)
+                .WithOne(e => e.ChatMessage)
+                .HasForeignKey<ChatExtraction>(e => e.ChatMessageId)
+                .IsRequired();
+
+            builder.HasMany(e => e.ExtractedTransactions)
+                .WithOne(e => e.ChatMessage)
+                .HasForeignKey(e => e.ChatMessageId);
         }
     }
 }

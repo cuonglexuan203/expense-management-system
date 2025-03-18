@@ -14,7 +14,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Title)
                 .HasMaxLength(255);
 
-            builder.Property(e => e.Interval)
+            builder.Property(e => e.RecurrenceType)
                 .HasConversion<string>()
                 .HasMaxLength(15);
 
