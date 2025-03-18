@@ -10,6 +10,7 @@ namespace EMS.Core.Entities
         public int WalletId { get; set; }
         public int? CategoryId { get; set; }
         public string UserId { get; set; } = default!;
+        public CurrencyCode CurrencyCode { get; set; }
         public float Amount { get; set; }
         public TransactionType Type { get; set; }
         public DateTimeOffset? OccurredAt { get; set; }

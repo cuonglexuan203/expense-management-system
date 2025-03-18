@@ -17,13 +17,17 @@ namespace EMS.Infrastructure.Persistence.Configurations
             builder.Property(e => e.Type)
                 .HasConversion<string>()
                 .HasMaxLength(15);
+
+            builder.Property(e => e.CurrencyCode)
+                .HasConversion<string>()
+                .HasMaxLength(3);
         }
 
         public override void ConfigureRelationships(EntityTypeBuilder<Transaction> builder)
         {
             builder.HasOne(e => e.Currency)
                 .WithMany()
-                //.HasForeignKey(nameof(Currency.Code))
+                .HasForeignKey(e => e.CurrencyCode)
                 .IsRequired();
         }
     }

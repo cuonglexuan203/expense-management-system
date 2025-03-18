@@ -15,13 +15,21 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .HasConversion<string>()
                 .HasMaxLength(50);
 
-            builder.Property(e => e.Currency)
+            builder.Property(e => e.CurrencyCode)
                 .HasConversion<string>()
-                .HasMaxLength(31);
+                .HasMaxLength(3);
 
             builder.Property(e => e.ConfirmationMode)
                 .HasConversion<string>()
                 .HasMaxLength(15);
+        }
+
+        public override void ConfigureRelationships(EntityTypeBuilder<UserPreference> builder)
+        {
+            builder.HasOne(e => e.Currency)
+                .WithMany()
+                .HasForeignKey(e => e.CurrencyCode)
+                .IsRequired();
         }
     }
 }

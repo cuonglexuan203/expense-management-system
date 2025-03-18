@@ -3,6 +3,7 @@ using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Utils;
+using EMS.Application.Features.Categories.Services;
 using EMS.Application.Features.Transactions.Dtos;
 using EMS.Application.Features.Transactions.Services;
 using EMS.Application.Features.Wallets.Services;
@@ -18,7 +19,7 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
     {
         public string Name { get; set; } = default!;
         public int WalletId { get; set; }
-        public string? Category { get; set; }
+        public int? CategoryId { get; set; }
         public float Amount { get; set; }
         public TransactionType Type { get; set; }
         public DateTimeOffset? OccurredAt { get; set; } // Nullable because there are cases where the user may not remember the transaction time.
@@ -33,6 +34,8 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
         private readonly IWalletService _walletService;
         private readonly IDistributedCacheService _distributedCacheService;
         private readonly ITransactionService _transactionService;
+        private readonly ICategoryService _categoryService;
+        private readonly IUserPreferenceService _userPreferenceService;
 
         //
         private static readonly TimePeriod[] _walletSummaryPeriods = Enum.GetValues<TimePeriod>();
@@ -44,7 +47,9 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
             IMapper mapper,
             IWalletService walletService,
             IDistributedCacheService distributedCacheService,
-            ITransactionService transactionService)
+            ITransactionService transactionService,
+            ICategoryService categoryService,
+            IUserPreferenceService userPreferenceService)
         {
             _logger = logger;
             _context = context;
@@ -53,6 +58,8 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
             _walletService = walletService;
             _distributedCacheService = distributedCacheService;
             _transactionService = transactionService;
+            _categoryService = categoryService;
+            _userPreferenceService = userPreferenceService;
         }
 
         public async Task<TransactionDto> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
@@ -64,33 +71,43 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
                 .FirstOrDefaultAsync(e => e.Id == request.WalletId && e.UserId == userId && !e.IsDeleted)
                 ?? throw new NotFoundException($"Wallet with Id {request.WalletId} not found");
 
+            var userPreference = await _userPreferenceService.GetUserPreferenceAsync();
+
             var transaction = new Transaction
             {
                 Name = request.Name,
                 WalletId = request.WalletId,
+                UserId = userId,
+                CurrencyCode = userPreference.CurrencyCode,
                 Amount = request.Amount,
                 Type = request.Type,
-                UserId = userId,
                 OccurredAt = request.OccurredAt,
             };
 
-            if (request.Category != null)
+            #region Add a new transaction into the category
+            if (request.CategoryId != null)
             {
                 var category = await _context.Categories
-                    .SingleOrDefaultAsync(e =>
-                e.Name == request.Category && (e.UserId == userId || e.UserId == null) && !e.IsDeleted)
-                ?? throw new NotFoundException($"Category with name {request.Category} not found");
+                .SingleOrDefaultAsync(e =>
+                e.Id == request.CategoryId && e.UserId == userId && !e.IsDeleted)
+                ?? throw new NotFoundException($"Category with id {request.CategoryId} not found");
 
                 BadRequestException.ThrowIf(request.Type != category.FinancialFlowType,
                     $"Cannot use a {category.FinancialFlowType} category for a {request.Type} transaction");
 
                 transaction.CategoryId = category.Id;
             }
+            else
+            {
+                var defaultCategory = await _categoryService.GetDefaultCategoryAsync(request.Type);
+                transaction.CategoryId = defaultCategory.Id;
+            }
+            #endregion
 
             await _transactionService.CreateTransactionAsync(request.WalletId, transaction);
 
-            _logger.LogInformation("Added a {Type} transaction: id {id}, wallet id {WalletId}, amount {Amount}, category {Category}",
-                transaction.Type, transaction.Id, transaction.WalletId, transaction.Amount, request.Category);
+            _logger.LogInformation("Added a {Type} transaction: id {id}, wallet id {WalletId}, amount {Amount}, category id {Category}",
+                transaction.Type, transaction.Id, transaction.WalletId, transaction.Amount, transaction.CategoryId);
 
             await CacheWalletBalanceSummariesAsync(request.WalletId);
 
