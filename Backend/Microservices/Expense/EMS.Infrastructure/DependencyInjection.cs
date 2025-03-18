@@ -29,6 +29,7 @@ namespace EMS.Infrastructure
             services.TryAddScoped<IWalletService, WalletService>();
             services.TryAddScoped<ITransactionService, TransactionService>();
             services.TryAddScoped<ICategoryService, CategoryService>();
+            services.TryAddScoped<IUserPreferenceService, UserPreferenceService>();
 
             services.AddRedisCaching(configuration);
 
