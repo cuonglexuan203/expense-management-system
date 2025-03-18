@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter_boilerplate/shared/http/app_exception.dart';
+import 'package:expense_management_system/shared/http/app_exception.dart';
 import '../model/wallet.dart';
 
 part 'wallet_state.freezed.dart';

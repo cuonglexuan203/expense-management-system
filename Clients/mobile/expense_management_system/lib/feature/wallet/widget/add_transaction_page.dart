@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/feature/category/model/category.dart';
-import 'package:flutter_boilerplate/feature/category/provider/category_provider.dart';
-import 'package:flutter_boilerplate/feature/transaction/provider/transaction_provider.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
-import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
-import 'package:flutter_boilerplate/shared/http/api_provider.dart';
+import 'package:expense_management_system/feature/category/model/category.dart';
+import 'package:expense_management_system/feature/category/provider/category_provider.dart';
+import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/constants/api_endpoints.dart';
+import 'package:expense_management_system/shared/http/api_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 

@@ -1,10 +1,12 @@
 // transaction_repository.dart
 import 'dart:convert';
-import 'package:flutter_boilerplate/feature/transaction/model/transaction.dart';
-import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
-import 'package:flutter_boilerplate/shared/http/api_provider.dart';
-import 'package:flutter_boilerplate/shared/http/api_response.dart';
-import 'package:flutter_boilerplate/shared/http/app_exception.dart';
+import 'package:expense_management_system/feature/transaction/model/transaction.dart';
+import 'package:expense_management_system/shared/constants/api_endpoints.dart';
+import 'package:expense_management_system/shared/http/api_provider.dart';
+import 'package:expense_management_system/shared/http/api_response.dart';
+import 'package:expense_management_system/shared/http/app_exception.dart';
+import 'package:expense_management_system/shared/model/pagination_info.dart';
+import 'package:expense_management_system/shared/pagination/pagination_response.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final transactionRepositoryProvider = Provider(TransactionRepository.new);
@@ -93,6 +95,71 @@ class TransactionRepository {
           final transaction =
               Transaction.fromJson(data as Map<String, dynamic>);
           return APIResponse.success(transaction);
+        },
+        error: APIResponse.error,
+      );
+    } catch (e) {
+      return APIResponse.error(AppException.errorWithMessage(e.toString()));
+    }
+  }
+
+  Future<APIResponse<PaginatedResponse<Transaction>>>
+      getTransactionsByWalletPaginated(String walletName,
+          {int pageNumber = 1, int pageSize = 10}) async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.transaction.getAll,
+        query: {
+          'Wallet': walletName,
+          'PageNumber': pageNumber.toString(),
+          'PageSize': pageSize.toString(),
+        },
+      );
+
+      return response.when(
+        success: (data) {
+          try {
+            if (data is Map<String, dynamic> && data.containsKey('items')) {
+              final items = data['items'] as List<dynamic>;
+              final transactions = items
+                  .map((item) {
+                    try {
+                      if (item is Map<String, dynamic>) {
+                        // Safe handling of null values
+                        var safeItem = Map<String, dynamic>.from(item);
+                        if (safeItem['amount'] == null) safeItem['amount'] = 0;
+
+                        return Transaction.fromJson(safeItem);
+                      }
+                    } catch (e) {
+                      print('Error parsing transaction item: $e');
+                    }
+                    return null;
+                  })
+                  .whereType<Transaction>()
+                  .toList();
+
+              final paginationInfo = PaginationInfo.fromJson(data);
+
+              return APIResponse.success(
+                PaginatedResponse(
+                  items: transactions,
+                  paginationInfo: paginationInfo,
+                ),
+              );
+            }
+
+            return const APIResponse.error(
+              AppException.errorWithMessage('Invalid response format'),
+            );
+          } catch (parseError) {
+            print('Parse error: $parseError');
+            return APIResponse.error(
+              AppException.errorWithMessage(
+                'Error parsing transaction data: $parseError',
+              ),
+            );
+          }
         },
         error: APIResponse.error,
       );

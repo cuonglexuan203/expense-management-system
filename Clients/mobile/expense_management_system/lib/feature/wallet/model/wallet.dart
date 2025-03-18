@@ -1,4 +1,4 @@
-import 'package:flutter_boilerplate/feature/wallet/model/transaction_summary.dart';
+import 'package:expense_management_system/feature/wallet/model/transaction_summary.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';

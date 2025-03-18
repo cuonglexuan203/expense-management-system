@@ -1,6 +1,6 @@
-import 'package:flutter_boilerplate/feature/home/state/home_state.dart';
-import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
-import 'package:flutter_boilerplate/feature/wallet/repository/wallet_repository.dart';
+import 'package:expense_management_system/feature/home/state/home_state.dart';
+import 'package:expense_management_system/feature/wallet/model/wallet.dart';
+import 'package:expense_management_system/feature/wallet/repository/wallet_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_provider.g.dart';

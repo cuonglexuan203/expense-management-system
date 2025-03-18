@@ -11,7 +11,7 @@ class Transaction with _$Transaction {
     required int walletId,
     String? walletName,
     String? categoryName,
-    required double amount,
+    @JsonKey(fromJson: _amountFromJson) required double amount,
     String? description,
     required String type,
     required DateTime occurredAt,
@@ -20,4 +20,9 @@ class Transaction with _$Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
+}
+
+double _amountFromJson(dynamic value) {
+  if (value == null) return 0.0;
+  return (value as num).toDouble();
 }

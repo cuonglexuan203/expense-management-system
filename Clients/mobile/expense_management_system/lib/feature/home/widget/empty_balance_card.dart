@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
 
 class EmptyBalanceCard extends StatelessWidget {
   const EmptyBalanceCard({Key? key}) : super(key: key);

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter_boilerplate/feature/auth/model/token.dart';
-import 'package:flutter_boilerplate/feature/auth/repository/token_repository.dart';
-import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
-import 'package:flutter_boilerplate/shared/http/api_provider.dart';
+import 'package:expense_management_system/feature/auth/model/token.dart';
+import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
+import 'package:expense_management_system/shared/constants/api_endpoints.dart';
+import 'package:expense_management_system/shared/http/api_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthInterceptor extends Interceptor {

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
+import 'package:expense_management_system/feature/wallet/model/wallet.dart';
 
 part 'home_state.freezed.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
-import 'package:flutter_boilerplate/shared/route/app_router.dart';
+import 'package:expense_management_system/feature/wallet/model/wallet.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 

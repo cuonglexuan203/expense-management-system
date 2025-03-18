@@ -1,7 +1,7 @@
 // lib/feature/category/provider/category_provider.dart
-import 'package:flutter_boilerplate/feature/category/model/category.dart';
-import 'package:flutter_boilerplate/feature/category/repository/category_repository.dart';
-import 'package:flutter_boilerplate/shared/model/pagination_info.dart';
+import 'package:expense_management_system/feature/category/model/category.dart';
+import 'package:expense_management_system/feature/category/repository/category_repository.dart';
+import 'package:expense_management_system/shared/model/pagination_info.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'category_provider.g.dart';

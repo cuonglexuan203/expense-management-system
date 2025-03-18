@@ -7,7 +7,7 @@ part of 'transaction_provider.dart';
 // **************************************************************************
 
 String _$walletTransactionsHash() =>
-    r'28d36e4482dc08f68391e74f5034c9ccbff8938e';
+    r'96e8a79101315825ad0bd8956697043e325ca2a9';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -160,8 +160,156 @@ class _WalletTransactionsProviderElement
   int get walletId => (origin as WalletTransactionsProvider).walletId;
 }
 
+String _$paginatedTransactionsHash() =>
+    r'335969770d7f73060d0492a641d7f28578a5b4fc';
+
+abstract class _$PaginatedTransactions
+    extends BuildlessAutoDisposeNotifier<PaginatedState<Transaction>> {
+  late final int walletId;
+
+  PaginatedState<Transaction> build(
+    int walletId,
+  );
+}
+
+/// See also [PaginatedTransactions].
+@ProviderFor(PaginatedTransactions)
+const paginatedTransactionsProvider = PaginatedTransactionsFamily();
+
+/// See also [PaginatedTransactions].
+class PaginatedTransactionsFamily extends Family<PaginatedState<Transaction>> {
+  /// See also [PaginatedTransactions].
+  const PaginatedTransactionsFamily();
+
+  /// See also [PaginatedTransactions].
+  PaginatedTransactionsProvider call(
+    int walletId,
+  ) {
+    return PaginatedTransactionsProvider(
+      walletId,
+    );
+  }
+
+  @override
+  PaginatedTransactionsProvider getProviderOverride(
+    covariant PaginatedTransactionsProvider provider,
+  ) {
+    return call(
+      provider.walletId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'paginatedTransactionsProvider';
+}
+
+/// See also [PaginatedTransactions].
+class PaginatedTransactionsProvider extends AutoDisposeNotifierProviderImpl<
+    PaginatedTransactions, PaginatedState<Transaction>> {
+  /// See also [PaginatedTransactions].
+  PaginatedTransactionsProvider(
+    int walletId,
+  ) : this._internal(
+          () => PaginatedTransactions()..walletId = walletId,
+          from: paginatedTransactionsProvider,
+          name: r'paginatedTransactionsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$paginatedTransactionsHash,
+          dependencies: PaginatedTransactionsFamily._dependencies,
+          allTransitiveDependencies:
+              PaginatedTransactionsFamily._allTransitiveDependencies,
+          walletId: walletId,
+        );
+
+  PaginatedTransactionsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.walletId,
+  }) : super.internal();
+
+  final int walletId;
+
+  @override
+  PaginatedState<Transaction> runNotifierBuild(
+    covariant PaginatedTransactions notifier,
+  ) {
+    return notifier.build(
+      walletId,
+    );
+  }
+
+  @override
+  Override overrideWith(PaginatedTransactions Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: PaginatedTransactionsProvider._internal(
+        () => create()..walletId = walletId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        walletId: walletId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeNotifierProviderElement<PaginatedTransactions,
+      PaginatedState<Transaction>> createElement() {
+    return _PaginatedTransactionsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PaginatedTransactionsProvider && other.walletId == walletId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, walletId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin PaginatedTransactionsRef
+    on AutoDisposeNotifierProviderRef<PaginatedState<Transaction>> {
+  /// The parameter `walletId` of this provider.
+  int get walletId;
+}
+
+class _PaginatedTransactionsProviderElement
+    extends AutoDisposeNotifierProviderElement<PaginatedTransactions,
+        PaginatedState<Transaction>> with PaginatedTransactionsRef {
+  _PaginatedTransactionsProviderElement(super.provider);
+
+  @override
+  int get walletId => (origin as PaginatedTransactionsProvider).walletId;
+}
+
 String _$transactionNotifierHash() =>
-    r'c4d77660d4e1513216a381fd77768a651be11288';
+    r'b319dee48a4cfed1302335c03b567a3043b8fd58';
 
 /// See also [TransactionNotifier].
 @ProviderFor(TransactionNotifier)

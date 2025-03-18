@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
-import 'package:flutter_boilerplate/feature/wallet/provider/wallet_provider.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
+import 'package:expense_management_system/feature/wallet/model/transaction_summary.dart';
+import 'package:expense_management_system/feature/wallet/model/wallet.dart';
+import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -155,9 +156,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                 child: _buildIncomeExpenseItem(
                   icon: Icons.arrow_downward,
                   label: 'Income',
-                  amount: wallet.income == null
-                      ? '\$0.00'
-                      : '\$${wallet.expense?.totalAmount?.toStringAsFixed(2) ?? "0.00"}',
+                  amount: '\$${_safeFormatAmount(wallet.income)}',
                   iconColor: Colors.white70,
                 ),
               ),
@@ -166,9 +165,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                 child: _buildIncomeExpenseItem(
                   icon: Icons.arrow_upward,
                   label: 'Expenses',
-                  amount: wallet.expense == null
-                      ? '\$0.00'
-                      : '\$${wallet.expense?.totalAmount?.toStringAsFixed(2) ?? "0.00"}',
+                  amount: '\$${_safeFormatAmount(wallet.expense)}',
                   iconColor: Colors.white70,
                 ),
               ),
@@ -262,5 +259,19 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
         ],
       ),
     );
+  }
+}
+
+// Thêm phương thức helper này vào class _WalletBalanceCardState
+String _safeFormatAmount(TransactionSummary? summary) {
+  try {
+    if (summary == null) return '0.00';
+    final amount =
+        summary.totalAmount; // Có thể null trong quá trình deserialize
+    if (amount == null) return '0.00';
+    return amount.toStringAsFixed(2);
+  } catch (e) {
+    print('Format error: $e');
+    return '0.00';
   }
 }

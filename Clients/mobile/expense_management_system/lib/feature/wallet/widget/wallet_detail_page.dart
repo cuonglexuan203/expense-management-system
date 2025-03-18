@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/app/widget/bottom_nav_bar.dart';
-import 'package:flutter_boilerplate/feature/transaction/model/transaction.dart';
-import 'package:flutter_boilerplate/feature/transaction/provider/transaction_provider.dart';
-import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
-import 'package:flutter_boilerplate/feature/wallet/provider/wallet_provider.dart';
-import 'package:flutter_boilerplate/feature/wallet/widget/add_transaction_page.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
+import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
+import 'package:expense_management_system/feature/transaction/model/transaction.dart';
+import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
+import 'package:expense_management_system/feature/wallet/model/wallet.dart';
+import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
+import 'package:expense_management_system/feature/wallet/widget/add_transaction_page.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
@@ -21,6 +21,48 @@ class WalletDetailPage extends ConsumerStatefulWidget {
 
 class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
   int _currentIndex = 0;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Add scroll listener for infinite scrolling
+    _scrollController.addListener(_onScroll);
+
+    // Initial load of transactions
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialTransactions();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _loadInitialTransactions() {
+    ref
+        .read(paginatedTransactionsProvider(widget.walletId).notifier)
+        .fetchNextPage();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      ref
+          .read(paginatedTransactionsProvider(widget.walletId).notifier)
+          .fetchNextPage();
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    // Fetch more when we're 200 pixels from the bottom
+    return currentScroll >= (maxScroll - 200);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +75,10 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
       if (previous != next) {
         // Refresh wallet data when changes occur
         ref.invalidate(walletDetailNotifierProvider(widget.walletId));
-        ref.invalidate(walletTransactionsProvider(widget.walletId));
+        // Refresh paginated transactions
+        ref
+            .read(paginatedTransactionsProvider(widget.walletId).notifier)
+            .refresh();
       }
     });
 
@@ -250,9 +295,9 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Transaction list with pull-to-refresh
+                        // Transaction list with pull-to-refresh and infinite scrolling
                         Expanded(
-                          child: _buildTransactionsList(wallet.id),
+                          child: _buildPaginatedTransactionsList(wallet.id),
                         ),
                       ],
                     ),
@@ -281,80 +326,59 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
     );
   }
 
-  Widget _buildTransactionsList(int walletId) {
+  Widget _buildPaginatedTransactionsList(int walletId) {
     return Consumer(
       builder: (context, ref, child) {
-        final transactionsAsync =
-            ref.watch(walletTransactionsProvider(walletId));
+        final paginatedState =
+            ref.watch(paginatedTransactionsProvider(walletId));
+        final transactions = paginatedState.items;
+        final isLoading = paginatedState.isLoading;
+        final hasError = paginatedState.errorMessage != null;
 
         return RefreshIndicator(
           onRefresh: () async {
             // Refresh both the wallet and transactions data
             ref.invalidate(walletDetailNotifierProvider(walletId));
-            return ref.refresh(walletTransactionsProvider(walletId).future);
+            return ref
+                .read(paginatedTransactionsProvider(walletId).notifier)
+                .refresh();
           },
-          child: transactionsAsync.when(
-            data: (transactions) {
-              // Use ListView with proper physics even when empty
-              return ListView.builder(
-                itemCount: transactions.isEmpty ? 1 : transactions.length,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  if (transactions.isEmpty) {
-                    return Container(
-                      padding: const EdgeInsets.only(top: 40),
-                      child: const Center(
-                        child: Text(
-                          'No transactions yet',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                            fontFamily: 'Nunito',
-                          ),
-                        ),
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: transactions.isEmpty
+                ? 1
+                : transactions.length + (isLoading ? 1 : 0),
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              // Show empty state message
+              if (transactions.isEmpty && !isLoading) {
+                return Container(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: const Center(
+                    child: Text(
+                      'No transactions yet',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontFamily: 'Nunito',
                       ),
-                    );
-                  }
-
-                  final transaction = transactions[index];
-                  return _buildTransactionItem(transaction);
-                },
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                const SizedBox(height: 40),
-                Center(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.error_outline,
-                          color: Colors.red, size: 32),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Error loading transactions',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontFamily: 'Nunito',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        error.toString(),
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                          fontFamily: 'Nunito',
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                );
+              }
+
+              // Show loading indicator at the end
+              if (index == transactions.length && isLoading) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              // Show transaction item
+              final transaction = transactions[index];
+              return _buildTransactionItem(transaction);
+            },
           ),
         );
       },
@@ -408,7 +432,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
             ),
           ),
           Text(
-            '${isIncome ? '+' : '-'}\$${transaction.amount}',
+            '${isIncome ? '+' : '-'}\$${_safeFormatAmount(transaction.amount)}',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -454,5 +478,15 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
         ],
       ),
     );
+  }
+}
+
+String _safeFormatAmount(num? amount) {
+  try {
+    if (amount == null) return '0.00';
+    return amount.toStringAsFixed(2);
+  } catch (e) {
+    print('Format error: $e');
+    return '0.00';
   }
 }

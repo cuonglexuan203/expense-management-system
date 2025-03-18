@@ -1,9 +1,9 @@
 // import 'package:flutter/material.dart';
-// import 'package:flutter_boilerplate/app/widget/bottom_nav_bar.dart';
-// import 'package:flutter_boilerplate/gen/colors.gen.dart';
+// import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
+// import 'package:expense_management_system/gen/colors.gen.dart';
 // import 'package:go_router/go_router.dart';
 // import 'package:iconsax/iconsax.dart';
-// import 'package:flutter_boilerplate/feature/wallet/widget/add_transaction_page.dart';
+// import 'package:expense_management_system/feature/wallet/widget/add_transaction_page.dart';
 
 // class WalletPage extends StatefulWidget {
 //   const WalletPage({super.key});

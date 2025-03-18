@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/feature/wallet/provider/wallet_provider.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
-import 'package:flutter_boilerplate/shared/util/number_formatter.dart';
+import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/util/number_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
