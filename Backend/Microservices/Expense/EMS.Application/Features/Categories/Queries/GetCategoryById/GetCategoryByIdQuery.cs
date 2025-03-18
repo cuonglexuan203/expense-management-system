@@ -38,16 +38,8 @@ namespace EMS.Application.Features.Categories.Queries.GetCategoryById
                 //.Include(c => c.Transactions)
                 .AsNoTracking()
                 .Include(c => c.Icon)
-                .FirstOrDefaultAsync(c => c.Id == request.CategoryId &&
-                (c.UserId == userId || c.UserId == null) && // allow default and custom categories
-                !c.IsDeleted, cancellationToken)
+                .FirstOrDefaultAsync(c => c.Id == request.CategoryId && c.UserId == userId && !c.IsDeleted, cancellationToken)
                 ?? throw new NotFoundException($"{nameof(Core.Entities.Category)} with ID {request.CategoryId} not found");
-
-            //_logger.LogInformation("Successfully retrieved category. ID: {CategoryId}, Name: {CategoryName}, TransactionCount: {TransactionCount}, HasIcon: {HasIcon}",
-            //    category.Id,
-            //    category.Name,
-            //    category.Transactions.Count,
-            //    category.Icon != null);
 
             return _mapper.Map<CategoryDto>(category);
         }

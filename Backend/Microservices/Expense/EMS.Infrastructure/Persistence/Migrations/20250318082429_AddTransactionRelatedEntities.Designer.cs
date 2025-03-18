@@ -3,6 +3,7 @@ using System;
 using EMS.Infrastructure.Persistence.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EMS.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250318082429_AddTransactionRelatedEntities")]
+    partial class AddTransactionRelatedEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -808,7 +811,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("CurrencyCode")
                         .IsRequired()
-                        .HasMaxLength(3)
                         .HasColumnType("character varying(3)");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
@@ -887,10 +889,10 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
 
-                    b.Property<string>("CurrencyCode")
+                    b.Property<string>("Currency")
                         .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
+                        .HasMaxLength(31)
+                        .HasColumnType("character varying(31)");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -920,8 +922,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(36)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CurrencyCode");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -1459,19 +1459,11 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("EMS.Core.Entities.UserPreference", b =>
                 {
-                    b.HasOne("EMS.Core.ValueObjects.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyCode")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EMS.Infrastructure.Identity.Models.ApplicationUser", null)
                         .WithOne("UserPreference")
                         .HasForeignKey("EMS.Core.Entities.UserPreference", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Currency");
                 });
 
             modelBuilder.Entity("EMS.Core.Entities.Wallet", b =>

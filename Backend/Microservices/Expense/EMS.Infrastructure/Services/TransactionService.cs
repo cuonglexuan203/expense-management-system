@@ -57,6 +57,7 @@ namespace EMS.Infrastructure.Services
 
             return wallet.Balance - transaction.Amount >= 0;
         }
+
         public async Task<TransactionDto?> GetTransactionByIdAsync(int transactionId, CancellationToken cancellationToken = default)
         {
             var transaction = await _context.Transactions

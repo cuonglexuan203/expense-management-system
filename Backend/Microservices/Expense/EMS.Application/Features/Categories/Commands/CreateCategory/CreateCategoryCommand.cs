@@ -13,7 +13,6 @@ namespace EMS.Application.Features.Categories.Commands.CreateCategory
     public record CreateCategoryCommand : IRequest<CategoryDto>
     {
         public string Name { get; init; } = default!;
-        public bool IsDefault { get; init; }
         public TransactionType FinancialFlowType { get; init; }
         public Guid? IconId { get; init; }
     }
@@ -40,7 +39,7 @@ namespace EMS.Application.Features.Categories.Commands.CreateCategory
             var category = new Category
             {
                 Name = request.Name,
-                Type = request.IsDefault ? CategoryType.Default : CategoryType.Custom,
+                Type = CategoryType.Custom,
                 FinancialFlowType = request.FinancialFlowType,
                 UserId = userId!,
                 IconId = request.IconId

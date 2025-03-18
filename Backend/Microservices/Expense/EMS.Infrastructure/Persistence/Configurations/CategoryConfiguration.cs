@@ -28,6 +28,11 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .WithOne(e => e.Category)
                 .HasForeignKey(e => e.CategoryId)
                 .IsRequired(false);
+
+            builder.HasMany(e => e.ExtractedTransactions)
+                .WithOne(e => e.Category)
+                .HasForeignKey(e => e.CategoryId)
+                .IsRequired(false);
         }
     }
 }

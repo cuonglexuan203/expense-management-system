@@ -102,6 +102,15 @@ namespace EMS.Infrastructure.Persistence.DbContext
             }
             #endregion
 
+            #region Add default currencies
+            if(!_context.Currencies.Any())
+            {
+                var defaultCurrencies = DefaultSeedData.GetDefaultCurrencies();
+                _context.Currencies.AddRange(defaultCurrencies);
+                _logger.LogStateInfo(AppStates.SeedingData, $"Added {defaultCurrencies.Length} default currencies.");
+            }
+            #endregion
+
             await _context.SaveChangesAsync();
         }
     }

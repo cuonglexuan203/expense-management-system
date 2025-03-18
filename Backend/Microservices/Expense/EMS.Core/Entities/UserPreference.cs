@@ -1,5 +1,6 @@
 ﻿using EMS.Core.Entities.Common;
 using EMS.Core.Enums;
+using EMS.Core.ValueObjects;
 
 namespace EMS.Core.Entities
 {
@@ -7,10 +8,11 @@ namespace EMS.Core.Entities
     {
         public string UserId { get; set; } = default!;
         public Language Language { get; set; } = Language.EN;
-        public Currency Currency { get; set; } = Currency.USD;
+        public CurrencyCode CurrencyCode { get; set; } = CurrencyCode.USD;
         //public string? Metadata { get; set; }
-        public bool RequiresConfirmation { get; set; } // confirm the response message of the system
+        public ConfirmationMode ConfirmationMode { get; set; } // confirm the response message of the system
 
         // Navigations
+        public Currency Currency { get; set; } = default!;
     }
 }
