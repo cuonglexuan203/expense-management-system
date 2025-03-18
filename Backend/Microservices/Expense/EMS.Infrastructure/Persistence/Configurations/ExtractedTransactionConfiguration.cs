@@ -1,5 +1,4 @@
 ﻿using EMS.Core.Entities;
-using EMS.Core.ValueObjects;
 using EMS.Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,7 +27,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
         {
             builder.HasOne(e => e.Currency)
                 .WithMany()
-                .HasForeignKey(nameof(Currency))
+                //.HasForeignKey(nameof(Currency.Code))
                 .IsRequired();
         }
     }
