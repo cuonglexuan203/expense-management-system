@@ -79,6 +79,7 @@ flutter:
     - assets/env/.env.development
     - assets/env/
     - assets/fonts/
+    - assets/images/
   fonts:
     - family: Nunito
       fonts:
