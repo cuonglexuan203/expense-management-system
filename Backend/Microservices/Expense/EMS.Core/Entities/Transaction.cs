@@ -22,7 +22,7 @@ namespace EMS.Core.Entities
         public CalendarEvent? CalendarEvent { get; set; }
         public Category? Category { get; set; }
         public Wallet Wallet { get; set; } = default!;
-        public CurrencyCode CurrencyCode { get; set; } = default!;
+        public Currency Currency { get; set; } = default!;
 
     }
 }

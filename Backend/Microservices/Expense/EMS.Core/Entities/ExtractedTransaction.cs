@@ -21,7 +21,7 @@ namespace EMS.Core.Entities
         public ChatMessage ChatMessage { get; set; } = default!;
         public ChatExtraction ChatExtraction { get; set; } = default!;
         public Transaction? Transaction { get; set; }
-        public CurrencyCode CurrencyCode { get; set; } = default!;
+        public Currency Currency { get; set; } = default!;
         public Category? Category { get; set; }
     }
 }

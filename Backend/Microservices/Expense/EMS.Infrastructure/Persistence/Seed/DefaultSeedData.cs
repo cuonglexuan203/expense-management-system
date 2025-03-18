@@ -41,7 +41,7 @@ namespace EMS.Infrastructure.Persistence.Seed
                 new SystemSetting
                 {
                     SettingKey = "Currency",
-                    SettingValue = Currency.USD.ToString(),
+                    SettingValue = CurrencyCode.USD.ToString(),
                     DataType = DataType.String,
                     Description = "Default currency used in transactions",
                     Type = SettingType.General,

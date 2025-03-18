@@ -2,7 +2,7 @@
 
 namespace EMS.Core.Enums
 {
-    public enum Currency
+    public enum CurrencyCode
     {
         [Description("United States Dollar")]
         USD,

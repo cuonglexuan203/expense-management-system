@@ -66,7 +66,7 @@ namespace EMS.Application.Features.Auth.Commands.Register
                 {
                     UserId = userId,
                     Language = MapSystemSettingValue(systemSettings, nameof(UserPreference.Language), Language.EN),
-                    Currency = MapSystemSettingValue(systemSettings, nameof(UserPreference.Currency), Currency.USD),
+                    Currency = MapSystemSettingValue(systemSettings, nameof(UserPreference.Currency), CurrencyCode.USD),
                     ConfirmationMode = MapSystemSettingValue(systemSettings, nameof(UserPreference.ConfirmationMode), ConfirmationMode.Manual)
                 };
 

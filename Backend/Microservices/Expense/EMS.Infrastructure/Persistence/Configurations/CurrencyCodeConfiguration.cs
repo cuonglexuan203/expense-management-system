@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
 {
-    public class CurrencyCodeConfiguration : EntityTypeConfiguration<CurrencyCode>
+    public class CurrencyCodeConfiguration : EntityTypeConfiguration<Currency>
     {
-        public override void ConfigureProperties(EntityTypeBuilder<CurrencyCode> builder)
+        public override void ConfigureProperties(EntityTypeBuilder<Currency> builder)
         {
             builder.HasKey(e => e.Code);
 

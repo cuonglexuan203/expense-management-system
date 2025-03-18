@@ -7,7 +7,7 @@ namespace EMS.Core.Entities
     {
         public string UserId { get; set; } = default!;
         public Language Language { get; set; } = Language.EN;
-        public Currency Currency { get; set; } = Currency.USD;
+        public CurrencyCode Currency { get; set; } = CurrencyCode.USD;
         //public string? Metadata { get; set; }
         public ConfirmationMode ConfirmationMode { get; set; } // confirm the response message of the system
 

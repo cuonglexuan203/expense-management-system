@@ -3,9 +3,9 @@ using EMS.Core.ValueObjects.Common;
 
 namespace EMS.Core.ValueObjects
 {
-    public class CurrencyCode : ValueObject
+    public class Currency : ValueObject
     {
-        public Currency Code { get; set; }
+        public CurrencyCode Code { get; set; }
         public string Country { get; set; } = default!;
         public string CurrencyName { get; set; } = default!;
 

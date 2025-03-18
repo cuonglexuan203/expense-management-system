@@ -22,9 +22,9 @@ namespace EMS.Infrastructure.Persistence.Configurations
 
         public override void ConfigureRelationships(EntityTypeBuilder<Transaction> builder)
         {
-            builder.HasOne(e => e.CurrencyCode)
+            builder.HasOne(e => e.Currency)
                 .WithMany()
-                //.HasForeignKey(nameof(CurrencyCode))
+                .HasForeignKey(nameof(Currency))
                 .IsRequired();
         }
     }

@@ -30,7 +30,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<ChatExtraction> ChatExtractions { get; set; }
         public DbSet<ExtractedTransaction> ExtractedTransactions { get; set; }
-        public DbSet<CurrencyCode> CurrencyCodes { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
