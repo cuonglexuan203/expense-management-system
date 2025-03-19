@@ -7,7 +7,7 @@ part of 'transaction_provider.dart';
 // **************************************************************************
 
 String _$paginatedTransactionsHash() =>
-    r'73820f74fd719a94a1a29f1c84c38263a18945d0';
+    r'47d36c28d6ec156f3e73cffd591734c61515ef1d';
 
 /// Copied from Dart SDK
 class _SystemHash {

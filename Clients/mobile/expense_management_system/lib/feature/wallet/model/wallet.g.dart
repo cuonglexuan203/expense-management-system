@@ -9,14 +9,14 @@ part of 'wallet.dart';
 _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
-      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+      balance: (json['balance'] as num?)?.toDouble() ?? 0,
       description: json['description'] as String?,
       createdAt: _dateTimeFromJson(json['createdAt']),
       income: json['income'] == null
-          ? const TransactionSummary(totalAmount: 0.0, transactionCount: 0)
+          ? const TransactionSummary(totalAmount: 0, transactionCount: 0)
           : TransactionSummary.fromJson(json['income'] as Map<String, dynamic>),
       expense: json['expense'] == null
-          ? const TransactionSummary(totalAmount: 0.0, transactionCount: 0)
+          ? const TransactionSummary(totalAmount: 0, transactionCount: 0)
           : TransactionSummary.fromJson(
               json['expense'] as Map<String, dynamic>),
       filterPeriod: json['filterPeriod'] as String?,
