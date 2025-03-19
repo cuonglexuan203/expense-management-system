@@ -10,6 +10,8 @@ class TransactionSummary with _$TransactionSummary {
     @Default(0) int transactionCount,
   }) = _TransactionSummary;
 
-  factory TransactionSummary.fromJson(Map<String, dynamic> json) =>
-      _$TransactionSummaryFromJson(json);
+  factory TransactionSummary.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return const TransactionSummary();
+    return _$TransactionSummaryFromJson(json);
+  }
 }

@@ -22,7 +22,7 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
           : TransactionSummary.fromJson(
               json['expense'] as Map<String, dynamic>),
       filterPeriod: json['filterPeriod'] as String?,
-      balanceByPeriod: (json['balanceByPeriod'] as num?)?.toDouble(),
+      balanceByPeriod: (json['balanceByPeriod'] as num?)?.toDouble() ?? 0,
     );
 
 Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
@@ -32,8 +32,8 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'balance': instance.balance,
       'description': instance.description,
       'createdAt': instance.createdAt?.toIso8601String(),
-      'income': instance.income,
-      'expense': instance.expense,
+      'income': _transactionSummaryToJson(instance.income),
+      'expense': _transactionSummaryToJson(instance.expense),
       'filterPeriod': instance.filterPeriod,
       'balanceByPeriod': instance.balanceByPeriod,
     };

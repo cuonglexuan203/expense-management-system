@@ -6,46 +6,47 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'transaction_provider.g.dart';
 
-// Paginated transactions provider
 @riverpod
 class PaginatedTransactions extends _$PaginatedTransactions {
   @override
   PaginatedState<Transaction> build(int walletId) {
-    // Initialize with empty state
-    return PaginatedState.initial<Transaction>();
+    print('Building PaginatedTransactions provider for wallet $walletId');
+
+    state = PaginatedState.initial<Transaction>();
+
+    // Gọi fetch ngay khi provider khởi tạo
+    Future.microtask(() async {
+      await fetchNextPage();
+    });
+
+    return state;
   }
 
   Future<void> fetchNextPage() async {
+    print(
+        'fetchNextPage called, current state: ${state.items.length} items, page: ${state.paginationInfo.pageNumber}');
+
     try {
       if (state.isLoading || state.hasReachedEnd) {
+        print(
+            'Skip fetching: isLoading=${state.isLoading}, hasReachedEnd=${state.hasReachedEnd}');
         return;
       }
 
+      print('Setting isLoading to true');
       state = state.copyWith(isLoading: true);
 
       final repository = ref.read(transactionRepositoryProvider);
-
-      // Lấy wallet từ walletDetailNotifierProvider thay vì filteredWalletProvider
-      final walletState = ref.read(walletDetailNotifierProvider(walletId));
-
-      final wallet = walletState.maybeWhen(
-        success: (wallet) => wallet,
-        orElse: () => null,
-      );
-
-      if (wallet == null) {
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: 'Wallet data not available',
-        );
-        return;
-      }
+      print(
+          'Fetching transactions for wallet $walletId, page ${state.paginationInfo.pageNumber}');
 
       final response = await repository.getTransactionsByWalletPaginated(
-        wallet.name,
+        walletId,
         pageNumber: state.paginationInfo.pageNumber,
         pageSize: state.paginationInfo.pageSize,
       );
+
+      print('Got response from repository');
 
       response.when(
         success: (paginatedResponse) {
@@ -55,18 +56,20 @@ class PaginatedTransactions extends _$PaginatedTransactions {
           state = state.copyWith(
             items: [...state.items, ...newTransactions],
             paginationInfo: newPaginationInfo,
-            isLoading: false,
+            isLoading: false, // Đặt lại isLoading
             hasReachedEnd: !newPaginationInfo.hasNextPage,
           );
         },
         error: (error) {
+          print('Error from repository: $error');
           state = state.copyWith(
-            isLoading: false,
+            isLoading: false, // Đặt lại isLoading
             errorMessage: error.toString(),
           );
         },
       );
     } catch (e) {
+      print('Exception in fetchNextPage: $e');
       state = state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
@@ -75,42 +78,47 @@ class PaginatedTransactions extends _$PaginatedTransactions {
   }
 
   Future<void> refresh() async {
-    // Reset state to initial
-    state = PaginatedState.initial<Transaction>();
-    // Fetch first page
+    print('refresh called for wallet $walletId');
+
+    // Đặt lại state và đảm bảo isLoading = true để trigger rebuild
+    state = PaginatedState.initial<Transaction>().copyWith(isLoading: true);
+
+    // Chờ dữ liệu từ API
     await fetchNextPage();
+
+    print('After fetchNextPage in refresh: ${state.items.length} items');
   }
 }
 
 // Keep the original walletTransactions provider for compatibility
-@riverpod
-Future<List<Transaction>> walletTransactions(
-  WalletTransactionsRef ref,
-  int walletId,
-) async {
-  // Watch for wallet changes
-  ref.listen(walletChangesProvider, (_, __) {
-    ref.invalidateSelf();
-  });
+// @riverpod
+// Future<List<Transaction>> walletTransactions(
+//   WalletTransactionsRef ref,
+//   int walletId,
+// ) async {
+//   // Watch for wallet changes
+//   ref.listen(walletChangesProvider, (_, __) {
+//     ref.invalidateSelf();
+//   });
 
-  try {
-    final repository = ref.watch(transactionRepositoryProvider);
+//   try {
+//     final repository = ref.watch(transactionRepositoryProvider);
 
-    final wallet = await ref.watch(filteredWalletProvider(
-      FilterParams(walletId: walletId, period: 'AllTime'),
-    ).future);
+//     // final wallet = await ref.watch(filteredWalletProvider(
+//     //   FilterParams(walletId: walletId, period: 'AllTime'),
+//     // ).future);
 
-    final response = await repository.getTransactionsByWallet(wallet.name);
+//     final response = await repository.getTransactionsByWallet(walletId);
 
-    return response.when(
-      success: (transactions) => transactions,
-      error: (error) => throw Exception(error),
-    );
-  } catch (e) {
-    print('Error fetching transactions: $e');
-    throw e;
-  }
-}
+//     return response.when(
+//       success: (transactions) => transactions,
+//       error: (error) => throw Exception(error),
+//     );
+//   } catch (e) {
+//     print('Error fetching transactions: $e');
+//     throw e;
+//   }
+// }
 
 // Transaction Notifier for creating transactions
 @riverpod
@@ -125,7 +133,7 @@ class TransactionNotifier extends _$TransactionNotifier {
   Future<Transaction?> createTransaction({
     required String name,
     required int walletId,
-    required String categoryName,
+    required int categoryId,
     required double amount,
     required bool isExpense,
     required DateTime occurredAt,
@@ -135,7 +143,7 @@ class TransactionNotifier extends _$TransactionNotifier {
     final response = await _repository.createTransaction(
       name: name,
       walletId: walletId,
-      category: categoryName,
+      categoryId: categoryId,
       amount: amount,
       type: type,
       occurredAt: occurredAt,

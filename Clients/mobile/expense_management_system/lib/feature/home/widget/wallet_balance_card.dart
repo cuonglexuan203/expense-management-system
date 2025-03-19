@@ -262,14 +262,10 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
   }
 }
 
-// Thêm phương thức helper này vào class _WalletBalanceCardState
 String _safeFormatAmount(TransactionSummary? summary) {
   try {
     if (summary == null) return '0.00';
-    final amount =
-        summary.totalAmount; // Có thể null trong quá trình deserialize
-    if (amount == null) return '0.00';
-    return amount.toStringAsFixed(2);
+    return summary.totalAmount.toStringAsFixed(2);
   } catch (e) {
     print('Format error: $e');
     return '0.00';

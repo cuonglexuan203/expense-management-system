@@ -72,7 +72,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           .createTransaction(
             name: _titleController.text,
             walletId: widget.walletId,
-            categoryName: _selectedCategoryName!,
+            categoryId: _selectedCategoryId!,
             amount: amount,
             isExpense: widget.isExpense,
             occurredAt: _selectedDate,

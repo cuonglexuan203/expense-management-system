@@ -26,10 +26,14 @@ mixin _$Wallet {
   double get balance => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(
+      fromJson: TransactionSummary.fromJson, toJson: _transactionSummaryToJson)
   TransactionSummary get income => throw _privateConstructorUsedError;
+  @JsonKey(
+      fromJson: TransactionSummary.fromJson, toJson: _transactionSummaryToJson)
   TransactionSummary get expense => throw _privateConstructorUsedError;
   String? get filterPeriod => throw _privateConstructorUsedError;
-  double? get balanceByPeriod => throw _privateConstructorUsedError;
+  double get balanceByPeriod => throw _privateConstructorUsedError;
 
   /// Serializes this Wallet to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,10 +55,16 @@ abstract class $WalletCopyWith<$Res> {
       double balance,
       String? description,
       DateTime? createdAt,
+      @JsonKey(
+          fromJson: TransactionSummary.fromJson,
+          toJson: _transactionSummaryToJson)
       TransactionSummary income,
+      @JsonKey(
+          fromJson: TransactionSummary.fromJson,
+          toJson: _transactionSummaryToJson)
       TransactionSummary expense,
       String? filterPeriod,
-      double? balanceByPeriod});
+      double balanceByPeriod});
 
   $TransactionSummaryCopyWith<$Res> get income;
   $TransactionSummaryCopyWith<$Res> get expense;
@@ -83,7 +93,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? income = null,
     Object? expense = null,
     Object? filterPeriod = freezed,
-    Object? balanceByPeriod = freezed,
+    Object? balanceByPeriod = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -118,10 +128,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.filterPeriod
           : filterPeriod // ignore: cast_nullable_to_non_nullable
               as String?,
-      balanceByPeriod: freezed == balanceByPeriod
+      balanceByPeriod: null == balanceByPeriod
           ? _value.balanceByPeriod
           : balanceByPeriod // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as double,
     ) as $Val);
   }
 
@@ -159,10 +169,16 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       double balance,
       String? description,
       DateTime? createdAt,
+      @JsonKey(
+          fromJson: TransactionSummary.fromJson,
+          toJson: _transactionSummaryToJson)
       TransactionSummary income,
+      @JsonKey(
+          fromJson: TransactionSummary.fromJson,
+          toJson: _transactionSummaryToJson)
       TransactionSummary expense,
       String? filterPeriod,
-      double? balanceByPeriod});
+      double balanceByPeriod});
 
   @override
   $TransactionSummaryCopyWith<$Res> get income;
@@ -191,7 +207,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? income = null,
     Object? expense = null,
     Object? filterPeriod = freezed,
-    Object? balanceByPeriod = freezed,
+    Object? balanceByPeriod = null,
   }) {
     return _then(_$WalletImpl(
       id: null == id
@@ -226,10 +242,10 @@ class __$$WalletImplCopyWithImpl<$Res>
           ? _value.filterPeriod
           : filterPeriod // ignore: cast_nullable_to_non_nullable
               as String?,
-      balanceByPeriod: freezed == balanceByPeriod
+      balanceByPeriod: null == balanceByPeriod
           ? _value.balanceByPeriod
           : balanceByPeriod // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as double,
     ));
   }
 }
@@ -243,12 +259,18 @@ class _$WalletImpl implements _Wallet {
       this.balance = 0,
       this.description,
       this.createdAt,
+      @JsonKey(
+          fromJson: TransactionSummary.fromJson,
+          toJson: _transactionSummaryToJson)
       this.income =
           const TransactionSummary(totalAmount: 0, transactionCount: 0),
+      @JsonKey(
+          fromJson: TransactionSummary.fromJson,
+          toJson: _transactionSummaryToJson)
       this.expense =
           const TransactionSummary(totalAmount: 0, transactionCount: 0),
       this.filterPeriod,
-      this.balanceByPeriod});
+      this.balanceByPeriod = 0});
 
   factory _$WalletImpl.fromJson(Map<String, dynamic> json) =>
       _$$WalletImplFromJson(json);
@@ -266,15 +288,18 @@ class _$WalletImpl implements _Wallet {
   @override
   final DateTime? createdAt;
   @override
-  @JsonKey()
+  @JsonKey(
+      fromJson: TransactionSummary.fromJson, toJson: _transactionSummaryToJson)
   final TransactionSummary income;
   @override
-  @JsonKey()
+  @JsonKey(
+      fromJson: TransactionSummary.fromJson, toJson: _transactionSummaryToJson)
   final TransactionSummary expense;
   @override
   final String? filterPeriod;
   @override
-  final double? balanceByPeriod;
+  @JsonKey()
+  final double balanceByPeriod;
 
   @override
   String toString() {
@@ -329,10 +354,16 @@ abstract class _Wallet implements Wallet {
       final double balance,
       final String? description,
       final DateTime? createdAt,
+      @JsonKey(
+          fromJson: TransactionSummary.fromJson,
+          toJson: _transactionSummaryToJson)
       final TransactionSummary income,
+      @JsonKey(
+          fromJson: TransactionSummary.fromJson,
+          toJson: _transactionSummaryToJson)
       final TransactionSummary expense,
       final String? filterPeriod,
-      final double? balanceByPeriod}) = _$WalletImpl;
+      final double balanceByPeriod}) = _$WalletImpl;
 
   factory _Wallet.fromJson(Map<String, dynamic> json) = _$WalletImpl.fromJson;
 
@@ -348,13 +379,17 @@ abstract class _Wallet implements Wallet {
   @override
   DateTime? get createdAt;
   @override
+  @JsonKey(
+      fromJson: TransactionSummary.fromJson, toJson: _transactionSummaryToJson)
   TransactionSummary get income;
   @override
+  @JsonKey(
+      fromJson: TransactionSummary.fromJson, toJson: _transactionSummaryToJson)
   TransactionSummary get expense;
   @override
   String? get filterPeriod;
   @override
-  double? get balanceByPeriod;
+  double get balanceByPeriod;
 
   /// Create a copy of Wallet
   /// with the given fields replaced by the non-null parameter values.

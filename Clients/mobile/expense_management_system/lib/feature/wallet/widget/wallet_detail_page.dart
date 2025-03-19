@@ -26,12 +26,20 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
   @override
   void initState() {
     super.initState();
-    // Add scroll listener for infinite scrolling
     _scrollController.addListener(_onScroll);
 
-    // Initial load of transactions
+    // Safe initialization with post-frame callback
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadInitialTransactions();
+      print('Initializing transactions for wallet ${widget.walletId}');
+      Future.microtask(() {
+        try {
+          ref
+              .read(paginatedTransactionsProvider(widget.walletId).notifier)
+              .refresh();
+        } catch (e) {
+          print('Error initializing provider: $e');
+        }
+      });
     });
   }
 
@@ -40,12 +48,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _loadInitialTransactions() {
-    ref
-        .read(paginatedTransactionsProvider(widget.walletId).notifier)
-        .fetchNextPage();
   }
 
   void _onScroll() {
@@ -308,25 +310,12 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/chat'),
-        shape: const CircleBorder(),
-        backgroundColor: const Color(0xFF386BF6),
-        child: const Icon(Iconsax.add, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   Widget _buildPaginatedTransactionsList(int walletId) {
+    print('Building paginated transactions list for wallet $walletId');
+
     return Consumer(
       builder: (context, ref, child) {
         final paginatedState =
@@ -335,50 +324,73 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
         final isLoading = paginatedState.isLoading;
         final hasError = paginatedState.errorMessage != null;
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            // Refresh both the wallet and transactions data
-            ref.invalidate(walletDetailNotifierProvider(walletId));
-            return ref
-                .read(paginatedTransactionsProvider(walletId).notifier)
-                .refresh();
-          },
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: transactions.isEmpty
-                ? 1
-                : transactions.length + (isLoading ? 1 : 0),
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              // Show empty state message
-              if (transactions.isEmpty && !isLoading) {
-                return Container(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: const Center(
-                    child: Text(
-                      'No transactions yet',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontFamily: 'Nunito',
-                      ),
-                    ),
-                  ),
-                );
-              }
+        print(
+            'Consumer rebuilding with state: ${transactions.length} items, loading: $isLoading, error: $hasError');
 
-              // Show loading indicator at the end
-              if (index == transactions.length && isLoading) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
+        if (hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error, color: Colors.red, size: 40),
+                const SizedBox(height: 10),
+                Text(
+                  'Error: ${paginatedState.errorMessage}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    ref
+                        .read(paginatedTransactionsProvider(walletId).notifier)
+                        .refresh();
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
 
-              // Show transaction item
-              final transaction = transactions[index];
-              return _buildTransactionItem(transaction);
+        // **Hiển thị loading khi dữ liệu đang fetch lần đầu**
+        if (isLoading && transactions.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // **Hiển thị danh sách giao dịch nếu có dữ liệu**
+        if (transactions.isNotEmpty) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              await ref
+                  .read(paginatedTransactionsProvider(walletId).notifier)
+                  .refresh();
             },
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: transactions.length + (isLoading ? 1 : 0),
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                // Hiển thị loading indicator khi đang fetch thêm trang mới
+                if (index == transactions.length && isLoading) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final transaction = transactions[index];
+                return _buildTransactionItem(transaction);
+              },
+            ),
+          );
+        }
+
+        // **Hiển thị thông báo khi không có giao dịch**
+        return const Center(
+          child: Text(
+            'No transactions yet',
+            style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
         );
       },
