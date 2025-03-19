@@ -1,5 +1,6 @@
 import 'package:expense_management_system/feature/home/state/home_state.dart';
 import 'package:expense_management_system/feature/wallet/model/wallet.dart';
+import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
 import 'package:expense_management_system/feature/wallet/repository/wallet_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -9,6 +10,10 @@ part 'home_provider.g.dart';
 class HomeNotifier extends _$HomeNotifier {
   @override
   HomeState build() {
+    ref.listen(walletChangesProvider, (_, __) {
+      refreshWallets();
+    });
+
     _fetchWallets();
     return const HomeState.loading();
   }
@@ -96,6 +101,6 @@ class HomeNotifier extends _$HomeNotifier {
 
   Future<void> refreshWallets() async {
     state = const HomeState.loading();
-    _fetchWallets();
+    await _fetchWallets();
   }
 }

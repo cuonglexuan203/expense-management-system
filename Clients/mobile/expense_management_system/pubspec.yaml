@@ -32,6 +32,7 @@ dependencies:
   currency_text_input_formatter: ^2.2.9
   go_router_builder: ^2.8.2
   flutter_launcher_icons: ^0.14.3
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

@@ -2,6 +2,7 @@ import 'package:expense_management_system/feature/wallet/model/transaction_summa
 import 'package:expense_management_system/feature/wallet/model/wallet.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
@@ -118,7 +119,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '\$${wallet.balance.toStringAsFixed(2) ?? '0'}',
+                    '\$${wallet.balance.toFormattedString() ?? '0'}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -126,6 +127,16 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                       fontFamily: 'Nunito',
                     ),
                   ),
+                  // const SizedBox(height: 8),
+                  // Text(
+                  //   '{wallet.balanceByPeriod.toFormattedString() ?? '0'}',
+                  //   style: const TextStyle(
+                  //     color: Colors.white,
+                  //     fontSize: 24,
+                  //     fontWeight: FontWeight.bold,
+                  //     fontFamily: 'Nunito',
+                  //   ),
+                  // ),
                 ],
               ),
               IconButton(
@@ -156,7 +167,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                   icon: Icons.arrow_downward,
                   label: 'Income',
                   amount: '\$${_safeFormatAmount(wallet.income)}',
-                  iconColor: Colors.white70,
+                  iconColor: Colors.green,
                 ),
               ),
               const SizedBox(width: 15),
@@ -165,7 +176,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                   icon: Icons.arrow_upward,
                   label: 'Expenses',
                   amount: '\$${_safeFormatAmount(wallet.expense)}',
-                  iconColor: Colors.white70,
+                  iconColor: Colors.red,
                 ),
               ),
             ],
@@ -229,10 +240,16 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                color: Colors.white,
-                size: 16,
+              Container(
+                // color: Colors.white30,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(45)),
+                child: Icon(
+                  icon,
+                  color: iconColor,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 8),
               Text(
@@ -263,5 +280,5 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
 
 String _safeFormatAmount(TransactionSummary? summary) {
   if (summary == null || summary.totalAmount == null) return '0';
-  return summary.totalAmount.toStringAsFixed(2);
+  return summary.totalAmount.toFormattedString();
 }

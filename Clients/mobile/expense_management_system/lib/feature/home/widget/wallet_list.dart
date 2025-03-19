@@ -1,5 +1,6 @@
 import 'package:expense_management_system/feature/wallet/model/wallet.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -132,7 +133,7 @@ class WalletList extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              '\$${wallet.balance}',
+                              wallet.balance.toFormattedString(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,

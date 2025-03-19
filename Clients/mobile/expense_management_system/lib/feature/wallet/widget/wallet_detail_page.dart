@@ -4,6 +4,7 @@ import 'package:expense_management_system/feature/wallet/model/wallet.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
 import 'package:expense_management_system/feature/wallet/widget/add_transaction_page.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -199,7 +200,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '\$${wallet.balance}',
+                          wallet.balance.toFormattedString(),
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 32,
@@ -212,8 +213,32 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _buildActionButton(
+                              icon: Iconsax.arrow_down_2,
+                              label: 'Add Income',
+                              color: Colors.green,
+                              onTap: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddTransactionPage(
+                                      isExpense: false,
+                                      walletId: wallet.id,
+                                    ),
+                                  ),
+                                );
+
+                                if (result == true) {
+                                  ref
+                                      .read(walletChangesProvider.notifier)
+                                      .notifyChanges();
+                                }
+                              },
+                            ),
+                            const SizedBox(width: 20),
+                            _buildActionButton(
                               icon: Iconsax.arrow_up_1,
                               label: 'Add Expense',
+                              color: Colors.red,
                               onTap: () async {
                                 final result = await Navigator.push(
                                   context,
@@ -227,28 +252,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
 
                                 if (result == true) {
                                   // Transaction added, notify changes
-                                  ref
-                                      .read(walletChangesProvider.notifier)
-                                      .notifyChanges();
-                                }
-                              },
-                            ),
-                            const SizedBox(width: 20),
-                            _buildActionButton(
-                              icon: Iconsax.arrow_down_2,
-                              label: 'Add Income',
-                              onTap: () async {
-                                final result = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddTransactionPage(
-                                      isExpense: false,
-                                      walletId: wallet.id,
-                                    ),
-                                  ),
-                                );
-
-                                if (result == true) {
                                   ref
                                       .read(walletChangesProvider.notifier)
                                       .notifyChanges();
@@ -440,11 +443,11 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildActionButton(
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap,
+      required Color color}) {
     return InkWell(
       onTap: onTap,
       child: Column(
@@ -457,7 +460,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
             ),
             child: Icon(
               icon,
-              color: ColorName.blue,
+              color: color,
               size: 36,
             ),
           ),
@@ -479,7 +482,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
 String _safeFormatAmount(num? amount) {
   try {
     if (amount == null) return '0.00';
-    return amount.toStringAsFixed(2);
+    return amount.toFormattedString();
   } catch (e) {
     return '0';
   }
