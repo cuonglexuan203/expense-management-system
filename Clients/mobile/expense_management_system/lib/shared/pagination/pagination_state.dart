@@ -1,5 +1,5 @@
 // lib/shared/models/paginated_state.dart
-import 'package:expense_management_system/shared/model/pagination_info.dart';
+import 'package:expense_management_system/shared/pagination/pagination_info.dart';
 
 class PaginatedState<T> {
   final List<T> items;

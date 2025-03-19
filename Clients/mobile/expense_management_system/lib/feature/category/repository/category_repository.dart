@@ -1,11 +1,10 @@
-// lib/feature/category/repository/category_repository.dart
 import 'dart:convert';
 import 'package:expense_management_system/feature/category/model/category.dart';
 import 'package:expense_management_system/shared/constants/api_endpoints.dart';
 import 'package:expense_management_system/shared/http/api_provider.dart';
 import 'package:expense_management_system/shared/http/api_response.dart';
 import 'package:expense_management_system/shared/http/app_exception.dart';
-import 'package:expense_management_system/shared/model/pagination_info.dart';
+import 'package:expense_management_system/shared/pagination/pagination_info.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final categoryRepositoryProvider = Provider(CategoryRepository.new);

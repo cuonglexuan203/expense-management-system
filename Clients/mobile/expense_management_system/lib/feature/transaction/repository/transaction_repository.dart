@@ -1,11 +1,10 @@
-// transaction_repository.dart
 import 'dart:convert';
 import 'package:expense_management_system/feature/transaction/model/transaction.dart';
 import 'package:expense_management_system/shared/constants/api_endpoints.dart';
 import 'package:expense_management_system/shared/http/api_provider.dart';
 import 'package:expense_management_system/shared/http/api_response.dart';
 import 'package:expense_management_system/shared/http/app_exception.dart';
-import 'package:expense_management_system/shared/model/pagination_info.dart';
+import 'package:expense_management_system/shared/pagination/pagination_info.dart';
 import 'package:expense_management_system/shared/pagination/pagination_response.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -111,9 +110,6 @@ class TransactionRepository {
       getTransactionsByWalletPaginated(int walletId,
           {int pageNumber = 1, int pageSize = 10}) async {
     try {
-      print(
-          'Repository: Fetching transactions for wallet $walletId, page $pageNumber');
-
       final response = await _api.get(
         ApiEndpoints.transaction.getAll,
         query: {
@@ -126,13 +122,8 @@ class TransactionRepository {
       return response.when(
         success: (data) {
           try {
-            print(
-                'Repository: API response received with data type: ${data.runtimeType}');
-
             if (data is Map<String, dynamic> && data.containsKey('items')) {
               final items = data['items'] as List<dynamic>;
-              print('Repository: Processing ${items.length} transaction items');
-
               final transactions = <Transaction>[];
 
               for (var item in items) {
@@ -142,20 +133,11 @@ class TransactionRepository {
                     if (safeItem['amount'] == null) safeItem['amount'] = 0;
 
                     final transaction = Transaction.fromJson(safeItem);
-                    print(
-                        'Repository: Parsed transaction: ${transaction.name} (${transaction.amount})');
                     transactions.add(transaction);
                   }
-                } catch (e) {
-                  print('Repository: Error parsing transaction item: $e');
-                }
+                } catch (e) {}
               }
-
-              print(
-                  'Repository: Successfully parsed ${transactions.length} transactions');
               final paginationInfo = PaginationInfo.fromJson(data);
-              print(
-                  'Repository: Pagination info - page ${paginationInfo.pageNumber}, total ${paginationInfo.totalCount}');
 
               return APIResponse.success(
                 PaginatedResponse(
@@ -164,15 +146,12 @@ class TransactionRepository {
                 ),
               );
             } else {
-              print(
-                  'Repository: Invalid response format: items key not found or data is not a map');
               return const APIResponse.error(
                 AppException.errorWithMessage(
                     'Invalid response format: missing items'),
               );
             }
           } catch (parseError) {
-            print('Repository: Parse error: $parseError');
             return APIResponse.error(
               AppException.errorWithMessage(
                   'Error parsing transaction data: $parseError'),
@@ -180,12 +159,10 @@ class TransactionRepository {
           }
         },
         error: (error) {
-          print('Repository: API returned error: $error');
           return APIResponse.error(error);
         },
       );
     } catch (e) {
-      print('Repository: Exception in getTransactionsByWalletPaginated: $e');
       return APIResponse.error(AppException.errorWithMessage(e.toString()));
     }
   }

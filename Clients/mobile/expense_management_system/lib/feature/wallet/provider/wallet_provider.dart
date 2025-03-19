@@ -84,7 +84,6 @@ class WalletDetailNotifier extends _$WalletDetailNotifier {
 @riverpod
 Future<Wallet> filteredWallet(
     FilteredWalletRef ref, FilterParams params) async {
-  // Listen for wallet changes to refresh when transactions are added/modified
   ref.listen(walletChangesProvider, (_, __) {
     ref.invalidateSelf();
   });

@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
 import 'package:expense_management_system/feature/transaction/model/transaction.dart';
 import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
 import 'package:expense_management_system/feature/wallet/model/wallet.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
 import 'package:expense_management_system/feature/wallet/widget/add_transaction_page.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
@@ -30,7 +29,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
 
     // Safe initialization with post-frame callback
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('Initializing transactions for wallet ${widget.walletId}');
       Future.microtask(() {
         try {
           ref
@@ -68,16 +66,12 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen to wallet state changes
     final walletState =
         ref.watch(walletDetailNotifierProvider(widget.walletId));
 
-    // Listen to wallet changes to refresh data
     ref.listen(walletChangesProvider, (previous, next) {
       if (previous != next) {
-        // Refresh wallet data when changes occur
         ref.invalidate(walletDetailNotifierProvider(widget.walletId));
-        // Refresh paginated transactions
         ref
             .read(paginatedTransactionsProvider(widget.walletId).notifier)
             .refresh();
@@ -255,7 +249,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                                 );
 
                                 if (result == true) {
-                                  // Transaction added, notify changes
                                   ref
                                       .read(walletChangesProvider.notifier)
                                       .notifyChanges();
@@ -297,7 +290,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Transaction list with pull-to-refresh and infinite scrolling
                         Expanded(
                           child: _buildPaginatedTransactionsList(wallet.id),
                         ),
@@ -314,8 +306,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
   }
 
   Widget _buildPaginatedTransactionsList(int walletId) {
-    print('Building paginated transactions list for wallet $walletId');
-
     return Consumer(
       builder: (context, ref, child) {
         final paginatedState =
@@ -323,9 +313,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
         final transactions = paginatedState.items;
         final isLoading = paginatedState.isLoading;
         final hasError = paginatedState.errorMessage != null;
-
-        print(
-            'Consumer rebuilding with state: ${transactions.length} items, loading: $isLoading, error: $hasError');
 
         if (hasError) {
           return Center(
@@ -353,12 +340,10 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
           );
         }
 
-        // **Hiển thị loading khi dữ liệu đang fetch lần đầu**
         if (isLoading && transactions.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // **Hiển thị danh sách giao dịch nếu có dữ liệu**
         if (transactions.isNotEmpty) {
           return RefreshIndicator(
             onRefresh: () async {
@@ -371,7 +356,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
               itemCount: transactions.length + (isLoading ? 1 : 0),
               physics: const AlwaysScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                // Hiển thị loading indicator khi đang fetch thêm trang mới
                 if (index == transactions.length && isLoading) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
@@ -386,7 +370,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
           );
         }
 
-        // **Hiển thị thông báo khi không có giao dịch**
         return const Center(
           child: Text(
             'No transactions yet',
@@ -433,7 +416,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                   ),
                 ),
                 Text(
-                  '${transaction.categoryName ?? "Unknown"} • $formattedDate', // Use categoryName
+                  '${transaction.categoryName ?? "Unknown"} • $formattedDate',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[600],
@@ -498,7 +481,6 @@ String _safeFormatAmount(num? amount) {
     if (amount == null) return '0.00';
     return amount.toStringAsFixed(2);
   } catch (e) {
-    print('Format error: $e');
-    return '0.00';
+    return '0';
   }
 }

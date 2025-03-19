@@ -1,11 +1,10 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:expense_management_system/feature/auth/provider/auth_provider.dart';
+import 'package:expense_management_system/feature/auth/provider/password_visibility_provider.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:expense_management_system/feature/auth/provider/auth_provider.dart';
-import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import '../provider/password_visibility_provider.dart';
 
 final isLoadingProvider = StateProvider<bool>((ref) => false);
 

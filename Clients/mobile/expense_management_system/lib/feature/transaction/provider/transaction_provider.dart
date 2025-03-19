@@ -1,7 +1,7 @@
 import 'package:expense_management_system/feature/transaction/model/transaction.dart';
 import 'package:expense_management_system/feature/transaction/repository/transaction_repository.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
-import 'package:expense_management_system/shared/model/pagination_state.dart';
+import 'package:expense_management_system/shared/pagination/pagination_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'transaction_provider.g.dart';
@@ -10,11 +10,8 @@ part 'transaction_provider.g.dart';
 class PaginatedTransactions extends _$PaginatedTransactions {
   @override
   PaginatedState<Transaction> build(int walletId) {
-    print('Building PaginatedTransactions provider for wallet $walletId');
-
     state = PaginatedState.initial<Transaction>();
 
-    // Gọi fetch ngay khi provider khởi tạo
     Future.microtask(() async {
       await fetchNextPage();
     });
@@ -23,30 +20,20 @@ class PaginatedTransactions extends _$PaginatedTransactions {
   }
 
   Future<void> fetchNextPage() async {
-    print(
-        'fetchNextPage called, current state: ${state.items.length} items, page: ${state.paginationInfo.pageNumber}');
-
     try {
       if (state.isLoading || state.hasReachedEnd) {
-        print(
-            'Skip fetching: isLoading=${state.isLoading}, hasReachedEnd=${state.hasReachedEnd}');
         return;
       }
 
-      print('Setting isLoading to true');
       state = state.copyWith(isLoading: true);
 
       final repository = ref.read(transactionRepositoryProvider);
-      print(
-          'Fetching transactions for wallet $walletId, page ${state.paginationInfo.pageNumber}');
 
       final response = await repository.getTransactionsByWalletPaginated(
         walletId,
         pageNumber: state.paginationInfo.pageNumber,
         pageSize: state.paginationInfo.pageSize,
       );
-
-      print('Got response from repository');
 
       response.when(
         success: (paginatedResponse) {
@@ -56,20 +43,18 @@ class PaginatedTransactions extends _$PaginatedTransactions {
           state = state.copyWith(
             items: [...state.items, ...newTransactions],
             paginationInfo: newPaginationInfo,
-            isLoading: false, // Đặt lại isLoading
+            isLoading: false,
             hasReachedEnd: !newPaginationInfo.hasNextPage,
           );
         },
         error: (error) {
-          print('Error from repository: $error');
           state = state.copyWith(
-            isLoading: false, // Đặt lại isLoading
+            isLoading: false,
             errorMessage: error.toString(),
           );
         },
       );
     } catch (e) {
-      print('Exception in fetchNextPage: $e');
       state = state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
@@ -78,15 +63,9 @@ class PaginatedTransactions extends _$PaginatedTransactions {
   }
 
   Future<void> refresh() async {
-    print('refresh called for wallet $walletId');
-
-    // Đặt lại state và đảm bảo isLoading = true để trigger rebuild
     state = PaginatedState.initial<Transaction>().copyWith(isLoading: true);
 
-    // Chờ dữ liệu từ API
     await fetchNextPage();
-
-    print('After fetchNextPage in refresh: ${state.items.length} items');
   }
 }
 
@@ -149,10 +128,8 @@ class TransactionNotifier extends _$TransactionNotifier {
       occurredAt: occurredAt,
     );
 
-    // Notify wallet changes provider to refresh wallet data
     ref.read(walletChangesProvider.notifier).notifyChanges();
 
-    // Refresh the paginated transactions if they're being used
     if (ref.exists(paginatedTransactionsProvider(walletId))) {
       ref.read(paginatedTransactionsProvider(walletId).notifier).refresh();
     }

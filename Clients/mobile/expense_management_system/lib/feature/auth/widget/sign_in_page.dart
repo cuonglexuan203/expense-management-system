@@ -1,14 +1,11 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:expense_management_system/gen/colors.gen.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_management_system/feature/auth/provider/auth_provider.dart';
-import 'package:expense_management_system/shared/route/app_router.dart';
+import 'package:expense_management_system/feature/auth/provider/password_visibility_provider.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import '../provider/password_visibility_provider.dart';
 
-// Provider để theo dõi trạng thái loading của quá trình đăng nhập
 final isLoadingProvider = StateProvider<bool>((ref) => false);
 
 class SignInPage extends ConsumerWidget {
@@ -18,7 +15,6 @@ class SignInPage extends ConsumerWidget {
   SignInPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Lấy trạng thái loading
     final isLoading = ref.watch(isLoadingProvider);
 
     return Scaffold(
@@ -192,24 +188,20 @@ class SignInPage extends ConsumerWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                // Vô hiệu hóa nút khi đang loading
                                 onPressed: isLoading
                                     ? null
                                     : () async {
-                                        // Đặt trạng thái loading thành true khi bắt đầu đăng nhập
                                         ref
                                             .read(isLoadingProvider.notifier)
                                             .state = true;
 
                                         try {
-                                          // Gọi hàm login
                                           await ref
                                               .read(
                                                   authNotifierProvider.notifier)
                                               .login(_emailController.text,
                                                   _passwordController.text);
                                         } finally {
-                                          // Đặt trạng thái loading thành false khi đã xử lý xong
                                           ref
                                               .read(isLoadingProvider.notifier)
                                               .state = false;
@@ -223,11 +215,9 @@ class SignInPage extends ConsumerWidget {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   elevation: 0,
-                                  // Làm mờ nút khi đang loading
                                   disabledBackgroundColor:
                                       const Color(0xFF386BF6).withOpacity(0.7),
                                 ),
-                                // Hiển thị biểu tượng loading hoặc text tùy thuộc vào trạng thái
                                 child: isLoading
                                     ? const SizedBox(
                                         height: 20,
