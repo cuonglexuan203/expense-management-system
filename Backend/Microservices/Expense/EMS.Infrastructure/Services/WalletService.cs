@@ -58,7 +58,7 @@ namespace EMS.Infrastructure.Services
 
             var result = new WalletBalanceSummary
             {
-                WalletId = walletId,
+                Id = walletId,
                 Name = wallet.Name,
                 Balance = wallet.Balance,
                 Description = wallet.Description,
