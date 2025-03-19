@@ -21,10 +21,12 @@ Wallet _$WalletFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Wallet {
   @JsonKey(name: 'id')
-  int get id => throw _privateConstructorUsedError;
+  int get id =>
+      throw _privateConstructorUsedError; // Đổi từ 'id' thành 'walletId'
   String get name => throw _privateConstructorUsedError;
   double get balance => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   DateTime? get createdAt => throw _privateConstructorUsedError;
   @JsonKey(
       fromJson: TransactionSummary.fromJson, toJson: _transactionSummaryToJson)
@@ -54,6 +56,7 @@ abstract class $WalletCopyWith<$Res> {
       String name,
       double balance,
       String? description,
+      @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
       DateTime? createdAt,
       @JsonKey(
           fromJson: TransactionSummary.fromJson,
@@ -168,6 +171,7 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       String name,
       double balance,
       String? description,
+      @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
       DateTime? createdAt,
       @JsonKey(
           fromJson: TransactionSummary.fromJson,
@@ -256,21 +260,22 @@ class _$WalletImpl implements _Wallet {
   const _$WalletImpl(
       {@JsonKey(name: 'id') required this.id,
       required this.name,
-      this.balance = 0,
+      this.balance = 0.0,
       this.description,
+      @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
       this.createdAt,
       @JsonKey(
           fromJson: TransactionSummary.fromJson,
           toJson: _transactionSummaryToJson)
       this.income =
-          const TransactionSummary(totalAmount: 0, transactionCount: 0),
+          const TransactionSummary(totalAmount: 0.0, transactionCount: 0),
       @JsonKey(
           fromJson: TransactionSummary.fromJson,
           toJson: _transactionSummaryToJson)
       this.expense =
-          const TransactionSummary(totalAmount: 0, transactionCount: 0),
+          const TransactionSummary(totalAmount: 0.0, transactionCount: 0),
       this.filterPeriod,
-      this.balanceByPeriod = 0});
+      this.balanceByPeriod = 0.0});
 
   factory _$WalletImpl.fromJson(Map<String, dynamic> json) =>
       _$$WalletImplFromJson(json);
@@ -278,6 +283,7 @@ class _$WalletImpl implements _Wallet {
   @override
   @JsonKey(name: 'id')
   final int id;
+// Đổi từ 'id' thành 'walletId'
   @override
   final String name;
   @override
@@ -286,6 +292,7 @@ class _$WalletImpl implements _Wallet {
   @override
   final String? description;
   @override
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   final DateTime? createdAt;
   @override
   @JsonKey(
@@ -353,6 +360,7 @@ abstract class _Wallet implements Wallet {
       required final String name,
       final double balance,
       final String? description,
+      @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
       final DateTime? createdAt,
       @JsonKey(
           fromJson: TransactionSummary.fromJson,
@@ -369,7 +377,7 @@ abstract class _Wallet implements Wallet {
 
   @override
   @JsonKey(name: 'id')
-  int get id;
+  int get id; // Đổi từ 'id' thành 'walletId'
   @override
   String get name;
   @override
@@ -377,6 +385,7 @@ abstract class _Wallet implements Wallet {
   @override
   String? get description;
   @override
+  @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
   DateTime? get createdAt;
   @override
   @JsonKey(

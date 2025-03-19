@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:expense_management_system/feature/wallet/model/transaction_summary.dart';
 import 'package:expense_management_system/feature/wallet/model/wallet.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -24,7 +24,6 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch the filtered wallet data based on the selected period
     final walletAsync = ref.watch(filteredWalletProvider(
         FilterParams(walletId: widget.walletId, period: _selectedPeriod)));
 
@@ -119,7 +118,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '\$${wallet.balance.toStringAsFixed(2)}',
+                    '\$${wallet.balance.toStringAsFixed(2) ?? '0'}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -263,11 +262,6 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
 }
 
 String _safeFormatAmount(TransactionSummary? summary) {
-  try {
-    if (summary == null) return '0.00';
-    return summary.totalAmount.toStringAsFixed(2);
-  } catch (e) {
-    print('Format error: $e');
-    return '0.00';
-  }
+  if (summary == null || summary.totalAmount == null) return '0';
+  return summary.totalAmount.toStringAsFixed(2);
 }

@@ -11,6 +11,7 @@ class Wallet with _$Wallet {
     required String name,
     @Default(0) double balance,
     String? description,
+    @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     DateTime? createdAt,
     @JsonKey(
         fromJson: TransactionSummary.fromJson,
@@ -23,11 +24,19 @@ class Wallet with _$Wallet {
     @Default(TransactionSummary(totalAmount: 0, transactionCount: 0))
     TransactionSummary expense,
     String? filterPeriod,
-    @Default(0) double balanceByPeriod,
+    @Default(0.0) double balanceByPeriod,
   }) = _Wallet;
 
   factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
 }
+
+DateTime? _dateTimeFromJson(dynamic value) {
+  if (value is String) return DateTime.parse(value);
+  if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+  return null;
+}
+
+dynamic _dateTimeToJson(DateTime? date) => date?.toIso8601String();
 
 Map<String, dynamic> _transactionSummaryToJson(TransactionSummary summary) =>
     summary.toJson();
