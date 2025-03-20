@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 extension NumberFormatting on num {
-  String toFormattedString({int decimalPlaces = 2}) {
+  String toFormattedString({int decimalPlaces = 0}) {
     final formatter = NumberFormat(
         '#,##0${decimalPlaces > 0 ? '.' + '0' * decimalPlaces : ''}');
     return formatter.format(this);

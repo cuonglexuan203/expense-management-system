@@ -119,7 +119,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '\$${wallet.balance.toFormattedString() ?? '0'}',
+                    wallet.balance.toFormattedString() ?? '0',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -127,16 +127,30 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                       fontFamily: 'Nunito',
                     ),
                   ),
-                  // const SizedBox(height: 8),
-                  // Text(
-                  //   '{wallet.balanceByPeriod.toFormattedString() ?? '0'}',
-                  //   style: const TextStyle(
-                  //     color: Colors.white,
-                  //     fontSize: 24,
-                  //     fontWeight: FontWeight.bold,
-                  //     fontFamily: 'Nunito',
-                  //   ),
-                  // ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Balance By Period',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Nunito',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    wallet.balanceByPeriod.toFormattedString() ?? '0',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Nunito',
+                    ),
+                  ),
                 ],
               ),
               IconButton(
@@ -166,7 +180,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                 child: _buildIncomeExpenseItem(
                   icon: Icons.arrow_downward,
                   label: 'Income',
-                  amount: '\$${_safeFormatAmount(wallet.income)}',
+                  amount: _safeFormatAmount(wallet.income),
                   iconColor: Colors.green,
                 ),
               ),
@@ -175,7 +189,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                 child: _buildIncomeExpenseItem(
                   icon: Icons.arrow_upward,
                   label: 'Expenses',
-                  amount: '\$${_safeFormatAmount(wallet.expense)}',
+                  amount: _safeFormatAmount(wallet.expense),
                   iconColor: Colors.red,
                 ),
               ),
@@ -241,14 +255,15 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                // color: Colors.white30,
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(45)),
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Icon(
                   icon,
                   color: iconColor,
-                  size: 24,
+                  size: 20,
                 ),
               ),
               const SizedBox(width: 8),

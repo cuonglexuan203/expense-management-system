@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
 import 'package:expense_management_system/feature/home/provider/greeting_provider.dart';
 import 'package:expense_management_system/feature/home/provider/home_provider.dart';
 import 'package:expense_management_system/feature/home/state/home_state.dart';
 import 'package:expense_management_system/feature/home/widget/empty_balance_card.dart';
-import 'package:expense_management_system/feature/home/widget/transactions_section.dart';
+import 'package:expense_management_system/feature/home/widget/transaction_list_section.dart';
 import 'package:expense_management_system/feature/home/widget/wallet_balance_card.dart';
 import 'package:expense_management_system/feature/home/widget/wallet_list.dart';
+import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
@@ -20,7 +21,53 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      _loadMoreIfNeeded();
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll - 200);
+  }
+
+  void _loadMoreIfNeeded() {
+    final homeState = ref.read(homeNotifierProvider)
+      ..maybeWhen(
+        loaded: (wallets, selectedIndex) {
+          if (wallets.isNotEmpty) {
+            final walletId = wallets[selectedIndex].id;
+            final paginatedState =
+                ref.read(paginatedTransactionsProvider(walletId));
+            if (!paginatedState.isLoading && !paginatedState.hasReachedEnd) {
+              ref
+                  .read(paginatedTransactionsProvider(walletId).notifier)
+                  .fetchNextPage();
+            }
+          }
+        },
+        orElse: () {},
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +108,22 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       child: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () =>
-              ref.read(homeNotifierProvider.notifier).refreshWallets(),
+          onRefresh: () async {
+            await ref.read(homeNotifierProvider.notifier).refreshWallets();
+            // Refresh transactions for current wallet if available
+            homeState.maybeWhen(
+              loaded: (wallets, selectedIndex) {
+                if (wallets.isNotEmpty) {
+                  ref
+                      .read(paginatedTransactionsProvider(
+                              wallets[selectedIndex].id)
+                          .notifier)
+                      .refresh();
+                }
+              },
+              orElse: () {},
+            );
+          },
           color: const Color(0xFF386BF6),
           child: _buildContent(homeState),
         ),
@@ -94,10 +155,75 @@ class _HomePageState extends ConsumerState<HomePage> {
 
           const SizedBox(height: 20),
 
-          // Transactions Section
-          const TransactionsSection(),
+          _buildTransactionSectionContainer(homeState),
         ],
       ),
+    );
+  }
+
+  Widget _buildTransactionSectionContainer(HomeState homeState) {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Transactions History',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Nunito',
+                ),
+              ),
+              // TextButton(
+              //   onPressed: () {},
+              //   child: const Text('See all'),
+              // ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          _buildTransactions(homeState),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransactions(HomeState homeState) {
+    return homeState.when(
+      loading: () => const Center(
+        child: SizedBox(height: 200, child: CircularProgressIndicator()),
+      ),
+      error: (_) => const Center(
+        child: SizedBox(
+          height: 200,
+          child: Text('Error loading transactions',
+              style: TextStyle(color: Colors.grey)),
+        ),
+      ),
+      loaded: (wallets, selectedIndex) {
+        if (wallets.isEmpty) {
+          return const Center(
+            child: SizedBox(
+              height: 200,
+              child: Text('No wallet selected',
+                  style: TextStyle(color: Colors.grey)),
+            ),
+          );
+        }
+
+        final walletId = wallets[selectedIndex].id;
+        return NonScrollableTransactionList(walletId: walletId);
+      },
     );
   }
 

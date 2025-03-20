@@ -1,5 +1,5 @@
-import 'package:expense_management_system/feature/transaction/model/transaction.dart';
 import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
+import 'package:expense_management_system/feature/transaction/widget/transaction_item.dart';
 import 'package:expense_management_system/feature/wallet/model/wallet.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
 import 'package:expense_management_system/feature/wallet/widget/add_transaction_page.dart';
@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:intl/intl.dart';
 
 class WalletDetailPage extends ConsumerStatefulWidget {
   final int walletId;
@@ -28,7 +27,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
     super.initState();
     _scrollController.addListener(_onScroll);
 
-    // Safe initialization with post-frame callback
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.microtask(() {
         try {
@@ -61,7 +59,6 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
     if (!_scrollController.hasClients) return false;
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.offset;
-    // Fetch more when we're 200 pixels from the bottom
     return currentScroll >= (maxScroll - 200);
   }
 
@@ -216,6 +213,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                               icon: Iconsax.arrow_down_2,
                               label: 'Add Income',
                               color: Colors.green,
+                              isIncome: true,
                               onTap: () async {
                                 final result = await Navigator.push(
                                   context,
@@ -239,6 +237,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                               icon: Iconsax.arrow_up_1,
                               label: 'Add Expense',
                               color: Colors.red,
+                              isIncome: false,
                               onTap: () async {
                                 final result = await Navigator.push(
                                   context,
@@ -367,7 +366,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                 }
 
                 final transaction = transactions[index];
-                return _buildTransactionItem(transaction);
+                return TransactionItem(transaction: transaction);
               },
             ),
           );
@@ -383,93 +382,52 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
     );
   }
 
-  Widget _buildTransactionItem(Transaction transaction) {
-    final isIncome = transaction.type == 'Income';
-    final formattedDate =
-        DateFormat('MMM d, yyyy').format(transaction.occurredAt);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              isIncome ? Iconsax.arrow_down_2 : Iconsax.arrow_up_1,
-              color: isIncome ? Colors.green : Colors.red,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  transaction.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Nunito',
-                  ),
-                ),
-                Text(
-                  '${transaction.categoryName ?? "Unknown"} • $formattedDate',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                    fontFamily: 'Nunito',
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            '${isIncome ? '+' : '-'}\$${_safeFormatAmount(transaction.amount)}',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isIncome ? Colors.green : Colors.red,
-              fontFamily: 'Nunito',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildActionButton(
       {required IconData icon,
       required String label,
       required VoidCallback onTap,
-      required Color color}) {
+      required Color color,
+      required bool isIncome}) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: isIncome
+                    ? [Colors.green[300]!, Colors.green[600]!]
+                    : [Colors.red[300]!, Colors.red[600]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(26),
+              boxShadow: [
+                BoxShadow(
+                  color: (isIncome ? Colors.green[300]! : Colors.red[300]!)
+                      .withOpacity(0.4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Icon(
-              icon,
-              color: color,
-              size: 36,
+              isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+              color: Colors.white,
+              size: 26,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
-              color: ColorName.black,
+            style: TextStyle(
+              color: color,
               fontSize: 12,
+              fontWeight: FontWeight.w600,
               fontFamily: 'Nunito',
             ),
           ),
