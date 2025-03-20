@@ -39,7 +39,7 @@ namespace EMS.Application.Features.Categories.Queries.GetCategories
             var specParams = request.SpecParams;
 
             var query = _context.Categories
-                .Where(e => (e.UserId == userId || e.UserId == null) && !e.IsDeleted)
+                .Where(e => e.UserId == userId && !e.IsDeleted)
                 .AsNoTracking();
 
             if (!string.IsNullOrEmpty(specParams.Name))

@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
+import 'package:expense_management_system/shared/constants/api_endpoints.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_boilerplate/feature/auth/model/token.dart';
-import 'package:flutter_boilerplate/feature/auth/repository/token_repository.dart';
-import 'package:flutter_boilerplate/feature/auth/state/auth_state.dart';
-import 'package:flutter_boilerplate/shared/http/api_provider.dart';
-import 'package:flutter_boilerplate/shared/http/app_exception.dart';
-import 'package:flutter_boilerplate/shared/util/validator.dart';
+import 'package:expense_management_system/feature/auth/model/token.dart';
+import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
+import 'package:expense_management_system/feature/auth/state/auth_state.dart';
+import 'package:expense_management_system/shared/http/api_provider.dart';
+import 'package:expense_management_system/shared/http/app_exception.dart';
+import 'package:expense_management_system/shared/util/validator.dart';
 
 abstract class AuthRepositoryProtocol {
   Future<AuthState> login(String email, String password);

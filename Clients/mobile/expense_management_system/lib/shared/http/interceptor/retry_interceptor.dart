@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_boilerplate/shared/http/interceptor/dio_connectivity_request_retrier.dart';
+import 'package:expense_management_system/shared/http/interceptor/dio_connectivity_request_retrier.dart';
 
 class RetryOnConnectionChangeInterceptor extends Interceptor {
   final DioConnectivityRequestRetrier requestRetrier;

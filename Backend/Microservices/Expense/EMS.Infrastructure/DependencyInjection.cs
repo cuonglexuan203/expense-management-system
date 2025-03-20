@@ -1,5 +1,6 @@
 ﻿using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Features.Categories.Services;
 using EMS.Application.Features.Transactions.Services;
 using EMS.Application.Features.Wallets.Services;
 using EMS.Infrastructure.Common.Extensions;
@@ -27,6 +28,8 @@ namespace EMS.Infrastructure
             services.TryAddScoped<IIdentityService, IdentityService>();
             services.TryAddScoped<IWalletService, WalletService>();
             services.TryAddScoped<ITransactionService, TransactionService>();
+            services.TryAddScoped<ICategoryService, CategoryService>();
+            services.TryAddScoped<IUserPreferenceService, UserPreferenceService>();
 
             services.AddRedisCaching(configuration);
 

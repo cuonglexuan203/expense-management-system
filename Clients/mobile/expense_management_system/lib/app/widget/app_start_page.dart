@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_boilerplate/app/provider/app_start_provider.dart';
-import 'package:flutter_boilerplate/feature/auth/widget/sign_in_page.dart';
-import 'package:flutter_boilerplate/feature/home/widget/home_page.dart';
-import 'package:flutter_boilerplate/shared/widget/connection_unavailable_widget.dart';
-import 'package:flutter_boilerplate/shared/widget/loading_widget.dart';
+import 'package:expense_management_system/app/provider/app_start_provider.dart';
+import 'package:expense_management_system/feature/auth/widget/sign_in_page.dart';
+import 'package:expense_management_system/feature/home/widget/home_page.dart';
+import 'package:expense_management_system/shared/widget/connection_unavailable_widget.dart';
+import 'package:expense_management_system/shared/widget/loading_widget.dart';
 
 class AppStartPage extends ConsumerWidget {
   const AppStartPage({Key? key}) : super(key: key);

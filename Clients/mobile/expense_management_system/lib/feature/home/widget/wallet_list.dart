@@ -1,7 +1,8 @@
+import 'package:expense_management_system/feature/wallet/model/wallet.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
+import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
-import 'package:flutter_boilerplate/shared/route/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -50,7 +51,7 @@ class WalletList extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 120,
+      height: 124,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
@@ -99,9 +100,16 @@ class WalletList extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? ColorName.blue.withOpacity(0.7)
+                        ? ColorName.blue.withOpacity(0.9)
                         : ColorName.blue.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(15),
+                    border: isSelected
+                        ? Border.all(
+                            color: Colors.white,
+                            width: 2,
+                            strokeAlign: BorderSide.strokeAlignInside,
+                          )
+                        : null,
                     boxShadow: [
                       BoxShadow(
                         color: ColorName.blue.withOpacity(0.3),
@@ -132,7 +140,7 @@ class WalletList extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              '\$${wallet.balance}',
+                              wallet.balance.toFormattedString(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,

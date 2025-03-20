@@ -6,8 +6,8 @@ part of 'transaction_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$walletTransactionsHash() =>
-    r'0fffb6f08d032241daebbd83c2f80b4af8322327';
+String _$paginatedTransactionsHash() =>
+    r'47d36c28d6ec156f3e73cffd591734c61515ef1d';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,30 +30,39 @@ class _SystemHash {
   }
 }
 
-/// See also [walletTransactions].
-@ProviderFor(walletTransactions)
-const walletTransactionsProvider = WalletTransactionsFamily();
+abstract class _$PaginatedTransactions
+    extends BuildlessAutoDisposeNotifier<PaginatedState<Transaction>> {
+  late final int walletId;
 
-/// See also [walletTransactions].
-class WalletTransactionsFamily extends Family<AsyncValue<List<Transaction>>> {
-  /// See also [walletTransactions].
-  const WalletTransactionsFamily();
+  PaginatedState<Transaction> build(
+    int walletId,
+  );
+}
 
-  /// See also [walletTransactions].
-  WalletTransactionsProvider call(
-    String walletName,
+/// See also [PaginatedTransactions].
+@ProviderFor(PaginatedTransactions)
+const paginatedTransactionsProvider = PaginatedTransactionsFamily();
+
+/// See also [PaginatedTransactions].
+class PaginatedTransactionsFamily extends Family<PaginatedState<Transaction>> {
+  /// See also [PaginatedTransactions].
+  const PaginatedTransactionsFamily();
+
+  /// See also [PaginatedTransactions].
+  PaginatedTransactionsProvider call(
+    int walletId,
   ) {
-    return WalletTransactionsProvider(
-      walletName,
+    return PaginatedTransactionsProvider(
+      walletId,
     );
   }
 
   @override
-  WalletTransactionsProvider getProviderOverride(
-    covariant WalletTransactionsProvider provider,
+  PaginatedTransactionsProvider getProviderOverride(
+    covariant PaginatedTransactionsProvider provider,
   ) {
     return call(
-      provider.walletName,
+      provider.walletId,
     );
   }
 
@@ -69,77 +78,81 @@ class WalletTransactionsFamily extends Family<AsyncValue<List<Transaction>>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'walletTransactionsProvider';
+  String? get name => r'paginatedTransactionsProvider';
 }
 
-/// See also [walletTransactions].
-class WalletTransactionsProvider
-    extends AutoDisposeFutureProvider<List<Transaction>> {
-  /// See also [walletTransactions].
-  WalletTransactionsProvider(
-    String walletName,
+/// See also [PaginatedTransactions].
+class PaginatedTransactionsProvider extends AutoDisposeNotifierProviderImpl<
+    PaginatedTransactions, PaginatedState<Transaction>> {
+  /// See also [PaginatedTransactions].
+  PaginatedTransactionsProvider(
+    int walletId,
   ) : this._internal(
-          (ref) => walletTransactions(
-            ref as WalletTransactionsRef,
-            walletName,
-          ),
-          from: walletTransactionsProvider,
-          name: r'walletTransactionsProvider',
+          () => PaginatedTransactions()..walletId = walletId,
+          from: paginatedTransactionsProvider,
+          name: r'paginatedTransactionsProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$walletTransactionsHash,
-          dependencies: WalletTransactionsFamily._dependencies,
+                  : _$paginatedTransactionsHash,
+          dependencies: PaginatedTransactionsFamily._dependencies,
           allTransitiveDependencies:
-              WalletTransactionsFamily._allTransitiveDependencies,
-          walletName: walletName,
+              PaginatedTransactionsFamily._allTransitiveDependencies,
+          walletId: walletId,
         );
 
-  WalletTransactionsProvider._internal(
+  PaginatedTransactionsProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.walletName,
+    required this.walletId,
   }) : super.internal();
 
-  final String walletName;
+  final int walletId;
 
   @override
-  Override overrideWith(
-    FutureOr<List<Transaction>> Function(WalletTransactionsRef provider) create,
+  PaginatedState<Transaction> runNotifierBuild(
+    covariant PaginatedTransactions notifier,
   ) {
+    return notifier.build(
+      walletId,
+    );
+  }
+
+  @override
+  Override overrideWith(PaginatedTransactions Function() create) {
     return ProviderOverride(
       origin: this,
-      override: WalletTransactionsProvider._internal(
-        (ref) => create(ref as WalletTransactionsRef),
+      override: PaginatedTransactionsProvider._internal(
+        () => create()..walletId = walletId,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        walletName: walletName,
+        walletId: walletId,
       ),
     );
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<Transaction>> createElement() {
-    return _WalletTransactionsProviderElement(this);
+  AutoDisposeNotifierProviderElement<PaginatedTransactions,
+      PaginatedState<Transaction>> createElement() {
+    return _PaginatedTransactionsProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WalletTransactionsProvider &&
-        other.walletName == walletName;
+    return other is PaginatedTransactionsProvider && other.walletId == walletId;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, walletName.hashCode);
+    hash = _SystemHash.combine(hash, walletId.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -147,22 +160,23 @@ class WalletTransactionsProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin WalletTransactionsRef on AutoDisposeFutureProviderRef<List<Transaction>> {
-  /// The parameter `walletName` of this provider.
-  String get walletName;
+mixin PaginatedTransactionsRef
+    on AutoDisposeNotifierProviderRef<PaginatedState<Transaction>> {
+  /// The parameter `walletId` of this provider.
+  int get walletId;
 }
 
-class _WalletTransactionsProviderElement
-    extends AutoDisposeFutureProviderElement<List<Transaction>>
-    with WalletTransactionsRef {
-  _WalletTransactionsProviderElement(super.provider);
+class _PaginatedTransactionsProviderElement
+    extends AutoDisposeNotifierProviderElement<PaginatedTransactions,
+        PaginatedState<Transaction>> with PaginatedTransactionsRef {
+  _PaginatedTransactionsProviderElement(super.provider);
 
   @override
-  String get walletName => (origin as WalletTransactionsProvider).walletName;
+  int get walletId => (origin as PaginatedTransactionsProvider).walletId;
 }
 
 String _$transactionNotifierHash() =>
-    r'c4d77660d4e1513216a381fd77768a651be11288';
+    r'998ef68c9d73dfe633f09078976e30362d0064ec';
 
 /// See also [TransactionNotifier].
 @ProviderFor(TransactionNotifier)

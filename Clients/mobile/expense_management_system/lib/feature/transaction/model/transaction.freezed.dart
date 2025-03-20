@@ -25,6 +25,7 @@ mixin _$Transaction {
   int get walletId => throw _privateConstructorUsedError;
   String? get walletName => throw _privateConstructorUsedError;
   String? get categoryName => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _amountFromJson)
   double get amount => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
@@ -53,7 +54,7 @@ abstract class $TransactionCopyWith<$Res> {
       int walletId,
       String? walletName,
       String? categoryName,
-      double amount,
+      @JsonKey(fromJson: _amountFromJson) double amount,
       String? description,
       String type,
       DateTime occurredAt,
@@ -145,7 +146,7 @@ abstract class _$$TransactionImplCopyWith<$Res>
       int walletId,
       String? walletName,
       String? categoryName,
-      double amount,
+      @JsonKey(fromJson: _amountFromJson) double amount,
       String? description,
       String type,
       DateTime occurredAt,
@@ -230,7 +231,7 @@ class _$TransactionImpl implements _Transaction {
       required this.walletId,
       this.walletName,
       this.categoryName,
-      required this.amount,
+      @JsonKey(fromJson: _amountFromJson) required this.amount,
       this.description,
       required this.type,
       required this.occurredAt,
@@ -250,6 +251,7 @@ class _$TransactionImpl implements _Transaction {
   @override
   final String? categoryName;
   @override
+  @JsonKey(fromJson: _amountFromJson)
   final double amount;
   @override
   final String? description;
@@ -316,7 +318,7 @@ abstract class _Transaction implements Transaction {
       required final int walletId,
       final String? walletName,
       final String? categoryName,
-      required final double amount,
+      @JsonKey(fromJson: _amountFromJson) required final double amount,
       final String? description,
       required final String type,
       required final DateTime occurredAt,
@@ -336,6 +338,7 @@ abstract class _Transaction implements Transaction {
   @override
   String? get categoryName;
   @override
+  @JsonKey(fromJson: _amountFromJson)
   double get amount;
   @override
   String? get description;

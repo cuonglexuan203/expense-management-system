@@ -1,15 +1,14 @@
+import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
+import 'package:expense_management_system/feature/transaction/widget/transaction_item.dart';
+import 'package:expense_management_system/feature/wallet/model/wallet.dart';
+import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
+import 'package:expense_management_system/feature/wallet/widget/add_transaction_page.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/app/widget/bottom_nav_bar.dart';
-import 'package:flutter_boilerplate/feature/transaction/model/transaction.dart';
-import 'package:flutter_boilerplate/feature/transaction/provider/transaction_provider.dart';
-import 'package:flutter_boilerplate/feature/wallet/model/wallet.dart';
-import 'package:flutter_boilerplate/feature/wallet/provider/wallet_provider.dart';
-import 'package:flutter_boilerplate/feature/wallet/widget/add_transaction_page.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:intl/intl.dart';
 
 class WalletDetailPage extends ConsumerStatefulWidget {
   final int walletId;
@@ -21,19 +20,59 @@ class WalletDetailPage extends ConsumerStatefulWidget {
 
 class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
   int _currentIndex = 0;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.microtask(() {
+        try {
+          ref
+              .read(paginatedTransactionsProvider(widget.walletId).notifier)
+              .refresh();
+        } catch (e) {
+          print('Error initializing provider: $e');
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      ref
+          .read(paginatedTransactionsProvider(widget.walletId).notifier)
+          .fetchNextPage();
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll - 200);
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Listen to wallet state changes
     final walletState =
         ref.watch(walletDetailNotifierProvider(widget.walletId));
 
-    // Listen to wallet changes to refresh data
     ref.listen(walletChangesProvider, (previous, next) {
       if (previous != next) {
-        // Refresh wallet data when changes occur
         ref.invalidate(walletDetailNotifierProvider(widget.walletId));
-        ref.invalidate(walletTransactionsProvider(widget.walletId));
+        ref
+            .read(paginatedTransactionsProvider(widget.walletId).notifier)
+            .refresh();
       }
     });
 
@@ -158,7 +197,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '\$${wallet.balance}',
+                          wallet.balance.toFormattedString(),
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 32,
@@ -171,21 +210,22 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _buildActionButton(
-                              icon: Iconsax.arrow_up_1,
-                              label: 'Add Expense',
+                              icon: Iconsax.arrow_down_2,
+                              label: 'Add Income',
+                              color: Colors.green,
+                              isIncome: true,
                               onTap: () async {
                                 final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => AddTransactionPage(
-                                      isExpense: true,
+                                      isExpense: false,
                                       walletId: wallet.id,
                                     ),
                                   ),
                                 );
 
                                 if (result == true) {
-                                  // Transaction added, notify changes
                                   ref
                                       .read(walletChangesProvider.notifier)
                                       .notifyChanges();
@@ -194,14 +234,16 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                             ),
                             const SizedBox(width: 20),
                             _buildActionButton(
-                              icon: Iconsax.arrow_down_2,
-                              label: 'Add Income',
+                              icon: Iconsax.arrow_up_1,
+                              label: 'Add Expense',
+                              color: Colors.red,
+                              isIncome: false,
                               onTap: () async {
                                 final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => AddTransactionPage(
-                                      isExpense: false,
+                                      isExpense: true,
                                       walletId: wallet.id,
                                     ),
                                   ),
@@ -250,9 +292,8 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Transaction list with pull-to-refresh
                         Expanded(
-                          child: _buildTransactionsList(wallet.id),
+                          child: _buildPaginatedTransactionsList(wallet.id),
                         ),
                       ],
                     ),
@@ -263,156 +304,130 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/chat'),
-        shape: const CircleBorder(),
-        backgroundColor: const Color(0xFF386BF6),
-        child: const Icon(Iconsax.add, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  Widget _buildTransactionsList(int walletId) {
+  Widget _buildPaginatedTransactionsList(int walletId) {
     return Consumer(
       builder: (context, ref, child) {
-        final transactionsAsync =
-            ref.watch(walletTransactionsProvider(walletId));
+        final paginatedState =
+            ref.watch(paginatedTransactionsProvider(walletId));
+        final transactions = paginatedState.items;
+        final isLoading = paginatedState.isLoading;
+        final hasError = paginatedState.errorMessage != null;
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            // Refresh both the wallet and transactions data
-            ref.invalidate(walletDetailNotifierProvider(walletId));
-            return ref.refresh(walletTransactionsProvider(walletId).future);
-          },
-          child: transactionsAsync.when(
-            data: (transactions) {
-              // Use ListView with proper physics even when empty
-              return ListView.builder(
-                itemCount: transactions.isEmpty ? 1 : transactions.length,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  if (transactions.isEmpty) {
-                    return Container(
-                      padding: const EdgeInsets.only(top: 40),
-                      child: const Center(
-                        child: Text(
-                          'No transactions yet',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                            fontFamily: 'Nunito',
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-
-                  final transaction = transactions[index];
-                  return _buildTransactionItem(transaction);
-                },
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
+        if (hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
-                Center(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.error_outline,
-                          color: Colors.red, size: 32),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error loading transactions',
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontFamily: 'Nunito',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        error.toString(),
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                          fontFamily: 'Nunito',
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                const Icon(Icons.error, color: Colors.red, size: 40),
+                const SizedBox(height: 10),
+                Text(
+                  'Error: ${paginatedState.errorMessage}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    ref
+                        .read(paginatedTransactionsProvider(walletId).notifier)
+                        .refresh();
+                  },
+                  child: const Text('Retry'),
                 ),
               ],
             ),
+          );
+        }
+
+        if (isLoading && transactions.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (transactions.isNotEmpty) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              await ref
+                  .read(paginatedTransactionsProvider(walletId).notifier)
+                  .refresh();
+            },
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: transactions.length + (isLoading ? 1 : 0),
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                if (index == transactions.length && isLoading) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final transaction = transactions[index];
+                return TransactionItem(transaction: transaction);
+              },
+            ),
+          );
+        }
+
+        return const Center(
+          child: Text(
+            'No transactions yet',
+            style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
         );
       },
     );
   }
 
-  Widget _buildTransactionItem(Transaction transaction) {
-    final isIncome = transaction.type == 'Income';
-    final formattedDate =
-        DateFormat('MMM d, yyyy').format(transaction.occurredAt);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
+  Widget _buildActionButton(
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap,
+      required Color color,
+      required bool isIncome}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 48,
-            height: 48,
-            padding: const EdgeInsets.all(8),
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              isIncome ? Iconsax.arrow_down_2 : Iconsax.arrow_up_1,
-              color: isIncome ? Colors.green : Colors.red,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  transaction.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Nunito',
-                  ),
-                ),
-                Text(
-                  '${transaction.categoryName ?? "Unknown"} • $formattedDate', // Use categoryName
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                    fontFamily: 'Nunito',
-                  ),
+              gradient: LinearGradient(
+                colors: isIncome
+                    ? [Colors.green[300]!, Colors.green[600]!]
+                    : [Colors.red[300]!, Colors.red[600]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(26),
+              boxShadow: [
+                BoxShadow(
+                  color: (isIncome ? Colors.green[300]! : Colors.red[300]!)
+                      .withOpacity(0.4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
+            child: Icon(
+              isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+              color: Colors.white,
+              size: 26,
+            ),
           ),
+          const SizedBox(height: 8),
           Text(
-            '${isIncome ? '+' : '-'}\$${transaction.amount}',
+            label,
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isIncome ? Colors.green : Colors.red,
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
               fontFamily: 'Nunito',
             ),
           ),
@@ -420,39 +435,13 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
       ),
     );
   }
+}
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: ColorName.blue,
-              size: 36,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              color: ColorName.black,
-              fontSize: 12,
-              fontFamily: 'Nunito',
-            ),
-          ),
-        ],
-      ),
-    );
+String _safeFormatAmount(num? amount) {
+  try {
+    if (amount == null) return '0.00';
+    return amount.toFormattedString();
+  } catch (e) {
+    return '0';
   }
 }

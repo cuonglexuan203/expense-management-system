@@ -2,16 +2,15 @@
 // @AdaptiveAutoRouter
 // @CustomAutoRouter
 
+import 'package:expense_management_system/app/widget/app_start_page.dart';
+import 'package:expense_management_system/feature/auth/widget/sign_in_page.dart';
+import 'package:expense_management_system/feature/auth/widget/sign_up_page.dart';
+import 'package:expense_management_system/feature/chat/widget/chat_page.dart';
+import 'package:expense_management_system/feature/wallet/widget/create_wallet_page.dart';
+import 'package:expense_management_system/feature/wallet/widget/wallet_detail_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/app/widget/app_start_page.dart';
-import 'package:flutter_boilerplate/feature/auth/widget/sign_in_page.dart';
-import 'package:flutter_boilerplate/feature/auth/widget/sign_up_page.dart';
-import 'package:flutter_boilerplate/feature/wallet/widget/wallet_detail_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:flutter_boilerplate/feature/chat/widget/chat_page.dart';
-import 'package:flutter_boilerplate/feature/wallet/widget/wallet_page.dart';
-import 'package:flutter_boilerplate/feature/wallet/widget/create_wallet_page.dart';
 
 part 'app_router.g.dart';
 

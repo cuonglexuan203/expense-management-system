@@ -13,7 +13,7 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
       walletId: (json['walletId'] as num).toInt(),
       walletName: json['walletName'] as String?,
       categoryName: json['categoryName'] as String?,
-      amount: (json['amount'] as num).toDouble(),
+      amount: _amountFromJson(json['amount']),
       description: json['description'] as String?,
       type: json['type'] as String,
       occurredAt: DateTime.parse(json['occurredAt'] as String),

@@ -1,7 +1,6 @@
-// lib/feature/category/provider/category_provider.dart
-import 'package:flutter_boilerplate/feature/category/model/category.dart';
-import 'package:flutter_boilerplate/feature/category/repository/category_repository.dart';
-import 'package:flutter_boilerplate/shared/model/pagination_info.dart';
+import 'package:expense_management_system/feature/category/model/category.dart';
+import 'package:expense_management_system/feature/category/repository/category_repository.dart';
+import 'package:expense_management_system/shared/pagination/pagination_info.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'category_provider.g.dart';
@@ -85,12 +84,10 @@ class CategoryNotifier extends _$CategoryNotifier {
 
     return response.when(
       success: (data) {
-        // FIX: Don't try to convert Category objects again
         final categories = data['categories'] as List<Category>;
         final pagination = data['pagination'] as PaginationInfo;
 
         if (pageNumber == 1) {
-          // First page - replace existing data
           return CategoryState(
             categories: categories,
             pagination: pagination,
@@ -106,7 +103,6 @@ class CategoryNotifier extends _$CategoryNotifier {
         }
       },
       error: (error) {
-        print("Error loading categories: ${error}");
         return currentState.copyWith(isLoading: false);
       },
     );
@@ -156,8 +152,6 @@ class CategoryNotifier extends _$CategoryNotifier {
         return category;
       },
       error: (error) {
-        // Consider using a proper logging mechanism
-        print("Error creating category: $error");
         return null;
       },
     );

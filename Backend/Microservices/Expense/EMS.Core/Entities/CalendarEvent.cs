@@ -9,7 +9,7 @@ namespace EMS.Core.Entities
         public int WalletId { get; set; }
         public string Title { get; set; } = default!;
         public string? Description { get; set; }
-        public RecurrenceInterval Interval { get; set; }
+        public RecurrenceType RecurrenceType { get; set; }
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset? EndDate { get; set; }
         public string? Location { get; set; }

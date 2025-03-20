@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter_boilerplate/feature/chat/model/message.dart';
-import 'package:flutter_boilerplate/shared/http/app_exception.dart';
+import 'package:expense_management_system/feature/chat/model/message.dart';
+import 'package:expense_management_system/shared/http/app_exception.dart';
 
 part 'chat_state.freezed.dart';
 

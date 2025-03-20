@@ -11,13 +11,16 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
       name: json['name'] as String,
       balance: (json['balance'] as num?)?.toDouble() ?? 0,
       description: json['description'] as String?,
-      createdAt: json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-      income: (json['income'] as num?)?.toDouble(),
-      expense: (json['expense'] as num?)?.toDouble(),
+      createdAt: _dateTimeFromJson(json['createdAt']),
+      income: json['income'] == null
+          ? const TransactionSummary(totalAmount: 0, transactionCount: 0)
+          : TransactionSummary.fromJson(json['income'] as Map<String, dynamic>),
+      expense: json['expense'] == null
+          ? const TransactionSummary(totalAmount: 0, transactionCount: 0)
+          : TransactionSummary.fromJson(
+              json['expense'] as Map<String, dynamic>),
       filterPeriod: json['filterPeriod'] as String?,
-      balanceByPeriod: (json['balanceByPeriod'] as num?)?.toDouble(),
+      balanceByPeriod: (json['balanceByPeriod'] as num?)?.toDouble() ?? 0.0,
     );
 
 Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
@@ -26,9 +29,9 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'name': instance.name,
       'balance': instance.balance,
       'description': instance.description,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'income': instance.income,
-      'expense': instance.expense,
+      'createdAt': _dateTimeToJson(instance.createdAt),
+      'income': _transactionSummaryToJson(instance.income),
+      'expense': _transactionSummaryToJson(instance.expense),
       'filterPeriod': instance.filterPeriod,
       'balanceByPeriod': instance.balanceByPeriod,
     };

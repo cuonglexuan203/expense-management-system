@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_boilerplate/feature/chat/provider/chat_provider.dart';
-import 'package:flutter_boilerplate/feature/chat/widget/message_bubble.dart';
+import 'package:expense_management_system/feature/chat/provider/chat_provider.dart';
+import 'package:expense_management_system/feature/chat/widget/message_bubble.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ChatPage extends ConsumerStatefulWidget {

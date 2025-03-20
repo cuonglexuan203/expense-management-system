@@ -14,5 +14,6 @@ namespace EMS.Core.Entities
         // Navigations
         public ICollection<Transaction> Transactions { get; set; } = [];
         public Media? Icon { get; set; }
+        public ICollection<ExtractedTransaction> ExtractedTransactions { get; set; } = [];
     }
 }

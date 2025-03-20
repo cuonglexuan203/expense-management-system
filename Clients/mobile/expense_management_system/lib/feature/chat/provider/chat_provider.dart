@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_boilerplate/feature/chat/model/message.dart';
-import 'package:flutter_boilerplate/feature/chat/state/chat_state.dart';
-import 'package:flutter_boilerplate/feature/chat/repository/chat_repository.dart';
+import 'package:expense_management_system/feature/chat/model/message.dart';
+import 'package:expense_management_system/feature/chat/state/chat_state.dart';
+import 'package:expense_management_system/feature/chat/repository/chat_repository.dart';
 import 'package:uuid/uuid.dart';
 
 final chatProvider = StateNotifierProvider<ChatNotifier, ChatState>((ref) {

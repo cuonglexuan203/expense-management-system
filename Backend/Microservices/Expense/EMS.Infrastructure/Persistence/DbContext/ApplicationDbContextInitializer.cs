@@ -12,12 +12,18 @@ namespace EMS.Infrastructure.Persistence.DbContext
         private readonly ILogger<ApplicationDbContextInitializer> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IIdentityService _identityService;
+        private readonly IUserPreferenceService _userPreferenceService;
 
-        public ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context, IIdentityService identityService)
+        public ApplicationDbContextInitializer(
+            ILogger<ApplicationDbContextInitializer> logger,
+            ApplicationDbContext context,
+            IIdentityService identityService,
+            IUserPreferenceService userPreferenceService)
         {
             _logger = logger;
             _context = context;
             _identityService = identityService;
+            _userPreferenceService = userPreferenceService;
         }
 
         public async Task InitializeAsync()
@@ -51,39 +57,6 @@ namespace EMS.Infrastructure.Persistence.DbContext
 
         public async Task TrySeedAsync()
         {
-            if (!_context.Roles.Any())
-            {
-                #region Add default roles
-                var defaultRoles = DefaultSeedData.GetDefaultRoles();
-                foreach (var role in defaultRoles)
-                {
-                    var result = await _identityService.CreateRoleAsync(role);
-
-                    if (!result.Succeeded)
-                    {
-                        _logger.LogError("Failed to seed the role {0}: {1}", role, string.Join(", ", result.Errors!));
-                    }
-                }
-                _logger.LogStateInfo(AppStates.SeedingData, $"Added default roles: {defaultRoles}");
-                #endregion
-
-                #region Add default users
-                foreach (var user in DefaultSeedData.GetDefaultUsers())
-                {
-                    var (result, userId) = await _identityService.CreateUserAsync(user.UserName, user.Pwd);
-
-                    if (!result.Succeeded)
-                    {
-                        _logger.LogError("Failed to seed the user {0}: {1}", user.UserName, string.Join(", ", result.Errors!));
-                        continue;
-                    }
-
-                    await _identityService.AddToRoleAsync(userId, user.Role);
-                    _logger.LogStateInfo(AppStates.SeedingData, $"Added a default user: userName {user.UserName}, role {user.Role}");
-                }
-                #endregion
-            }
-
             #region Add default system settings
             if (!_context.SystemSettings.Any())
             {
@@ -101,6 +74,51 @@ namespace EMS.Infrastructure.Persistence.DbContext
                 _logger.LogStateInfo(AppStates.SeedingData, $"Added {defaultCategories.Length} default categories.");
             }
             #endregion
+
+            #region Add default currencies
+            if (!_context.Currencies.Any())
+            {
+                var defaultCurrencies = DefaultSeedData.GetDefaultCurrencies();
+                _context.Currencies.AddRange(defaultCurrencies);
+                _logger.LogStateInfo(AppStates.SeedingData, $"Added {defaultCurrencies.Length} default currencies.");
+            }
+            #endregion
+
+            if (!_context.Roles.Any())
+            {
+                #region Add default roles
+                var defaultRoles = DefaultSeedData.GetDefaultRoles();
+                foreach (var role in defaultRoles)
+                {
+                    var result = await _identityService.CreateRoleAsync(role);
+
+                    if (!result.Succeeded)
+                    {
+                        _logger.LogError("Failed to seed the role {0}: {1}", role, string.Join(", ", result.Errors!));
+                    }
+                }
+                _logger.LogStateInfo(AppStates.SeedingData, $"Added default roles: {string.Join(", ", defaultRoles)}");
+                #endregion
+
+                #region Add default users
+                foreach (var user in DefaultSeedData.GetDefaultUsers())
+                {
+                    var (result, userId) = await _identityService.CreateUserAsync(user.UserName, user.Pwd);
+
+                    if (!result.Succeeded)
+                    {
+                        _logger.LogError("Failed to seed the user {0}: {1}", user.UserName, string.Join(", ", result.Errors!));
+                        continue;
+                    }
+
+                    await _identityService.AddToRoleAsync(userId, user.Role);
+
+                    _logger.LogStateInfo(AppStates.SeedingData, $"Added a default user: userName {user.UserName}, role {user.Role}");
+
+                    await _userPreferenceService.CreateUserPreferencesAsync(userId);
+                }
+                #endregion
+            }
 
             await _context.SaveChangesAsync();
         }

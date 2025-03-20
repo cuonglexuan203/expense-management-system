@@ -1,13 +1,9 @@
-import 'dart:convert';
-
+import 'package:expense_management_system/feature/category/model/category.dart';
+import 'package:expense_management_system/feature/category/provider/category_provider.dart';
+import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
+import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_boilerplate/feature/category/model/category.dart';
-import 'package:flutter_boilerplate/feature/category/provider/category_provider.dart';
-import 'package:flutter_boilerplate/feature/transaction/provider/transaction_provider.dart';
-import 'package:flutter_boilerplate/gen/colors.gen.dart';
-import 'package:flutter_boilerplate/shared/constants/api_endpoints.dart';
-import 'package:flutter_boilerplate/shared/http/api_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -29,7 +25,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   final _amountController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
 
-  // Store both category ID and name
   int? _selectedCategoryId;
   String? _selectedCategoryName;
   bool _isLoading = false;
@@ -72,7 +67,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           .createTransaction(
             name: _titleController.text,
             walletId: widget.walletId,
-            categoryName: _selectedCategoryName!,
+            categoryId: _selectedCategoryId!,
             amount: amount,
             isExpense: widget.isExpense,
             occurredAt: _selectedDate,
@@ -86,7 +81,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Transaction added successfully')),
         );
-        Navigator.pop(context, true); // Return true to indicate success
+        Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to add transaction')),
@@ -136,13 +131,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             onPressed: () {
               if (categoryController.text.isEmpty) return;
 
-              // Get the category name before closing dialog
               final categoryName = categoryController.text;
 
-              // Close the category name dialog
               Navigator.pop(dialogContext);
 
-              // Now show a separate loading dialog
               BuildContext? loadingDialogContext;
               showDialog(
                 context: context,
@@ -160,7 +152,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   .read(categoryNotifierProvider(_flowType).notifier)
                   .createCategory(categoryName, _flowType)
                   .then((category) {
-                // Always close the loading dialog first
                 if (loadingDialogContext != null &&
                     Navigator.canPop(loadingDialogContext!)) {
                   Navigator.pop(loadingDialogContext!);
@@ -182,7 +173,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   );
                 }
               }).catchError((e) {
-                // Always close the loading dialog on error
                 if (loadingDialogContext != null &&
                     Navigator.canPop(loadingDialogContext!)) {
                   Navigator.pop(loadingDialogContext!);
@@ -229,7 +219,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Rest of the widget build method remains the same
     final inputDecoration = InputDecoration(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       border: OutlineInputBorder(
@@ -457,7 +446,6 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   }
 }
 
-// FIXED: Category Selector Dialog that properly handles the Category object
 class _CategorySelectorDialog extends ConsumerStatefulWidget {
   final String flowType;
   final Function(Category) onCategorySelected;

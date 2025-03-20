@@ -4,7 +4,7 @@ namespace EMS.Application.Features.Wallets.Queries.GetWalletSummary
 {
     public class WalletBalanceSummary
     {
-        public int WalletId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; } = default!;
         public float Balance { get; set; }
         public string? Description { get; set; }
