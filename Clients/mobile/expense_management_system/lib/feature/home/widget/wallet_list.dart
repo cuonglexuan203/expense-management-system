@@ -51,7 +51,7 @@ class WalletList extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 120,
+      height: 124,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
@@ -100,9 +100,16 @@ class WalletList extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? ColorName.blue.withOpacity(0.7)
+                        ? ColorName.blue.withOpacity(0.9)
                         : ColorName.blue.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(15),
+                    border: isSelected
+                        ? Border.all(
+                            color: Colors.white,
+                            width: 2,
+                            strokeAlign: BorderSide.strokeAlignInside,
+                          )
+                        : null,
                     boxShadow: [
                       BoxShadow(
                         color: ColorName.blue.withOpacity(0.3),
