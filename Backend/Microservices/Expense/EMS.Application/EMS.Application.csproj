@@ -19,8 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\DTOs\" />
     <Folder Include="Common\Validators\" />
+    <Folder Include="Features\Chats\Assistant\" />
+    <Folder Include="Features\Chats\Finance\Queries\" />
   </ItemGroup>
 
 </Project>

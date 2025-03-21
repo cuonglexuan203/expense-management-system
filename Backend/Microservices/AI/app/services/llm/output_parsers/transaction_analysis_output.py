@@ -4,9 +4,9 @@ from langchain.output_parsers import PydanticOutputParser
 
 
 class CategorizedItem(BaseModel):
-    item_name: str = Field(description="Name of the item from the user query")
+    name: str = Field(description="Name of the item from the user query")
     category: str = Field(description="Category like breakfast, lunch, salary, etc.")
-    transaction_type: str = Field(description="Either 'expense' or 'income'")
+    type: str = Field(description="Transaction type, either 'expense' or 'income'")
     amount: float = Field(description="Monetary amount of the transaction")
     currency: str = Field(default="USD", description="Currency code in ISO format")
 

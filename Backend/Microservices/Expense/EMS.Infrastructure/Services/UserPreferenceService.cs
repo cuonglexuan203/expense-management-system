@@ -40,6 +40,16 @@ namespace EMS.Infrastructure.Services
                 .FirstOrDefaultAsync() ?? throw new ServerException($"User preference of user id {userId} not found."));
         }
 
+        public async Task<UserPreference> GetUserPreferenceByIdAsync(string userId)
+        {
+            return await _cacheService.GetOrSetAsync(
+                CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.GeneralKeys.UserPreference, userId),
+                async () => await _context.UserPreferences
+                .AsNoTracking()
+                .Where(e => !e.IsDeleted && e.UserId == userId)
+                .FirstOrDefaultAsync() ?? throw new ServerException($"User preference of user id {userId} not found."));
+        }
+
         public async Task CreateUserPreferencesAsync(string userId, CancellationToken cancellationToken = default)
         {
             try

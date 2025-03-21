@@ -18,6 +18,8 @@ namespace EMS.Application.Common.Interfaces.DbContext
         DbSet<UserPreference> UserPreferences { get; set; }
         DbSet<Wallet> Wallets { get; set; }
         DbSet<RefreshToken> RefreshTokens { get; set; }
+        DbSet<ChatExtraction> ChatExtractions { get; set; }
+        DbSet<ExtractedTransaction> ExtractedTransactions { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

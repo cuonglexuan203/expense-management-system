@@ -27,7 +27,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
         {
             builder.HasOne(e => e.Currency)
                 .WithMany()
-                //.HasForeignKey(nameof(Currency.Code))
+                .HasForeignKey(e => e.CurrencyCode)
                 .IsRequired();
         }
     }
