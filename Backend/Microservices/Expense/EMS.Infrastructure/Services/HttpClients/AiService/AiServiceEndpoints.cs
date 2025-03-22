@@ -2,6 +2,7 @@
 {
     public static class AiServiceEndpoints
     {
-        public const string ExtractTransaction = "/extract-transaction";
+        private const string _apiVersion = "/api/v1";
+        public const string ExtractTransaction = $"{_apiVersion}/extractions/extract-transaction";
     }
 }

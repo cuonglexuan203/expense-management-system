@@ -1,8 +1,10 @@
-﻿using EMS.Core.Enums;
+﻿using EMS.Application.Common.Mappings;
+using EMS.Core.Entities;
+using EMS.Core.Enums;
 
 namespace EMS.Application.Features.Chats.Common.Dtos
 {
-    public class ExtractedTransactionDto
+    public class ExtractedTransactionDto : IMapFrom<ExtractedTransaction>
     {
         public int ChatExtractionId { get; set; }
         public int ChatMessageId { get; set; }

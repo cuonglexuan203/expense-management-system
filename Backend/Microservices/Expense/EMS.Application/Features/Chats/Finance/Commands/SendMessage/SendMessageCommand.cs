@@ -58,7 +58,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.SendMessage
             await _context.SaveChangesAsync();
 
             // Asynchronously process the message, intentionally sending an immediate acknowledgment to the frontend to prevent UI freezing.
-            _ = _mediator.Send(new ProcessMessageCommand(userId, request.WalletId, message.Id));
+            _ = await _mediator.Send(new ProcessMessageCommand(userId, request.WalletId, message.Id));
 
             return _mapper.Map<ChatMessageDto>(message);
         }

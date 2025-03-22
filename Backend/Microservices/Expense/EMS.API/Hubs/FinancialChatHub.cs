@@ -2,10 +2,12 @@
 using EMS.Application.Features.Chats.Common.Dtos;
 using EMS.Application.Features.Chats.Finance.Commands.SendMessage;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace EMS.API.Hubs
 {
+    [Authorize]
     public class FinancialChatHub : Hub<IFinancialChatClient>
     {
         private readonly ILogger<FinancialChatHub> _logger;
@@ -49,6 +51,8 @@ namespace EMS.API.Hubs
 
         public async Task<ChatMessageDto> SendMessage(int walletId, int chatThreadId, string text)
         {
+            var a = Context.User?.Claims?.Select(c => $"{c.Type}: {c.Value}").ToList();
+
             var userId = Context.UserIdentifier!;
             _logger.LogInformation("Message received from {UserId} in chat {ChatThreadId}", userId, chatThreadId);
 

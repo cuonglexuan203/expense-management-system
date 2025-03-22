@@ -90,7 +90,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
                             Name = item.Name,
                             Type = item.Type,
                             Amount = item.Amount,
-                            OccurredAt = item.OccurredAt ?? DateTimeOffset.Now,
+                            //OccurredAt = item.OccurredAt ?? DateTimeOffset.Now,
                         };
 
                         var category = item.Category != null ?
@@ -145,7 +145,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
                 UserId = request.UserId,
                 WalletId = request.WalletId,
                 ChatThreadId = chatThreadId,
-                SystemMessage = _mapper.Map<ChatMessageDto>(message),
+                SystemMessage = _mapper.Map<ChatMessageDto>(systemMsg),
                 ExtractedTransactions = _mapper.Map<List<ExtractedTransactionDto>>(chatExtraction.ExtractedTransactions)
             });
 

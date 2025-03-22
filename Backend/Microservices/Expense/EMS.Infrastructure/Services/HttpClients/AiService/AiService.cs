@@ -4,6 +4,8 @@ using EMS.Infrastructure.Common.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace EMS.Infrastructure.Services.HttpClients.AiService
 {
@@ -39,7 +41,11 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
 
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<MessageExtractionResponse>();
+                var result = await response.Content.ReadFromJsonAsync<MessageExtractionResponse>(new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                    Converters = { new JsonStringEnumConverter() }
+                });
 
                 return result;
             }
