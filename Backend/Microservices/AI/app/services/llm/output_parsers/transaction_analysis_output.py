@@ -6,7 +6,7 @@ from langchain.output_parsers import PydanticOutputParser
 class CategorizedItem(BaseModel):
     name: str = Field(description="Name of the item from the user query")
     category: str = Field(description="Category like breakfast, lunch, salary, etc.")
-    type: str = Field(description="Transaction type, either 'expense' or 'income'")
+    type: str = Field(description="Transaction type, either exactly 'Expense' or 'Income'(upper first letter)")
     amount: float = Field(description="Monetary amount of the transaction")
     currency: str = Field(default="USD", description="Currency code in ISO format")
 
@@ -16,7 +16,7 @@ class TransactionAnalysisOutput(BaseModel):
         description="List of categorized transactions from the query"
     )
     transaction_type: Optional[str] = Field(
-        description="Dominant transaction type (expense/income) if clear"
+        description="Dominant transaction type (Expense/Income) if clear"
     )
     introduction: str = Field(
         description="LLM-generated summary of the financial transactions"

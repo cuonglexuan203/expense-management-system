@@ -18,7 +18,7 @@ def Test():
     return {"count": 1}
 
 
-@router.post("extract-transaction")
+@router.post("/extract-transaction")
 async def extract_transaction(transaction: Transaction):
     model = LLMFactory.create(
         LLMConfig(provider=LLMProvider.GOOGLE, model=LLMModel.GEMINI_20_FLASH, temperature=0)
