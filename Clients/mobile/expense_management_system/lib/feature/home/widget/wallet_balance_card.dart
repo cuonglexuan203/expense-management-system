@@ -203,7 +203,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
   Widget _buildTimeFilterButton(String value, String label) {
     final isSelected = _selectedPeriod == value;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: TextButton(
         onPressed: () {
           setState(() {
@@ -215,6 +215,8 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
           backgroundColor: MaterialStateProperty.all(
             isSelected ? Colors.white : Colors.transparent,
           ),
+          padding: MaterialStateProperty.all(
+              EdgeInsets.symmetric(horizontal: 8, vertical: 6)),
           shape: MaterialStateProperty.all(RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           )),
@@ -222,6 +224,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
         child: Text(
           label,
           style: TextStyle(
+            fontSize: 13,
             color: isSelected ? ColorName.blue : Colors.white,
           ),
         ),
