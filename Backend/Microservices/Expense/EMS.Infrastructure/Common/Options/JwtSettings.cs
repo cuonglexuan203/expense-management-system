@@ -2,6 +2,7 @@
 {
     public class JwtSettings
     {
+        public const string Jwt = "JwtSettings";
         public string SecretKey { get; set; } = default!;
         public int AccessTokenExpirationInMinutes { get; set; }
         public int RefreshTokenExpirationInDays { get; set; }

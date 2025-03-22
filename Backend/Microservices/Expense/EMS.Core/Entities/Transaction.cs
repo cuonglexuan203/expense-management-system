@@ -24,6 +24,26 @@ namespace EMS.Core.Entities
         public Category? Category { get; set; }
         public Wallet Wallet { get; set; } = default!;
         public Currency Currency { get; set; } = default!;
+        public ExtractedTransaction? ExtractedTransaction { get; set; }
 
+        #region Behaviors
+        public static Transaction? CreateFrom(
+            ExtractedTransaction extractedTransaction,
+            string userId,
+            int walletId,
+            int messageId)
+        {
+            if(!extractedTransaction.TryMapToTransaction(out Transaction transaction))
+            {
+                return null;
+            }
+
+            transaction.UserId = userId;
+            transaction.WalletId = walletId;
+            transaction.ChatMessageId = messageId;
+
+            return transaction;
+        }
+        #endregion
     }
 }

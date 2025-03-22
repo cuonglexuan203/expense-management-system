@@ -1,14 +1,18 @@
 ﻿using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Common.Interfaces.Services.HttpClients;
 using EMS.Application.Features.Categories.Services;
+using EMS.Application.Features.Chats.Common.Services;
 using EMS.Application.Features.Transactions.Services;
 using EMS.Application.Features.Wallets.Services;
 using EMS.Infrastructure.Common.Extensions;
+using EMS.Infrastructure.Common.Options;
 using EMS.Infrastructure.Identity;
 using EMS.Infrastructure.Identity.Models;
 using EMS.Infrastructure.Persistence.DbContext;
 using EMS.Infrastructure.Persistence.Interceptors;
 using EMS.Infrastructure.Services;
+using EMS.Infrastructure.Services.HttpClients.AiService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -22,6 +26,8 @@ namespace EMS.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<AiServiceOptions>(configuration.GetSection(AiServiceOptions.AiService));
+
             services.AddSingleton(TimeProvider.System);
             services.TryAddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
             services.TryAddScoped<ITokenService, TokenService>();
@@ -30,6 +36,9 @@ namespace EMS.Infrastructure
             services.TryAddScoped<ITransactionService, TransactionService>();
             services.TryAddScoped<ICategoryService, CategoryService>();
             services.TryAddScoped<IUserPreferenceService, UserPreferenceService>();
+            services.TryAddScoped<IChatThreadService, ChatThreadService>();
+
+            AddHttpClients(services);
 
             services.AddRedisCaching(configuration);
 
@@ -66,6 +75,11 @@ namespace EMS.Infrastructure
             #endregion
 
             return services;
+        }
+
+        private static void AddHttpClients(IServiceCollection services)
+        {
+            services.AddHttpClient<IAiService, AiService>();
         }
     }
 }

@@ -18,10 +18,10 @@ def Test():
     return {"count": 1}
 
 
-@router.post("/analyze-transaction")
-async def analyze_transaction(transaction: Transaction):
+@router.post("/extract-transaction")
+async def extract_transaction(transaction: Transaction):
     model = LLMFactory.create(
-        LLMConfig(provider=LLMProvider.OPENAI, model=LLMModel.GPT_4O_MINI, temperature=0)
+        LLMConfig(provider=LLMProvider.GOOGLE, model=LLMModel.GEMINI_20_FLASH, temperature=0)
     )
 
     parser = JsonOutputParser(pydantic_object=TransactionAnalysisOutput)
