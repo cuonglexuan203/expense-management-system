@@ -86,7 +86,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 var extractionResult = await aiService.ExtractTransactionAsync(msgExtractionRequest);
 
                 // Save system msg
-                var systemMsg = ChatMessage.CreateSystemMessage(queuedMessage.UserId, chatThreadId, extractionResult.Introduction);
+                var systemMsg = ChatMessage.CreateSystemMessage(chatThreadId, extractionResult.Introduction);
                 context.ChatMessages.Add(systemMsg);
 
                 // Save raw extraction
@@ -181,7 +181,6 @@ namespace EMS.Infrastructure.BackgroundJobs
                 _logger.LogError(ex, "Error processing message {MessageId}", queuedMessage.MessageId);
 
                 var errorMsg = ChatMessage.CreateSystemMessage(
-                    queuedMessage.UserId,
                     queuedMessage.ChatThreadId,
                     "Sorry, I encountered an error processing your request. Please try again.");
 

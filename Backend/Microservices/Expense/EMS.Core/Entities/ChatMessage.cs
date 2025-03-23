@@ -31,11 +31,10 @@ namespace EMS.Core.Entities
             return message;
         }
 
-        public static ChatMessage CreateSystemMessage(string userId, int chatThreadId, string? content)
+        public static ChatMessage CreateSystemMessage(int chatThreadId, string? content)
         {
             var message = new ChatMessage
             {
-                UserId = userId,
                 ChatThreadId = chatThreadId,
                 Role = MessageRole.System,
                 Content = content

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
@@ -39,21 +40,25 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
             var chatThreadId = request.ChatThreadId;
             var specParams = request.SpecParams;
 
+            var chatThread = await _context.ChatThreads
+                .FirstOrDefaultAsync(e => e.Id == chatThreadId && e.UserId == userId && !e.IsDeleted)
+                ?? throw new NotFoundException($"Chat thread with id {chatThreadId} not found.");
+
             var query = _context.ChatMessages
                 .AsNoTracking()
-                .Where(e => e.UserId == userId && e.ChatThreadId == chatThreadId && !e.ChatThread.IsDeleted && !e.IsDeleted);
+                .Where(e => e.ChatThreadId == chatThreadId && !e.ChatThread.IsDeleted && !e.IsDeleted);
 
-            if(specParams.Role != null)
+            if (specParams.Role != null)
             {
                 query = query.Where(e => e.Role == specParams.Role);
             }
 
-            if(specParams.Content != null)
+            if (specParams.Content != null)
             {
                 query = query.Where(e => e.Content != null && e.Content.Contains(specParams.Content));
             }
 
-            if(specParams.Sort == SortDirection.ASC)
+            if (specParams.Sort == SortDirection.ASC)
             {
                 query = query.OrderBy(e => e.CreatedAt);
             }
