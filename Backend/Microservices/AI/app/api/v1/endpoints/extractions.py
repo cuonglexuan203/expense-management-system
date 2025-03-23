@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from langchain_core.output_parsers import JsonOutputParser
 from app.api.v1.models import Transaction
+from app.core.logging import get_logger
 from app.schemas.llm_config import LLMConfig
 from app.services.llm.output_parsers.transaction_analysis_output import (
     TransactionAnalysisOutput,
@@ -12,6 +13,8 @@ from app.services.llm.factory import LLMFactory
 
 router = APIRouter()
 
+logger = get_logger(__name__)
+
 
 @router.get("/")
 def Test():
@@ -21,7 +24,9 @@ def Test():
 @router.post("/extract-transaction")
 async def extract_transaction(transaction: Transaction):
     model = LLMFactory.create(
-        LLMConfig(provider=LLMProvider.GOOGLE, model=LLMModel.GEMINI_20_FLASH, temperature=0)
+        LLMConfig(
+            provider=LLMProvider.GOOGLE, model=LLMModel.GEMINI_20_FLASH, temperature=0
+        )
     )
 
     parser = JsonOutputParser(pydantic_object=TransactionAnalysisOutput)
@@ -34,5 +39,7 @@ async def extract_transaction(transaction: Transaction):
 
     chain = prompt | model | parser
     res = chain.invoke({"input": transaction.query})
+
+    # logger.info(res)
 
     return res

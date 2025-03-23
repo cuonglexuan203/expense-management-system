@@ -12,19 +12,27 @@ namespace EMS.Application.Features.Chats.Finance.Notifications.MessageProcessed
         public int ChatThreadId { get; set; }
         public ChatMessageDto SystemMessage { get; set; } = default!;
         public List<ExtractedTransactionDto> ExtractedTransactions { get; set; } = [];
+        public bool HasError { get; set; }
 
         public MessageProcessedNotification()
         {
             
         }
 
-        public MessageProcessedNotification(string userId, int walletId, int chatThreadId, ChatMessageDto systemMessage, List<ExtractedTransactionDto> extractedTransactions)
+        public MessageProcessedNotification(
+            string userId,
+            int walletId,
+            int chatThreadId,
+            ChatMessageDto systemMessage,
+            List<ExtractedTransactionDto> extractedTransactions,
+            bool hasError)
         {
             UserId = userId;
             WalletId = walletId;
             ChatThreadId = chatThreadId;
             SystemMessage = systemMessage;
             ExtractedTransactions = extractedTransactions;
+            HasError = hasError;
         }
     }
 

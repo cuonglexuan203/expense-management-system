@@ -14,6 +14,7 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
         private readonly ILogger<AiService> _logger;
         private readonly HttpClient _httpClient;
         private readonly AiServiceOptions _options;
+        private readonly JsonSerializerOptions _serializerOptions;
 
         public AiService(
             ILogger<AiService> logger,
@@ -23,7 +24,11 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
             _logger = logger;
             _httpClient = httpClient;
             _options = options.Value;
-
+            _serializerOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                Converters = { new JsonStringEnumConverter() }
+            };
             //
             ConfigureClient(_httpClient);
         }
@@ -41,11 +46,7 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
 
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<MessageExtractionResponse>(new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-                    Converters = { new JsonStringEnumConverter() }
-                });
+                var result = await response.Content.ReadFromJsonAsync<MessageExtractionResponse>(_serializerOptions);
 
                 return result;
             }

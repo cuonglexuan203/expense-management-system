@@ -8,5 +8,6 @@
         public const string RunningMigrations = "RunningMigrations";
         public const string Ready = "Ready";
         public const string ShuttingDown = "ShuttingDown";
+        public const string RunningBackgroundJobs = "RunningBackgroundJobs";
     }
 }

@@ -17,6 +17,7 @@ using System.Text.Json;
 
 namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
 {
+    // Unused - Retained as a fallback method
     public record ProcessMessageCommand(string UserId, int WalletId, int MessageId) : IRequest<Unit>;
 
     public class ProcessMessageCommandHandler : IRequestHandler<ProcessMessageCommand, Unit>
