@@ -13,7 +13,7 @@ namespace EMS.Core.Entities
         // Navigations
         public ChatThread ChatThread { get; set; } = default!;
         public ICollection<Media> Medias { get; set; } = [];
-        public Transaction? Transaction { get; set; }
+        public ICollection<Transaction> Transaction { get; set; } = [];
         public ChatExtraction? ChatExtraction { get; set; }
         //public ICollection<ExtractedTransaction> ExtractedTransactions { get; set; } = [];
 
