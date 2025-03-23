@@ -6,6 +6,7 @@ namespace EMS.Application.Features.Chats.Common.Dtos
 {
     public class ExtractedTransactionDto : IMapFrom<ExtractedTransaction>
     {
+        public int Id { get; set; }
         public int ChatExtractionId { get; set; }
         public int ChatMessageId { get; set; }
         public string? Category { get; set; }

@@ -154,6 +154,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                             var transaction = Transaction.CreateFrom(item, queuedMessage.UserId, queuedMessage.WalletId, queuedMessage.MessageId);
                             if (transaction != null)
                             {
+                                transaction.ExtractedTransaction = item;
                                 transactions.Add(transaction);
                             }
                         }

@@ -1,6 +1,6 @@
 ﻿using EMS.Application.Common.Exceptions;
-using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Features.Chats.Common.Services;
 using EMS.Core.Constants;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -17,19 +17,19 @@ namespace EMS.Application.Features.Auth.Commands.Register
     {
         private readonly ILogger<RegisterCommandHandler> _logger;
         private readonly IIdentityService _identityService;
-        private readonly IApplicationDbContext _dbContext;
         private readonly IUserPreferenceService _userPreferenceService;
+        private readonly IChatThreadService _chatThreadService;
 
         public RegisterCommandHandler(
             ILogger<RegisterCommandHandler> logger,
             IIdentityService identityService,
-            IApplicationDbContext dbContext,
-            IUserPreferenceService userPreferenceService)
+            IUserPreferenceService userPreferenceService,
+            IChatThreadService chatThreadService)
         {
             _logger = logger;
             _identityService = identityService;
-            _dbContext = dbContext;
             _userPreferenceService = userPreferenceService;
+            _chatThreadService = chatThreadService;
         }
 
         public async Task<RegisterDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -50,6 +50,7 @@ namespace EMS.Application.Features.Auth.Commands.Register
             }
 
             await _userPreferenceService.CreateUserPreferencesAsync(userId, cancellationToken);
+            await _chatThreadService.CreateDefaultChatThreadsAsync(userId);
 
             _logger.LogInformation("User {0} registered", request.Email);
             return new(userId);

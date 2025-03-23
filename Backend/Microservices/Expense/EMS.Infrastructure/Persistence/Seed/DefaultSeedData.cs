@@ -210,5 +210,28 @@ namespace EMS.Infrastructure.Persistence.Seed
 
             return defaultCurrencies;
         }
+
+        public static ChatThread[] GetDefaultChatThreads(string userId)
+        {
+            var defaultChatThreads = new ChatThread[]
+            {
+                new()
+                {
+                    UserId = userId,
+                    Title = "Finance",
+                    Type = ChatThreadType.Finance,
+                    IsActive = true,
+                },
+                new()
+                {
+                    UserId = userId,
+                    Title = "Assistant",
+                    Type = ChatThreadType.Assistant,
+                    IsActive = true,
+                }
+            };
+
+            return defaultChatThreads;
+        }
     }
 }
