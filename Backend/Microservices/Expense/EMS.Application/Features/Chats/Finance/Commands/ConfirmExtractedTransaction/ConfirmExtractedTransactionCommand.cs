@@ -64,7 +64,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ConfirmExtractedTransa
                 }
 
                 transaction.ExtractedTransaction = extractedTransaction;
-                var transactionDto = await _transactionService.CreateTransactionAsync(request.WalletId, transaction);
+                var transactionDto = await _transactionService.CreateTransactionAsync(userId, request.WalletId, transaction);
 
                 await _walletService.CacheWalletBalanceSummariesAsync(request.WalletId);
 

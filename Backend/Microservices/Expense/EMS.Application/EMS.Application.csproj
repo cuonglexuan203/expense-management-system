@@ -21,7 +21,7 @@
   <ItemGroup>
     <Folder Include="Common\Validators\" />
     <Folder Include="Features\Chats\Assistant\" />
-    <Folder Include="Features\Chats\Finance\Queries\" />
+    <Folder Include="Features\Chats\Commands\" />
   </ItemGroup>
 
 </Project>

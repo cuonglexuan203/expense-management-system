@@ -97,7 +97,7 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
             }
             #endregion
 
-            await _transactionService.CreateTransactionAsync(request.WalletId, transaction);
+            await _transactionService.CreateTransactionAsync(userId, request.WalletId, transaction);
 
             _logger.LogInformation("Added a {Type} transaction: id {id}, wallet id {WalletId}, amount {Amount}, category id {Category}",
                 transaction.Type, transaction.Id, transaction.WalletId, transaction.Amount, transaction.CategoryId);

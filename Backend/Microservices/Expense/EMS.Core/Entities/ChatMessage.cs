@@ -18,12 +18,12 @@ namespace EMS.Core.Entities
         //public ICollection<ExtractedTransaction> ExtractedTransactions { get; set; } = [];
 
         #region Behaviors
-        public static ChatMessage CreateUserMessage(int chatThreadId, string userId, string? content)
+        public static ChatMessage CreateUserMessage(string userId, int chatThreadId, string? content)
         {
             var message = new ChatMessage
             {
-                ChatThreadId = chatThreadId,
                 UserId = userId,
+                ChatThreadId = chatThreadId,
                 Role = MessageRole.User,
                 Content = content
             };
@@ -31,10 +31,11 @@ namespace EMS.Core.Entities
             return message;
         }
 
-        public static ChatMessage CreateSystemMessage(int chatThreadId, string? content)
+        public static ChatMessage CreateSystemMessage(string userId, int chatThreadId, string? content)
         {
             var message = new ChatMessage
             {
+                UserId = userId,
                 ChatThreadId = chatThreadId,
                 Role = MessageRole.System,
                 Content = content

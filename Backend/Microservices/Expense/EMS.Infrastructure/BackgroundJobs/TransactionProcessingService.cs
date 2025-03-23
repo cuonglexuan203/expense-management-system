@@ -11,6 +11,7 @@ using EMS.Application.Features.Chats.Common.Dtos;
 using EMS.Application.Features.Chats.Finance.Messaging;
 using EMS.Application.Features.Chats.Finance.Notifications.MessageProcessed;
 using EMS.Application.Features.Transactions.Services;
+using EMS.Application.Features.Wallets.Services;
 using EMS.Core.Constants;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
@@ -70,6 +71,7 @@ namespace EMS.Infrastructure.BackgroundJobs
             var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
             var dbTransactionManager = scope.ServiceProvider.GetRequiredService<IDatabaseTransactionManager>();
+            var walletService = scope.ServiceProvider.GetRequiredService<IWalletService>();
 
             try
             {
@@ -84,7 +86,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 var extractionResult = await aiService.ExtractTransactionAsync(msgExtractionRequest);
 
                 // Save system msg
-                var systemMsg = ChatMessage.CreateSystemMessage(chatThreadId, extractionResult.Introduction);
+                var systemMsg = ChatMessage.CreateSystemMessage(queuedMessage.UserId, chatThreadId, extractionResult.Introduction);
                 context.ChatMessages.Add(systemMsg);
 
                 // Save raw extraction
@@ -159,8 +161,10 @@ namespace EMS.Infrastructure.BackgroundJobs
                             }
                         }
 
-                        var transactionDtoList = await transactionService.CreateTransactionsAsync(queuedMessage.WalletId, transactions);
+                        var transactionDtoList = await transactionService.CreateTransactionsAsync(queuedMessage.UserId, queuedMessage.WalletId, transactions);
                     });
+
+                    await walletService.CacheWalletBalanceSummariesAsync(queuedMessage.WalletId);
                 }
 
                 await mediator.Publish(new MessageProcessedNotification()
@@ -177,6 +181,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 _logger.LogError(ex, "Error processing message {MessageId}", queuedMessage.MessageId);
 
                 var errorMsg = ChatMessage.CreateSystemMessage(
+                    queuedMessage.UserId,
                     queuedMessage.ChatThreadId,
                     "Sorry, I encountered an error processing your request. Please try again.");
 
@@ -192,8 +197,6 @@ namespace EMS.Infrastructure.BackgroundJobs
                     ExtractedTransactions = new List<ExtractedTransactionDto>(),
                     HasError = true
                 }, stoppingToken);
-
-                throw;
             }
         }
     }

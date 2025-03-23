@@ -64,7 +64,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
             var extractionResult = await _aiService.ExtractTransactionAsync(msgExtractionRequest);
 
             // Save system msg
-            var systemMsg = ChatMessage.CreateSystemMessage(chatThreadId, extractionResult.Introduction);
+            var systemMsg = ChatMessage.CreateSystemMessage(request.UserId, chatThreadId, extractionResult.Introduction);
             _context.ChatMessages.Add(systemMsg);
 
             // Save raw extraction
@@ -138,7 +138,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
                     }
                 }
 
-                var transactionDtoList = await _transactionService.CreateTransactionsAsync(request.WalletId, transactions);
+                var transactionDtoList = await _transactionService.CreateTransactionsAsync(request.UserId, request.WalletId, transactions);
             }
 
             await _mediator.Publish(new MessageProcessedNotification()

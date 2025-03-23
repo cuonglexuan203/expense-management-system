@@ -5,6 +5,5 @@ namespace EMS.Application.Features.Chats.Common.Services
     public interface IChatThreadService
     {
         Task<List<ChatThreadDto>> CreateDefaultChatThreadsAsync(string userId);
-        Task<bool> IsChatThreadActiveAsync(int chatThreadId);
     }
 }

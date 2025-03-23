@@ -43,12 +43,5 @@ namespace EMS.Infrastructure.Services
                 throw;
             }
         }
-
-        public async Task<bool> IsChatThreadActiveAsync(int chatThreadId)
-        {
-            var chatThread = await _context.ChatThreads.FindAsync(chatThreadId);
-
-            return chatThread?.IsActive ?? false;
-        }
     }
 }
