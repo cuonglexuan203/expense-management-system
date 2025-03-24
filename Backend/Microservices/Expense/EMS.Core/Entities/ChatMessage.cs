@@ -13,17 +13,17 @@ namespace EMS.Core.Entities
         // Navigations
         public ChatThread ChatThread { get; set; } = default!;
         public ICollection<Media> Medias { get; set; } = [];
-        public Transaction? Transaction { get; set; }
+        public ICollection<Transaction> Transaction { get; set; } = [];
         public ChatExtraction? ChatExtraction { get; set; }
         //public ICollection<ExtractedTransaction> ExtractedTransactions { get; set; } = [];
 
         #region Behaviors
-        public static ChatMessage CreateUserMessage(int chatThreadId, string userId, string? content)
+        public static ChatMessage CreateUserMessage(string userId, int chatThreadId, string? content)
         {
             var message = new ChatMessage
             {
-                ChatThreadId = chatThreadId,
                 UserId = userId,
+                ChatThreadId = chatThreadId,
                 Role = MessageRole.User,
                 Content = content
             };

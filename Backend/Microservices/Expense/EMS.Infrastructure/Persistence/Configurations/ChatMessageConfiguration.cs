@@ -23,9 +23,9 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .HasForeignKey(e => e.ChatMessageId)
                 .IsRequired(false);
 
-            builder.HasOne(e => e.Transaction)
+            builder.HasMany(e => e.Transaction)
                 .WithOne(e => e.ChatMessage)
-                .HasForeignKey<Transaction>(e => e.ChatMessageId)
+                .HasForeignKey(e => e.ChatMessageId)
                 .IsRequired(false);
 
             builder.HasOne(e => e.ChatExtraction)

@@ -1,4 +1,5 @@
 ﻿using EMS.API.Common.Attributes;
+using EMS.Application.Features.Chats.Finance.Commands.ConfirmExtractedTransaction;
 using EMS.Application.Features.Transactions.Commands.CreateTransaction;
 using EMS.Application.Features.Transactions.Queries.GetTransactionById;
 using EMS.Application.Features.Transactions.Queries.GetTransactions;

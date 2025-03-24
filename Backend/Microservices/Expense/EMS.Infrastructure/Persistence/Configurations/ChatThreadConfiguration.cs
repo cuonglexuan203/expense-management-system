@@ -1,6 +1,5 @@
 ﻿using EMS.Core.Entities;
 using EMS.Infrastructure.Persistence.Configurations.Common;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
@@ -14,6 +13,10 @@ namespace EMS.Infrastructure.Persistence.Configurations
 
             builder.Property(e => e.Title)
                 .HasMaxLength(255);
+
+            builder.Property(e => e.Type)
+                .HasConversion<string>()
+                .HasMaxLength(15);
         }
 
         public override void ConfigureRelationships(EntityTypeBuilder<ChatThread> builder)

@@ -43,12 +43,13 @@ namespace EMS.Infrastructure.Services
             return (wallet, transaction);
         }
 
-        public async Task<TransactionDto> CreateTransactionAsync(int walletId, Transaction transaction, CancellationToken cancellationToken = default)
+        public async Task<TransactionDto> CreateTransactionAsync(string userId, int walletId, Transaction transaction, CancellationToken cancellationToken = default)
         {
             var wallet = await _context.Wallets
-                .FirstOrDefaultAsync(e => e.Id == walletId && !e.IsDeleted)
+                .FirstOrDefaultAsync(e => e.UserId == userId && e.Id == walletId && !e.IsDeleted)
                 ?? throw new NotFoundException($"Wallet with Id {walletId} not found");
 
+            transaction.UserId = userId;
             ApplyTransactionToWalletAsync(wallet, transaction, cancellationToken);
 
             _context.Transactions.Add(transaction);
@@ -57,14 +58,15 @@ namespace EMS.Infrastructure.Services
             return _mapper.Map<TransactionDto>(transaction);
         }
 
-        public async Task<List<TransactionDto>> CreateTransactionsAsync(int walletId, List<Transaction> transactions, CancellationToken cancellationToken = default)
+        public async Task<List<TransactionDto>> CreateTransactionsAsync(string userId, int walletId, List<Transaction> transactions, CancellationToken cancellationToken = default)
         {
             var wallet = await _context.Wallets
-                .FirstOrDefaultAsync(e => e.Id == walletId && !e.IsDeleted)
+                .FirstOrDefaultAsync(e => e.UserId == userId && e.Id == walletId && !e.IsDeleted)
                 ?? throw new NotFoundException($"Wallet with Id {walletId} not found");
 
             foreach (var transaction in transactions)
             {
+                transaction.UserId = userId;
                 ApplyTransactionToWalletAsync(wallet, transaction, cancellationToken);
             }
 

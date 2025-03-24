@@ -4,9 +4,11 @@ using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Common.Utils;
 using EMS.Application.Features.Wallets.Dtos;
 using EMS.Application.Features.Wallets.Queries.GetWalletSummary;
 using EMS.Application.Features.Wallets.Services;
+using EMS.Core.Entities;
 using EMS.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,17 +20,23 @@ namespace EMS.Infrastructure.Services
         private readonly ILogger<WalletService> _logger;
         private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IDistributedCacheService _distributedCacheService;
         private readonly IMapper _mapper;
+
+        //
+        private static readonly TimePeriod[] _walletSummaryPeriods = Enum.GetValues<TimePeriod>();
 
         public WalletService(
             ILogger<WalletService> logger,
             IApplicationDbContext context,
             ICurrentUserService currentUserService,
+            IDistributedCacheService distributedCacheService,
             IMapper mapper)
         {
             _logger = logger;
             _context = context;
             _currentUserService = currentUserService;
+            _distributedCacheService = distributedCacheService;
             _mapper = mapper;
         }
 
@@ -81,6 +89,17 @@ namespace EMS.Infrastructure.Services
                 .FirstOrDefaultAsync();
 
             return walletDto;
+        }
+
+        public async Task CacheWalletBalanceSummariesAsync(int walletId)
+        {
+            foreach (var value in _walletSummaryPeriods)
+            {
+                var walletSummary = await GetWalletBalanceSummaryAsync(walletId, value);
+                await _distributedCacheService.SetAsync(
+                    CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.QueryKeys.WalletByUser, _currentUserService.Id!, walletId, value),
+                    walletSummary);
+            }
         }
     }
 }

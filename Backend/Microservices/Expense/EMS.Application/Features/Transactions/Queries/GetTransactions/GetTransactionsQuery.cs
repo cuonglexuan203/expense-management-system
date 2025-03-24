@@ -62,13 +62,14 @@ namespace EMS.Application.Features.Transactions.Queries.GetTransactions
                 query = query.Where(e => e.Type == specParams.Type);
             }
 
+            // TODO: Sort by CreatedAt/OccurredAt or both
             if(specParams.Sort == SortDirection.ASC)
             {
-                query = query.OrderBy(e => e.CreatedAt);
+                query = query.OrderBy(e => e.OccurredAt);
             }
             else
             {
-                query = query.OrderByDescending(e => e.CreatedAt);
+                query = query.OrderByDescending(e => e.OccurredAt);
             }
 
             var dtoQuery = _mapper.ProjectTo<TransactionDto>(query);

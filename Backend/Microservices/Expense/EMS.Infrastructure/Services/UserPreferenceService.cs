@@ -70,9 +70,11 @@ namespace EMS.Infrastructure.Services
 
                 _logger.LogInformation("Created default preferences for user {userId}", userId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "Error creating default preferences for user {userId}", userId);
+                _logger.LogError("Error creating default preferences for user {userId}", userId);
+
+                throw;
             }
         }
 

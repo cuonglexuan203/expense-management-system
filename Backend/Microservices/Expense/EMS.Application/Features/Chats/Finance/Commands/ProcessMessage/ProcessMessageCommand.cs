@@ -17,6 +17,7 @@ using System.Text.Json;
 
 namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
 {
+    // Unused - Retained as a fallback method
     public record ProcessMessageCommand(string UserId, int WalletId, int MessageId) : IRequest<Unit>;
 
     public class ProcessMessageCommandHandler : IRequestHandler<ProcessMessageCommand, Unit>
@@ -137,7 +138,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
                     }
                 }
 
-                var transactionDtoList = await _transactionService.CreateTransactionsAsync(request.WalletId, transactions);
+                var transactionDtoList = await _transactionService.CreateTransactionsAsync(request.UserId, request.WalletId, transactions);
             }
 
             await _mediator.Publish(new MessageProcessedNotification()
