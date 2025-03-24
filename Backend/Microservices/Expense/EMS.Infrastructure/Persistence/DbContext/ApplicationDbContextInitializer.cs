@@ -1,5 +1,6 @@
 ﻿using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Features.Chats.Common.Services;
 using EMS.Core.Constants;
 using EMS.Infrastructure.Persistence.Seed;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +14,20 @@ namespace EMS.Infrastructure.Persistence.DbContext
         private readonly ApplicationDbContext _context;
         private readonly IIdentityService _identityService;
         private readonly IUserPreferenceService _userPreferenceService;
+        private readonly IChatThreadService _chatThreadService;
 
         public ApplicationDbContextInitializer(
             ILogger<ApplicationDbContextInitializer> logger,
             ApplicationDbContext context,
             IIdentityService identityService,
-            IUserPreferenceService userPreferenceService)
+            IUserPreferenceService userPreferenceService,
+            IChatThreadService chatThreadService)
         {
             _logger = logger;
             _context = context;
             _identityService = identityService;
             _userPreferenceService = userPreferenceService;
+            _chatThreadService = chatThreadService;
         }
 
         public async Task InitializeAsync()
@@ -116,6 +120,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
                     _logger.LogStateInfo(AppStates.SeedingData, $"Added a default user: userName {user.UserName}, role {user.Role}");
 
                     await _userPreferenceService.CreateUserPreferencesAsync(userId);
+                    await _chatThreadService.CreateDefaultChatThreadsAsync(userId);
                 }
                 #endregion
             }

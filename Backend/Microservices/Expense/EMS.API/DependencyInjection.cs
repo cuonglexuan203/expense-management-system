@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using EMS.Infrastructure.Common.Options;
 using EMS.API.Common.Extensions;
+using EMS.Application.Features.Chats.Finance.Services;
+using EMS.API.RealTime;
 
 namespace EMS.API
 {
@@ -22,8 +24,8 @@ namespace EMS.API
 
             services.ConfigureJsonSerializer();
 
-            services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
-            var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt Settings not configured");
+            services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Jwt));
+            var jwtSettings = configuration.GetSection(JwtSettings.Jwt).Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt Settings not configured");
 
             services.AddAuthentication(options =>
             {
@@ -46,13 +48,34 @@ namespace EMS.API
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
                         ClockSkew = TimeSpan.Zero,
                     };
+
+                    // Configure SignalR authentication
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                path.StartsWithSegments("/hubs/finance"))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             services.AddAuthorizationBuilder();
             services.AddAuthorization(options => options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
             services.AddProblemDetails();
             services.AddHttpContextAccessor();
+
+            services.ConfigureSignalR();
+
             services.TryAddScoped<ICurrentUserService, CurrentUserService>();
+            services.TryAddScoped<IFinancialChatNotifier, FinancialChatNotifier>();
 
             AddSwaggerService(services);
             AddCors(services);

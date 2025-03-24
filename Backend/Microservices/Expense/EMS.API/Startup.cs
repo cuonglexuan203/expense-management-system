@@ -1,4 +1,5 @@
-﻿using EMS.Application;
+﻿using EMS.API.Hubs;
+using EMS.Application;
 using EMS.Infrastructure;
 using Serilog;
 
@@ -45,6 +46,7 @@ namespace EMS.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<FinancialChatHub>("/hubs/finance");
             });
         }
     }

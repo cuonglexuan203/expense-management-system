@@ -8,5 +8,6 @@ namespace EMS.Application.Features.Wallets.Services
     {
         Task<WalletDto?> GetWalletByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(int walletId, TimePeriod period, CancellationToken cancellationToken = default);
+        Task CacheWalletBalanceSummariesAsync(int walletId);
     }
 }

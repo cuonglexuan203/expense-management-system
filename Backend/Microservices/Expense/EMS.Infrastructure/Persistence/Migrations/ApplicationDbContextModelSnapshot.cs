@@ -313,7 +313,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(15)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
 
@@ -346,6 +345,9 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -360,6 +362,11 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -388,9 +395,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("ChatExtractionId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ChatMessageId")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConfirmationMode")
@@ -439,7 +443,7 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("OccurredAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("TransactionId")
+                    b.Property<int?>("TransactionId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Type")
@@ -453,11 +457,10 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ChatExtractionId");
 
-                    b.HasIndex("ChatMessageId");
-
                     b.HasIndex("CurrencyCode");
 
-                    b.HasIndex("TransactionId");
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
 
                     b.ToTable("ExtractedTransactions");
                 });
@@ -855,8 +858,7 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("ChatMessageId")
-                        .IsUnique();
+                    b.HasIndex("ChatMessageId");
 
                     b.HasIndex("CurrencyCode");
 
@@ -1339,12 +1341,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EMS.Core.Entities.ChatMessage", "ChatMessage")
-                        .WithMany("ExtractedTransactions")
-                        .HasForeignKey("ChatMessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EMS.Core.ValueObjects.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyCode")
@@ -1352,16 +1348,12 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("EMS.Core.Entities.Transaction", "Transaction")
-                        .WithMany()
-                        .HasForeignKey("TransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithOne("ExtractedTransaction")
+                        .HasForeignKey("EMS.Core.Entities.ExtractedTransaction", "TransactionId");
 
                     b.Navigation("Category");
 
                     b.Navigation("ChatExtraction");
-
-                    b.Navigation("ChatMessage");
 
                     b.Navigation("Currency");
 
@@ -1425,8 +1417,8 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasForeignKey("CategoryId");
 
                     b.HasOne("EMS.Core.Entities.ChatMessage", "ChatMessage")
-                        .WithOne("Transaction")
-                        .HasForeignKey("EMS.Core.Entities.Transaction", "ChatMessageId");
+                        .WithMany("Transaction")
+                        .HasForeignKey("ChatMessageId");
 
                     b.HasOne("EMS.Core.ValueObjects.Currency", "Currency")
                         .WithMany()
@@ -1555,8 +1547,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("ChatExtraction");
 
-                    b.Navigation("ExtractedTransactions");
-
                     b.Navigation("Medias");
 
                     b.Navigation("Transaction");
@@ -1570,6 +1560,11 @@ namespace EMS.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("EMS.Core.Entities.Media", b =>
                 {
                     b.Navigation("Categories");
+                });
+
+            modelBuilder.Entity("EMS.Core.Entities.Transaction", b =>
+                {
+                    b.Navigation("ExtractedTransaction");
                 });
 
             modelBuilder.Entity("EMS.Core.Entities.Wallet", b =>
