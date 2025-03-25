@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace EMS.API.Common.Extensions
+﻿namespace EMS.API.Common.Extensions
 {
     public static class ServiceCollectionExtensions
     {
@@ -14,10 +12,7 @@ namespace EMS.API.Common.Extensions
                 options.MaximumReceiveMessageSize = 64 * 1024; // 64KB
                 options.StreamBufferCapacity = 20;
             })
-                .AddJsonProtocol(options =>
-            {
-                options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            });
+                .AddJsonProtocol(options => JsonConfigurationExtensions.ConfigureJsonSerializerOptions(options.PayloadSerializerOptions));
 
             return services;
         }

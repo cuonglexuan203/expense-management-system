@@ -3,6 +3,7 @@ using EMS.Application.Features.Chats.Common.Dtos;
 using EMS.Application.Features.Chats.Finance.Commands.SendMessage;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Connections.Features;
 using Microsoft.AspNetCore.SignalR;
 
 namespace EMS.API.Hubs
@@ -23,7 +24,9 @@ namespace EMS.API.Hubs
 
         public override Task OnConnectedAsync()
         {
-            _logger.LogInformation("Client connected: {ConnectionId}", Context.ConnectionId);
+            _logger.LogInformation("Client connected: {ConnectionId} using transport: {Transport}",
+                Context.ConnectionId,
+                Context.Features.Get<IHttpTransportFeature>()?.TransportType.ToString());
             return base.OnConnectedAsync();
         }
 
