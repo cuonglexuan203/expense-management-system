@@ -62,7 +62,7 @@ namespace EMS.Infrastructure.Services
         {
             var wallet = await _context.Wallets
                 .FirstOrDefaultAsync(e => e.UserId == userId && e.Id == walletId && !e.IsDeleted)
-                ?? throw new NotFoundException($"Wallet with Id {walletId} not found");
+                ?? throw new NotFoundException($"Wallet with ID {walletId} not found for user with ID {userId}.");
 
             foreach (var transaction in transactions)
             {

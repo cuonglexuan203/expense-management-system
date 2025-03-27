@@ -1,31 +1,86 @@
 ﻿using EMS.Application.Common.Interfaces.Services;
+using EMS.Infrastructure.SignalR;
 using System.Security.Claims;
 
 namespace EMS.API.Services
 {
-    public class CurrentUserService : ICurrentUserService
+    public class CurrentUserService(
+        IHttpContextAccessor httpContextAccessor,
+        SignalRConnectionManager connectionManager,
+        ISignalRContextAccessor signalRContextAccessor) : ICurrentUserService
     {
-        private readonly IHttpContextAccessor _accessor;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly SignalRConnectionManager _signalRConnectionManager = connectionManager;
+        private readonly ISignalRContextAccessor _signalRContextAccessor = signalRContextAccessor;
 
-        public CurrentUserService(IHttpContextAccessor accessor)
+        public string? Id
         {
-            _accessor = accessor;
+            get
+            {
+                var httpUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(httpUserId))
+                {
+                    return httpUserId;
+                }
+
+                var signalRContext = _signalRContextAccessor.Context;
+                if (signalRContext != null)
+                {
+                    return signalRContext.UserIdentifier;
+                }
+
+                return null;
+            }
         }
-        public string? Id => _accessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
 
         public string? IpAddress
         {
             get
             {
-                var ip = _accessor.HttpContext?.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-                if (string.IsNullOrEmpty(ip))
+                var httpContext = _httpContextAccessor.HttpContext;
+                if (httpContext != null)
                 {
-                    ip = _accessor.HttpContext?.Connection?.RemoteIpAddress?.MapToIPv4().ToString();
+                    var ip = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+                    if (string.IsNullOrEmpty(ip))
+                    {
+                        ip = httpContext.Connection?.RemoteIpAddress?.MapToIPv4().ToString();
+                    }
+                    return ip;
                 }
-                return ip;
+
+                var signalRContext = _signalRContextAccessor.Context;
+                if (signalRContext != null)
+                {
+                    var connectionInfo = _signalRConnectionManager.GetConnectionInfo(signalRContext.ConnectionId);
+
+                    return connectionInfo?.IpAddress;
+                }
+
+                return null;
             }
         }
 
-        public string? UserAgent => _accessor.HttpContext?.Request.Headers.UserAgent.ToString();
+        public string? UserAgent
+        {
+            get
+            {
+                var userAgent = _httpContextAccessor.HttpContext?.Request.Headers.UserAgent.ToString();
+                if (!string.IsNullOrEmpty(userAgent))
+                {
+                    return userAgent;
+                }
+
+                var signalRContext = _signalRContextAccessor.Context;
+                if (signalRContext != null)
+                {
+                    var connectionInfo = _signalRConnectionManager.GetConnectionInfo(signalRContext.ConnectionId);
+
+                    return connectionInfo?.UserAgent;
+                }
+
+                return null;
+            }
+        }
     }
 }
