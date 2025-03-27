@@ -41,12 +41,19 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
             var specParams = request.SpecParams;
 
             var chatThread = await _context.ChatThreads
+                .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == chatThreadId && e.UserId == userId && !e.IsDeleted)
                 ?? throw new NotFoundException($"Chat thread with id {chatThreadId} not found.");
 
             var query = _context.ChatMessages
                 .AsNoTracking()
-                .Where(e => e.ChatThreadId == chatThreadId && !e.ChatThread.IsDeleted && !e.IsDeleted);
+                .Include(e => e.ChatExtraction) // left join
+                    .ThenInclude(e => e.ExtractedTransactions // left join
+                        .Where(e => !e.IsDeleted)
+                        .OrderByDescending(e => e.CreatedAt))
+                .Where(e => e.ChatThreadId == chatThreadId &&
+                    !e.ChatThread.IsDeleted &&
+                    !e.IsDeleted);
 
             if (specParams.Role != null)
             {
@@ -67,11 +74,21 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
                 query = query.OrderByDescending(e => e.CreatedAt);
             }
 
-            var dtoQuery = _mapper.ProjectTo<ChatMessageDto>(query);
+            var chatMessagePage = await query.ToPaginatedList(specParams.PageNumber, specParams.PageSize);
 
-            var result = await dtoQuery.ToPaginatedList(specParams.PageNumber, specParams.PageSize);
+            var chatMessageDtoList = new List<ChatMessageDto>();
 
-            return result;
+            foreach(var chatMsg in chatMessagePage.Items)
+            {
+                var chatMsgDto = _mapper.Map<ChatMessageDto>(chatMsg);
+                chatMsgDto.ExtractedTransactions = chatMsg.ChatExtraction != null && chatMsg.ChatExtraction.ExtractedTransactions != null
+                    ? _mapper.Map<List<ExtractedTransactionDto>>(chatMsg.ChatExtraction.ExtractedTransactions)
+                    : [];
+
+                chatMessageDtoList.Add(chatMsgDto);
+            }
+
+            return new PaginatedList<ChatMessageDto>(chatMessageDtoList, chatMessagePage.TotalCount, chatMessagePage.PageNumber, chatMessagePage.PageSize);
         }
     }
 }
