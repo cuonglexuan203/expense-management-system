@@ -16,11 +16,6 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.get("/")
-def Test():
-    return {"count": 1}
-
-
 @router.post("/extract-transaction")
 async def extract_transaction(transaction: Transaction):
     model = LLMFactory.create(
