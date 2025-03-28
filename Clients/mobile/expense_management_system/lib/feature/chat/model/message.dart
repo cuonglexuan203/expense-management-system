@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'extracted_transaction.dart'; // Import the ExtractedTransaction model
 
 part 'message.freezed.dart';
 part 'message.g.dart';
@@ -6,11 +7,13 @@ part 'message.g.dart';
 @freezed
 class Message with _$Message {
   const factory Message({
-    required String id,
+    required int id,
+    required int chatThreadId,
+    String? userId,
+    required String role,
     required String content,
-    required bool isUser,
-    required DateTime timestamp,
-    String? transactionAmount,
+    required DateTime createdAt,
+    @Default([]) List<ExtractedTransaction> extractedTransactions,
   }) = _Message;
 
   factory Message.fromJson(Map<String, dynamic> json) =>

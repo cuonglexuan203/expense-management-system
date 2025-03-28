@@ -144,8 +144,10 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                   const SizedBox(height: 8),
                   Text(
                     wallet.balanceByPeriod.toFormattedString() ?? '0',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: wallet.balanceByPeriod < 0
+                          ? Colors.red
+                          : ColorName.green,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Nunito',
@@ -153,26 +155,27 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                   ),
                 ],
               ),
-              IconButton(
-                icon: const Icon(
-                  Iconsax.more,
-                  color: Colors.white,
-                ),
-                onPressed: () {},
-              ),
+              // IconButton(
+              //   icon: const Icon(
+              //     Iconsax.more,
+              //     color: Colors.white,
+              //   ),
+              //   onPressed: () {},
+              // ),
             ],
           ),
           const SizedBox(height: 15),
           // Time filter row
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildTimeFilterButton('AllTime', 'All'),
-              _buildTimeFilterButton('CurrentWeek', 'Week'),
-              _buildTimeFilterButton('CurrentMonth', 'Month'),
-              _buildTimeFilterButton('CurrentYear', 'Year'),
+              Expanded(child: _buildTimeFilterButton('AllTime', 'All')),
+              Expanded(child: _buildTimeFilterButton('CurrentWeek', 'Week')),
+              Expanded(child: _buildTimeFilterButton('CurrentMonth', 'Month')),
+              Expanded(child: _buildTimeFilterButton('CurrentYear', 'Year')),
             ],
           ),
+
           const SizedBox(height: 15),
           Row(
             children: [
@@ -203,7 +206,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
   Widget _buildTimeFilterButton(String value, String label) {
     final isSelected = _selectedPeriod == value;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: TextButton(
         onPressed: () {
           setState(() {
@@ -215,6 +218,8 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
           backgroundColor: MaterialStateProperty.all(
             isSelected ? Colors.white : Colors.transparent,
           ),
+          padding: MaterialStateProperty.all(
+              EdgeInsets.symmetric(horizontal: 8, vertical: 6)),
           shape: MaterialStateProperty.all(RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           )),
@@ -222,6 +227,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
         child: Text(
           label,
           style: TextStyle(
+            fontSize: 13,
             color: isSelected ? ColorName.blue : Colors.white,
           ),
         ),
@@ -242,9 +248,9 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.blue.withOpacity(0.5),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -255,23 +261,31 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: iconColor.withOpacity(0.6),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Icon(
                   icon,
                   color: iconColor,
-                  size: 20,
+                  size: 28,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Text(
                 label,
                 style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
+                  fontWeight: FontWeight.bold,
                   fontFamily: 'Nunito',
                 ),
               ),
@@ -282,7 +296,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
             amount,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               fontFamily: 'Nunito',
             ),

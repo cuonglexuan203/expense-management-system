@@ -7,13 +7,16 @@ import 'package:expense_management_system/shared/util/logger.dart';
 import 'package:expense_management_system/shared/util/platform_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'app/app.dart';
 
 Future<void> start() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-
+  await Future.wait([
+    initializeDateFormatting('en', ''),
+  ]);
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };
