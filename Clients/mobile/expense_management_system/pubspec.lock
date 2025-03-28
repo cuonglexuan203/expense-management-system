@@ -986,6 +986,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  signalr_netcore:
+    dependency: "direct main"
+    description:
+      name: signalr_netcore
+      sha256: "02d2e399c5a4b5587dfaa0a1da23502f7f438e8b92ac20bc5e652a796600d11a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.7+2-nullsafety.3"
   sky_engine:
     dependency: transitive
     description: flutter
