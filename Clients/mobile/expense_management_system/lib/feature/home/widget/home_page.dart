@@ -8,6 +8,8 @@ import 'package:expense_management_system/feature/home/widget/wallet_balance_car
 import 'package:expense_management_system/feature/home/widget/wallet_list.dart';
 import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
+import 'package:expense_management_system/shared/route/app_router.dart';
+import 'package:expense_management_system/shared/util/bottom_nav_bar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -72,20 +74,28 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final homeState = ref.watch(homeNotifierProvider);
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: _buildBody(homeState),
       bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        currentIndex: ref.watch(currentNavIndexProvider),
+        onTap: (index) =>
+            BottomNavigationManager.handleNavigation(context, ref, index),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/chat'),
+        onPressed: () {
+          final selectedWalletId = ref.read(homeNotifierProvider).maybeWhen(
+                loaded: (wallets, selectedIndex) => wallets[selectedIndex].id,
+                orElse: () => null,
+              );
+          if (selectedWalletId != null) {
+            ChatRoute(walletId: selectedWalletId).push(context);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please select a wallet first')),
+            );
+          }
+        },
         shape: const CircleBorder(),
         backgroundColor: const Color(0xFF386BF6),
         child: const Icon(Iconsax.add, color: Colors.white),
@@ -201,8 +211,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget _buildTransactions(HomeState homeState) {
     return homeState.when(
       loading: () => const Center(
-        child: SizedBox(height: 200, child: CircularProgressIndicator()),
-      ),
+          // child: SizedBox(height: 200, child: CircularProgressIndicator()),
+          ),
       error: (_) => const Center(
         child: SizedBox(
           height: 200,
