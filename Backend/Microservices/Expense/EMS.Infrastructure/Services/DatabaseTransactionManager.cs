@@ -19,7 +19,10 @@ namespace EMS.Infrastructure.Services
             _context = context;
         }
 
-        public async Task ExecuteInTransactionAsync(Func<Task> operation, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        public async Task ExecuteInTransactionAsync(
+            Func<Task> operation,
+            bool clearChangeTrackerOnRollback = false,
+            IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
             var strategy = _context.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () =>
@@ -34,12 +37,21 @@ namespace EMS.Infrastructure.Services
                 {
                     _logger.LogError(ex, "Database transaction failed and was rolled back");
                     await transaction.RollbackAsync();
+
+                    if (clearChangeTrackerOnRollback)
+                    {
+                        _context.ChangeTracker.Clear();
+                    }
+
                     throw;
                 }
             });
         }
 
-        public async Task<TResult> ExecuteInTransactionAsync<TResult>(Func<Task<TResult>> operation, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        public async Task<TResult> ExecuteInTransactionAsync<TResult>(
+            Func<Task<TResult>> operation,
+            bool clearChangeTrackerOnRollback = false,
+            IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
             var strategy = _context.Database.CreateExecutionStrategy();
             return await strategy.ExecuteAsync(async () =>
@@ -56,6 +68,12 @@ namespace EMS.Infrastructure.Services
                 {
                     _logger.LogError(ex, "Database transaction failed and was rolled back");
                     await transaction.RollbackAsync();
+
+                    if (clearChangeTrackerOnRollback)
+                    {
+                        _context.ChangeTracker.Clear();
+                    }
+
                     throw;
                 }
             });

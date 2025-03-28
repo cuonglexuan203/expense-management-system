@@ -17,7 +17,7 @@ namespace EMS.API.Common.Extensions
             return services;
         }
 
-        private static void ConfigureJsonSerializerOptions(JsonSerializerOptions options)
+        public static void ConfigureJsonSerializerOptions(JsonSerializerOptions options)
         {
             //options.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -25,7 +25,6 @@ namespace EMS.API.Common.Extensions
             options.NumberHandling = JsonNumberHandling.AllowReadingFromString;
             options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             options.Converters.Add(new JsonStringEnumConverter());
-
         }
     }
 }

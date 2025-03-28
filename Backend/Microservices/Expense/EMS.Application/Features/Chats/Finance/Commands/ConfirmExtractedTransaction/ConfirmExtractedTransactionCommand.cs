@@ -77,7 +77,6 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ConfirmExtractedTransa
 
                 throw;
             }
-
         }
     }
 }

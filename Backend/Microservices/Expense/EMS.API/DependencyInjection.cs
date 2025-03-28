@@ -74,8 +74,7 @@ namespace EMS.API
 
             services.ConfigureSignalR();
 
-            services.TryAddScoped<ICurrentUserService, CurrentUserService>();
-            services.TryAddScoped<IFinancialChatNotifier, FinancialChatNotifier>();
+            AddScopedServices(services);
 
             AddSwaggerService(services);
             AddCors(services);
@@ -98,6 +97,12 @@ namespace EMS.API
             #endregion
 
             return services;
+        }
+
+        private static void AddScopedServices(IServiceCollection services)
+        {
+            services.TryAddScoped<ICurrentUserService, CurrentUserService>();
+            services.TryAddScoped<IFinancialChatNotifier, FinancialChatNotifier>();
         }
 
         private static void AddSwaggerService(IServiceCollection services)
