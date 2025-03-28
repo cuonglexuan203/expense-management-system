@@ -1,34 +1,291 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:expense_management_system/feature/auth/model/token.dart';
+import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
+import 'package:expense_management_system/feature/chat/model/extracted_transaction.dart';
 import 'package:expense_management_system/feature/chat/model/message.dart';
+import 'package:expense_management_system/feature/chat/provider/chat_provider.dart';
+import 'package:expense_management_system/shared/constants/api_endpoints.dart';
 import 'package:expense_management_system/shared/http/api_provider.dart';
 import 'package:expense_management_system/shared/http/api_response.dart';
 import 'package:expense_management_system/shared/http/app_exception.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
+import 'package:signalr_netcore/signalr_client.dart';
 
-final chatRepositoryProvider = Provider((ref) => ChatRepository(ref));
+final chatRepositoryProvider =
+    Provider((ref) => ChatRepository(ref, ref.read(dioProvider)));
 
 class ChatRepository {
+  ChatRepository(this._ref, this.dio);
   final Ref _ref;
+  final Dio dio;
+  late HubConnection _hubConnection;
   late final ApiProvider _api = _ref.read(apiProvider);
+  late final TokenRepository _tokenRepository =
+      _ref.read(tokenRepositoryProvider);
 
-  ChatRepository(this._ref);
+  // Callback khi tin nhắn được nhận
+  VoidCallback? _onMessageReceived;
 
-  Future<APIResponse<Message>> getAIResponse(String userMessage) async {
+  void setOnMessageReceivedCallback(VoidCallback callback) {
+    _onMessageReceived = callback;
+  }
+
+  Future<void> connect(String accessToken) async {
+    _hubConnection = HubConnectionBuilder()
+        .withUrl(
+          'https://wzwmrgk9-5284.asse.devtunnels.ms/hubs/finance',
+          options: HttpConnectionOptions(
+            accessTokenFactory: () async => accessToken,
+          ),
+        )
+        .build();
+
+    _hubConnection.on('ReceiveMessage', _handleReceivedMessage);
+    await _startConnection();
+  }
+
+  Future<void> _startConnection() async {
     try {
-      // Simulate AI response for now
-      await Future.delayed(const Duration(seconds: 1));
+      await _hubConnection.start();
+    } catch (e) {
+      if (e.toString().contains("401")) {
+        final newAccessToken = await _refreshToken();
+        if (newAccessToken != null) {
+          await connect(newAccessToken);
+        }
+      } else {
+        throw AppException.errorWithMessage("Connection failed: $e");
+      }
+    }
 
-      return APIResponse.success(
-        Message(
-          id: const Uuid().v4(),
-          content:
-              "Spending on breakfast is reasonable! Prices may vary depending on where you eat, but consider other meals during the day to reduce costs!",
-          isUser: false,
-          timestamp: DateTime.now(),
+    _hubConnection.onclose((error) {
+      Future.delayed(const Duration(seconds: 5), () async {
+        await _startConnection();
+      });
+    });
+  }
+
+  Future<void> disconnect() async {
+    if (_hubConnection.state == HubConnectionState.Connected) {
+      await _hubConnection.stop();
+    }
+  }
+
+  Future<void> sendMessage(
+      int walletId, int chatThreadId, String message) async {
+    if (_hubConnection.state == HubConnectionState.Connected) {
+      await _hubConnection
+          .invoke("SendMessage", args: [walletId, chatThreadId, message]);
+    } else {
+      throw AppException.errorWithMessage("Connection is not established.");
+    }
+  }
+
+  void _handleReceivedMessage(List<Object?>? args) {
+    print(args);
+    if (args != null && args.isNotEmpty) {
+      final messageData = args[0];
+
+      try {
+        Map<String, dynamic> data;
+        if (messageData is String) {
+          data = jsonDecode(messageData) as Map<String, dynamic>;
+        } else if (messageData is Map<String, dynamic>) {
+          data = messageData;
+        } else {
+          debugPrint(
+              'Unexpected message data type: ${messageData.runtimeType}');
+          return;
+        }
+
+        if (data.containsKey('systemMessage') &&
+            data['systemMessage'] != null) {
+          final systemMessageData =
+              data['systemMessage'] as Map<String, dynamic>;
+
+          _convertDataTypes(systemMessageData);
+
+          final systemMessage = Message.fromJson(systemMessageData);
+
+          if (data.containsKey('extractedTransactions') &&
+              data['extractedTransactions'] is List &&
+              (data['extractedTransactions'] as List).isNotEmpty) {
+            final extractedTransactionsList =
+                data['extractedTransactions'] as List;
+            final extractedTransactions = extractedTransactionsList.map((e) {
+              final transactionData = e as Map<String, dynamic>;
+
+              _convertDataTypes(transactionData);
+
+              return ExtractedTransaction.fromJson(transactionData);
+            }).toList();
+
+            final messageWithTransactions = systemMessage.copyWith(
+              extractedTransactions: extractedTransactions,
+            );
+
+            _ref
+                .read(chatProvider.notifier)
+                .addReceivedMessage(messageWithTransactions);
+          } else {
+            _ref.read(chatProvider.notifier).addReceivedMessage(systemMessage);
+          }
+
+          if (_onMessageReceived != null) {
+            _onMessageReceived!();
+          }
+        }
+      } catch (e) {
+        debugPrint('Error parsing WebSocket message: $e');
+      }
+    }
+  }
+
+// Hàm helper để chuyển đổi kiểu dữ liệu phù hợp
+  void _convertDataTypes(Map<String, dynamic> data) {
+    // Chuyển đổi các trường ID từ String sang int nếu cần
+    final intFields = [
+      'id',
+      'chatThreadId',
+      'chatExtractionId',
+      'chatMessageId',
+      'transactionId',
+      'amount',
+      'type',
+      'confirmationMode',
+      'confirmationStatus'
+    ];
+
+    for (final field in intFields) {
+      if (data.containsKey(field)) {
+        if (data[field] is String) {
+          data[field] = int.tryParse(data[field] as String) ?? 0;
+        }
+      }
+    }
+
+    // Chuyển đổi userId từ int sang String nếu cần
+    if (data.containsKey('userId') && data['userId'] is int) {
+      data['userId'] = data['userId'].toString(); // Sửa lỗi ở đây
+    }
+
+    // Thêm xử lý role nếu là số
+    if (data.containsKey('role') && data['role'] is int) {
+      int roleValue = data['role'] as int;
+      // Chuyển đổi từ int sang String
+      switch (roleValue) {
+        case 0:
+          data['role'] = 'Unknown';
+          break;
+        case 1:
+          data['role'] = 'System'; // role=1 là System
+          break;
+        case 2:
+          data['role'] = 'User'; // role=2 là User
+          break;
+        default:
+          data['role'] = 'System'; // Mặc định là System
+      }
+    }
+  }
+
+  Future<String?> _refreshToken() async {
+    try {
+      final token = await _tokenRepository.fetchToken();
+      if (token == null || token.refreshToken!.isEmpty) {
+        return null;
+      }
+
+      final baseUrl = _api.baseUrl;
+
+      final response = await dio.post(
+        '${baseUrl}${ApiEndpoints.auth.refreshToken}',
+        data: {
+          'accessToken': token.accessToken,
+          'refreshToken': token.refreshToken,
+        },
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          validateStatus: (status) =>
+              status != null && status >= 200 && status < 300,
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final tokenData = response.data as Map<String, dynamic>;
+        final newToken = Token(
+          token: json.encode(tokenData),
+          accessToken: tokenData['accessToken']?.toString() ?? '',
+          refreshToken: tokenData['refreshToken']?.toString() ?? '',
+          accessTokenExpiration:
+              tokenData['accessTokenExpiration']?.toString() ?? '',
+          refreshTokenExpiration:
+              tokenData['refreshTokenExpiration']?.toString() ?? '',
+        );
+        await _tokenRepository.saveToken(newToken);
+        return newToken.accessToken;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getChatThreads() async {
+    try {
+      final response = await _api.get(ApiEndpoints.chatThread.getAll);
+      return response.when(
+        success: (data) => List<Map<String, dynamic>>.from(data as List),
+        error: (e) => throw AppException.errorWithMessage(
+          "Failed to fetch chat threads: $e",
         ),
       );
     } catch (e) {
+      throw AppException.errorWithMessage("Failed to fetch chat threads: $e");
+    }
+  }
+
+  Future<APIResponse<Map<String, dynamic>>> getMessagesByChatThreadId({
+    required int chatThreadId,
+    int pageNumber = 1,
+    int pageSize = 10,
+  }) async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.chatThread.getMessageById(chatThreadId),
+        query: {
+          'pageNumber': pageNumber.toString(),
+          'pageSize': pageSize.toString()
+        },
+      );
+
+      return response.when(
+        success: (data) => APIResponse.success(data as Map<String, dynamic>),
+        error: APIResponse.error,
+      );
+    } catch (e) {
       return APIResponse.error(AppException.errorWithMessage(e.toString()));
+    }
+  }
+
+  Future<Map<String, dynamic>> confirmExtractedTransaction({
+    required int transactionId,
+    required int walletId,
+  }) async {
+    try {
+      final body = {
+        'walletId': walletId,
+      };
+
+      final response = await _api.post(
+        ApiEndpoints.extractedTransaction.confirmTransaction(transactionId),
+        jsonEncode(body),
+      );
+      return Map<String, dynamic>.from(response as Map);
+    } catch (e) {
+      throw AppException.errorWithMessage("Failed to confirm transaction: $e");
     }
   }
 }

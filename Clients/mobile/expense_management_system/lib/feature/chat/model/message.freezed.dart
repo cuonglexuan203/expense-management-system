@@ -20,11 +20,14 @@ Message _$MessageFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Message {
-  String get id => throw _privateConstructorUsedError;
+  int get id => throw _privateConstructorUsedError;
+  int get chatThreadId => throw _privateConstructorUsedError;
+  String? get userId => throw _privateConstructorUsedError;
+  String get role => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
-  bool get isUser => throw _privateConstructorUsedError;
-  DateTime get timestamp => throw _privateConstructorUsedError;
-  String? get transactionAmount => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  List<ExtractedTransaction> get extractedTransactions =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this Message to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,11 +44,13 @@ abstract class $MessageCopyWith<$Res> {
       _$MessageCopyWithImpl<$Res, Message>;
   @useResult
   $Res call(
-      {String id,
+      {int id,
+      int chatThreadId,
+      String? userId,
+      String role,
       String content,
-      bool isUser,
-      DateTime timestamp,
-      String? transactionAmount});
+      DateTime createdAt,
+      List<ExtractedTransaction> extractedTransactions});
 }
 
 /// @nodoc
@@ -64,32 +69,42 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
   @override
   $Res call({
     Object? id = null,
+    Object? chatThreadId = null,
+    Object? userId = freezed,
+    Object? role = null,
     Object? content = null,
-    Object? isUser = null,
-    Object? timestamp = null,
-    Object? transactionAmount = freezed,
+    Object? createdAt = null,
+    Object? extractedTransactions = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      chatThreadId: null == chatThreadId
+          ? _value.chatThreadId
+          : chatThreadId // ignore: cast_nullable_to_non_nullable
+              as int,
+      userId: freezed == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
               as String,
       content: null == content
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
               as String,
-      isUser: null == isUser
-          ? _value.isUser
-          : isUser // ignore: cast_nullable_to_non_nullable
-              as bool,
-      timestamp: null == timestamp
-          ? _value.timestamp
-          : timestamp // ignore: cast_nullable_to_non_nullable
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      transactionAmount: freezed == transactionAmount
-          ? _value.transactionAmount
-          : transactionAmount // ignore: cast_nullable_to_non_nullable
-              as String?,
+      extractedTransactions: null == extractedTransactions
+          ? _value.extractedTransactions
+          : extractedTransactions // ignore: cast_nullable_to_non_nullable
+              as List<ExtractedTransaction>,
     ) as $Val);
   }
 }
@@ -102,11 +117,13 @@ abstract class _$$MessageImplCopyWith<$Res> implements $MessageCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String id,
+      {int id,
+      int chatThreadId,
+      String? userId,
+      String role,
       String content,
-      bool isUser,
-      DateTime timestamp,
-      String? transactionAmount});
+      DateTime createdAt,
+      List<ExtractedTransaction> extractedTransactions});
 }
 
 /// @nodoc
@@ -123,32 +140,42 @@ class __$$MessageImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? chatThreadId = null,
+    Object? userId = freezed,
+    Object? role = null,
     Object? content = null,
-    Object? isUser = null,
-    Object? timestamp = null,
-    Object? transactionAmount = freezed,
+    Object? createdAt = null,
+    Object? extractedTransactions = null,
   }) {
     return _then(_$MessageImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      chatThreadId: null == chatThreadId
+          ? _value.chatThreadId
+          : chatThreadId // ignore: cast_nullable_to_non_nullable
+              as int,
+      userId: freezed == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
               as String,
       content: null == content
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
               as String,
-      isUser: null == isUser
-          ? _value.isUser
-          : isUser // ignore: cast_nullable_to_non_nullable
-              as bool,
-      timestamp: null == timestamp
-          ? _value.timestamp
-          : timestamp // ignore: cast_nullable_to_non_nullable
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      transactionAmount: freezed == transactionAmount
-          ? _value.transactionAmount
-          : transactionAmount // ignore: cast_nullable_to_non_nullable
-              as String?,
+      extractedTransactions: null == extractedTransactions
+          ? _value._extractedTransactions
+          : extractedTransactions // ignore: cast_nullable_to_non_nullable
+              as List<ExtractedTransaction>,
     ));
   }
 }
@@ -158,28 +185,42 @@ class __$$MessageImplCopyWithImpl<$Res>
 class _$MessageImpl implements _Message {
   const _$MessageImpl(
       {required this.id,
+      required this.chatThreadId,
+      this.userId,
+      required this.role,
       required this.content,
-      required this.isUser,
-      required this.timestamp,
-      this.transactionAmount});
+      required this.createdAt,
+      final List<ExtractedTransaction> extractedTransactions = const []})
+      : _extractedTransactions = extractedTransactions;
 
   factory _$MessageImpl.fromJson(Map<String, dynamic> json) =>
       _$$MessageImplFromJson(json);
 
   @override
-  final String id;
+  final int id;
+  @override
+  final int chatThreadId;
+  @override
+  final String? userId;
+  @override
+  final String role;
   @override
   final String content;
   @override
-  final bool isUser;
+  final DateTime createdAt;
+  final List<ExtractedTransaction> _extractedTransactions;
   @override
-  final DateTime timestamp;
-  @override
-  final String? transactionAmount;
+  @JsonKey()
+  List<ExtractedTransaction> get extractedTransactions {
+    if (_extractedTransactions is EqualUnmodifiableListView)
+      return _extractedTransactions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_extractedTransactions);
+  }
 
   @override
   String toString() {
-    return 'Message(id: $id, content: $content, isUser: $isUser, timestamp: $timestamp, transactionAmount: $transactionAmount)';
+    return 'Message(id: $id, chatThreadId: $chatThreadId, userId: $userId, role: $role, content: $content, createdAt: $createdAt, extractedTransactions: $extractedTransactions)';
   }
 
   @override
@@ -188,18 +229,28 @@ class _$MessageImpl implements _Message {
         (other.runtimeType == runtimeType &&
             other is _$MessageImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.chatThreadId, chatThreadId) ||
+                other.chatThreadId == chatThreadId) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.role, role) || other.role == role) &&
             (identical(other.content, content) || other.content == content) &&
-            (identical(other.isUser, isUser) || other.isUser == isUser) &&
-            (identical(other.timestamp, timestamp) ||
-                other.timestamp == timestamp) &&
-            (identical(other.transactionAmount, transactionAmount) ||
-                other.transactionAmount == transactionAmount));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            const DeepCollectionEquality()
+                .equals(other._extractedTransactions, _extractedTransactions));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, content, isUser, timestamp, transactionAmount);
+      runtimeType,
+      id,
+      chatThreadId,
+      userId,
+      role,
+      content,
+      createdAt,
+      const DeepCollectionEquality().hash(_extractedTransactions));
 
   /// Create a copy of Message
   /// with the given fields replaced by the non-null parameter values.
@@ -219,24 +270,30 @@ class _$MessageImpl implements _Message {
 
 abstract class _Message implements Message {
   const factory _Message(
-      {required final String id,
+      {required final int id,
+      required final int chatThreadId,
+      final String? userId,
+      required final String role,
       required final String content,
-      required final bool isUser,
-      required final DateTime timestamp,
-      final String? transactionAmount}) = _$MessageImpl;
+      required final DateTime createdAt,
+      final List<ExtractedTransaction> extractedTransactions}) = _$MessageImpl;
 
   factory _Message.fromJson(Map<String, dynamic> json) = _$MessageImpl.fromJson;
 
   @override
-  String get id;
+  int get id;
+  @override
+  int get chatThreadId;
+  @override
+  String? get userId;
+  @override
+  String get role;
   @override
   String get content;
   @override
-  bool get isUser;
+  DateTime get createdAt;
   @override
-  DateTime get timestamp;
-  @override
-  String? get transactionAmount;
+  List<ExtractedTransaction> get extractedTransactions;
 
   /// Create a copy of Message
   /// with the given fields replaced by the non-null parameter values.
