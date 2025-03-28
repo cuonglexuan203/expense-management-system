@@ -8,7 +8,7 @@ namespace EMS.Application.Features.Chats.Common.Dtos
     {
         public int Id { get; set; }
         public int ChatExtractionId { get; set; }
-        public int ChatMessageId { get; set; }
+        //public int ChatMessageId { get; set; }
         public string? Category { get; set; }
         public int TransactionId { get; set; }
         public string Name { get; set; } = default!;

@@ -15,6 +15,7 @@ using EMS.Application.Features.Wallets.Services;
 using EMS.Core.Constants;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
+using EMS.Infrastructure.Persistence.DbContext;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +65,7 @@ namespace EMS.Infrastructure.BackgroundJobs
             // Resolve scoped services
             using var scope = _serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-            var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var aiService = scope.ServiceProvider.GetRequiredService<IAiService>();
             var userPreferenceService = scope.ServiceProvider.GetRequiredService<IUserPreferenceService>();
             var transactionService = scope.ServiceProvider.GetRequiredService<ITransactionService>();
@@ -77,6 +78,7 @@ namespace EMS.Infrastructure.BackgroundJobs
             {
                 // Retrieve msg from db
                 var message = await context.ChatMessages
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(e => e.Id == queuedMessage.MessageId && e.ChatThreadId == queuedMessage.ChatThreadId && !e.IsDeleted)
                     ?? throw new NotFoundException($"Message with Id {queuedMessage.MessageId} not found");
                 var chatThreadId = message.ChatThreadId;
@@ -92,11 +94,11 @@ namespace EMS.Infrastructure.BackgroundJobs
                 // Save raw extraction
                 var chatExtraction = new ChatExtraction
                 {
-                    ChatMessageId = message.Id,
+                    ChatMessageId = systemMsg.Id,
                     ExtractionType = ExtractionType.Transaction,
                     ExtractedData = JsonSerializer.Serialize(extractionResult),
                 };
-                message.ChatExtraction = chatExtraction;
+                systemMsg.ChatExtraction = chatExtraction; // redundant but for clearer flow
 
                 var userPreferences = await userPreferenceService.GetUserPreferenceByIdAsync(queuedMessage.UserId);
                 // Save extracted transactions
@@ -128,9 +130,8 @@ namespace EMS.Infrastructure.BackgroundJobs
                             extractedTransaction.CategoryId = category.Id;
                             extractedTransaction.CurrencyCode = userPreferences.CurrencyCode;
                             extractedTransaction.ConfirmationMode = userPreferences.ConfirmationMode;
-                            extractedTransaction.ConfirmationStatus = userPreferences.ConfirmationMode == ConfirmationMode.Auto ?
-                                ConfirmationStatus.Confirmed :
-                                ConfirmationStatus.Pending;
+                            // NOTE: Pending for all confirmation modes, and will be modified when processing each mode later 
+                            extractedTransaction.ConfirmationStatus = ConfirmationStatus.Pending;
 
                             chatExtraction.ExtractedTransactions.Add(extractedTransaction);
                         }
@@ -153,7 +154,9 @@ namespace EMS.Infrastructure.BackgroundJobs
                         var transactions = new List<Transaction>();
                         foreach (var item in chatExtraction.ExtractedTransactions)
                         {
+                            item.ConfirmationStatus = ConfirmationStatus.Confirmed;
                             var transaction = Transaction.CreateFrom(item, queuedMessage.UserId, queuedMessage.WalletId, queuedMessage.MessageId);
+
                             if (transaction != null)
                             {
                                 transaction.ExtractedTransaction = item;
@@ -162,9 +165,9 @@ namespace EMS.Infrastructure.BackgroundJobs
                         }
 
                         var transactionDtoList = await transactionService.CreateTransactionsAsync(queuedMessage.UserId, queuedMessage.WalletId, transactions);
-                    });
+                    }, clearChangeTrackerOnRollback: true);
 
-                    await walletService.CacheWalletBalanceSummariesAsync(queuedMessage.WalletId);
+                    await walletService.CacheWalletBalanceSummariesAsync(queuedMessage.UserId, queuedMessage.WalletId);
                 }
 
                 await mediator.Publish(new MessageProcessedNotification()
@@ -185,7 +188,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                     "Sorry, I encountered an error processing your request. Please try again.");
 
                 context.ChatMessages.Add(errorMsg);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(stoppingToken);
 
                 await mediator.Publish(new MessageProcessedNotification
                 {

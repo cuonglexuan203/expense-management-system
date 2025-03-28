@@ -17,7 +17,9 @@ using EMS.Infrastructure.Persistence.DbContext;
 using EMS.Infrastructure.Persistence.Interceptors;
 using EMS.Infrastructure.Services;
 using EMS.Infrastructure.Services.HttpClients.AiService;
+using EMS.Infrastructure.SignalR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -71,6 +73,11 @@ namespace EMS.Infrastructure
             services.AddSingleton(TimeProvider.System);
             services.AddSingleton<IMessageQueue<TransactionProcessingMessage>,
                 ChannelMessageQueue<TransactionProcessingMessage>>();
+
+            // SignalR
+            services.TryAddSingleton<SignalRConnectionManager>();
+            services.TryAddSingleton<IUserIdProvider, SignalRUserIdProvider>();
+            services.TryAddSingleton<ISignalRContextAccessor, SignalRContextAccessor>();
         }
 
         private static void AddBackgroundJobs(IServiceCollection services)

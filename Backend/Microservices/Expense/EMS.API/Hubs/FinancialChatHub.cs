@@ -1,35 +1,36 @@
 ﻿using EMS.API.Hubs.Interfaces;
 using EMS.Application.Features.Chats.Common.Dtos;
 using EMS.Application.Features.Chats.Finance.Commands.SendMessage;
+using EMS.Infrastructure.SignalR;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Http.Connections.Features;
 
 namespace EMS.API.Hubs
 {
     [Authorize]
-    public class FinancialChatHub : Hub<IFinancialChatClient>
+    public class FinancialChatHub(
+        SignalRConnectionManager connectionManager,
+        ISignalRContextAccessor contextAccessor,
+        ILogger<FinancialChatHub> logger,
+        ISender sender) : EMSHubBase<IFinancialChatClient>(connectionManager, contextAccessor)
     {
-        private readonly ILogger<FinancialChatHub> _logger;
-        private readonly ISender _sender;
-
-        public FinancialChatHub(
-            ILogger<FinancialChatHub> logger,
-            ISender sender)
-        {
-            _logger = logger;
-            _sender = sender;
-        }
+        private readonly ILogger<FinancialChatHub> _logger = logger;
+        private readonly ISender _sender = sender;
 
         public override Task OnConnectedAsync()
         {
-            _logger.LogInformation("Client connected: {ConnectionId}", Context.ConnectionId);
+            _logger.LogInformation("Client connected: {ConnectionId} using transport: {Transport}",
+                Context.ConnectionId,
+                Context.Features.Get<IHttpTransportFeature>()?.TransportType.ToString());
+
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
             _logger.LogInformation("Client disconnected: {ConnectionId}", Context.ConnectionId);
+
             return base.OnDisconnectedAsync(exception);
         }
 
@@ -51,8 +52,6 @@ namespace EMS.API.Hubs
 
         public async Task<ChatMessageDto> SendMessage(int walletId, int chatThreadId, string text)
         {
-            var a = Context.User?.Claims?.Select(c => $"{c.Type}: {c.Value}").ToList();
-
             var userId = Context.UserIdentifier!;
             _logger.LogInformation("Message received from {UserId} in chat {ChatThreadId}", userId, chatThreadId);
 

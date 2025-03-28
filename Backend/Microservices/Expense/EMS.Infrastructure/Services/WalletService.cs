@@ -8,7 +8,6 @@ using EMS.Application.Common.Utils;
 using EMS.Application.Features.Wallets.Dtos;
 using EMS.Application.Features.Wallets.Queries.GetWalletSummary;
 using EMS.Application.Features.Wallets.Services;
-using EMS.Core.Entities;
 using EMS.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -42,10 +41,17 @@ namespace EMS.Infrastructure.Services
 
         public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(int walletId, TimePeriod period, CancellationToken cancellationToken = default)
         {
+            var summary = await GetWalletBalanceSummaryAsync(_currentUserService.Id!, walletId, period, cancellationToken);
+
+            return summary;
+        }
+
+        public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(string userId, int walletId, TimePeriod period, CancellationToken cancellationToken = default)
+        {
             var wallet = await _context.Wallets
                 .AsNoTracking()
-                .SingleOrDefaultAsync(e => e.UserId == _currentUserService.Id && e.Id == walletId && !e.IsDeleted)
-                ?? throw new NotFoundException($"Wallet with id {walletId} not found by user {_currentUserService.Id}");
+                .SingleOrDefaultAsync(e => e.UserId == userId && e.Id == walletId && !e.IsDeleted)
+                ?? throw new NotFoundException($"Wallet with id {walletId} not found by user {userId}");
 
             var transactionQuery = _context.Transactions
             .AsNoTracking()
@@ -93,11 +99,16 @@ namespace EMS.Infrastructure.Services
 
         public async Task CacheWalletBalanceSummariesAsync(int walletId)
         {
-            foreach (var value in _walletSummaryPeriods)
+            await CacheWalletBalanceSummariesAsync(_currentUserService.Id!, walletId);
+        }
+
+        public async Task CacheWalletBalanceSummariesAsync(string userId, int walletId)
+        {
+            foreach (var period in _walletSummaryPeriods)
             {
-                var walletSummary = await GetWalletBalanceSummaryAsync(walletId, value);
+                var walletSummary = await GetWalletBalanceSummaryAsync(userId, walletId, period);
                 await _distributedCacheService.SetAsync(
-                    CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.QueryKeys.WalletByUser, _currentUserService.Id!, walletId, value),
+                    CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.QueryKeys.WalletByUser, userId, walletId, period),
                     walletSummary);
             }
         }
