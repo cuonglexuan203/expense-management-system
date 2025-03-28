@@ -6,8 +6,8 @@ services:
   ems-api:
     image: ${DOCKER_REGISTRY-}ems-api
     build:
-      context: ./Microservices/Expense/EMS.API
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Microservices/Expense/EMS.API/Dockerfile
 
   # AI Microservice
   ai-service:
