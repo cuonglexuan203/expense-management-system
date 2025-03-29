@@ -4,9 +4,9 @@
     {
         Pending,
         Uploading,
-        Processing,
+        //Processing,
         Active,
         Failed,
-        Deleted,
+        //Deleted,
     }
 }
