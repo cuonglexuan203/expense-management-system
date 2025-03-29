@@ -181,7 +181,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
             children: [
               Expanded(
                 child: _buildIncomeExpenseItem(
-                  icon: Icons.arrow_downward,
+                  icon: Icons.trending_up,
                   label: 'Income',
                   amount: _safeFormatAmount(wallet.income),
                   iconColor: Colors.green,
@@ -190,7 +190,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
               const SizedBox(width: 15),
               Expanded(
                 child: _buildIncomeExpenseItem(
-                  icon: Icons.arrow_upward,
+                  icon: Icons.trending_down,
                   label: 'Expenses',
                   amount: _safeFormatAmount(wallet.expense),
                   iconColor: Colors.red,
