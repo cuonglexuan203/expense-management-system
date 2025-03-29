@@ -9,24 +9,24 @@ part of 'extracted_transaction.dart';
 _$ExtractedTransactionImpl _$$ExtractedTransactionImplFromJson(
         Map<String, dynamic> json) =>
     _$ExtractedTransactionImpl(
+      id: (json['id'] as num).toInt(),
       chatExtractionId: (json['chatExtractionId'] as num).toInt(),
-      chatMessageId: (json['chatMessageId'] as num).toInt(),
       category: json['category'] as String?,
       transactionId: (json['transactionId'] as num).toInt(),
       name: json['name'] as String,
       amount: (json['amount'] as num).toInt(),
-      type: (json['type'] as num).toInt(),
+      type: json['type'] as String,
       occurredAt: DateTime.parse(json['occurredAt'] as String),
-      confirmationMode: (json['confirmationMode'] as num).toInt(),
-      confirmationStatus: (json['confirmationStatus'] as num).toInt(),
+      confirmationMode: json['confirmationMode'] as String,
+      confirmationStatus: json['confirmationStatus'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
 Map<String, dynamic> _$$ExtractedTransactionImplToJson(
         _$ExtractedTransactionImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'chatExtractionId': instance.chatExtractionId,
-      'chatMessageId': instance.chatMessageId,
       'category': instance.category,
       'transactionId': instance.transactionId,
       'name': instance.name,

@@ -93,7 +93,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         if (accessToken != null) {
           await ref.read(chatRepositoryProvider).connect(accessToken);
 
-          // Thiết lập callback khi nhận được tin nhắn
           ref.read(chatRepositoryProvider).setOnMessageReceivedCallback(() {
             setState(() {
               isWaitingForResponse = false;
@@ -104,7 +103,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           throw AppException.errorWithMessage("Do not have Access Token");
         }
 
-        // Cuộn xuống dưới cùng sau khi tải tin nhắn
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToBottom();
         });
@@ -150,19 +148,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     _messageController.clear();
 
     final userMessage = Message(
-      id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
+      id: DateTime.now().millisecondsSinceEpoch,
       chatThreadId: chatThreadId!,
-      userId: 'current_user', // Hoặc lấy userId thực tế từ session
+      userId: 'current_user',
       role: 'User',
       content: message,
       createdAt: DateTime.now(),
       extractedTransactions: [],
     );
 
-    // Thêm tin nhắn vào provider để hiển thị ngay lập tức
     ref.read(chatProvider.notifier).addReceivedMessage(userMessage);
 
-    // Cuộn xuống để hiển thị tin nhắn mới nhất
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
@@ -171,7 +167,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       isWaitingForResponse = true;
     });
 
-    // Send message through the WebSocket connection
     try {
       await ref.read(chatRepositoryProvider).sendMessage(
             widget.walletId,
@@ -188,10 +183,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     }
   }
 
-  Future<void> _confirmTransaction(int transactionId) async {
+  Future<void> _confirmTransaction(int transactionId, String status) async {
     await ref.read(chatRepositoryProvider).confirmExtractedTransaction(
           transactionId: transactionId,
           walletId: widget.walletId,
+          status: status,
         );
   }
 
@@ -212,11 +208,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             color: Colors.white,
           ),
         ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
-        ),
+        // shape: const RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.vertical(
+        //     bottom: Radius.circular(20),
+        //   ),
+        // ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -227,9 +223,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 ColorName.chatGradientEnd,
               ],
             ),
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(20),
-            ),
+            // borderRadius: BorderRadius.vertical(
+            //   bottom: Radius.circular(20),
+            // ),
           ),
         ),
       ),
@@ -302,7 +298,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                                   controller: _scrollController,
                                   padding: const EdgeInsets.all(16),
                                   itemCount: messages.length,
-                                  reverse: true, // Đảo ngược thứ tự hiển thị
+                                  reverse: true,
                                   itemBuilder: (context, index) {
                                     final message = messages[index];
                                     return MessageBubble(
@@ -312,7 +308,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                                   },
                                 ),
                               ),
-                              // Hiển thị typing indicator khi đang đợi phản hồi
                               if (isWaitingForResponse)
                                 Padding(
                                   padding: const EdgeInsets.only(

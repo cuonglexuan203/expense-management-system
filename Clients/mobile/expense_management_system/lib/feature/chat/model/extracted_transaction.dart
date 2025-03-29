@@ -6,16 +6,16 @@ part 'extracted_transaction.g.dart';
 @freezed
 class ExtractedTransaction with _$ExtractedTransaction {
   const factory ExtractedTransaction({
+    required int id,
     required int chatExtractionId,
-    required int chatMessageId,
     String? category,
     required int transactionId,
     required String name,
     required int amount,
-    required int type,
+    required String type,
     required DateTime occurredAt,
-    required int confirmationMode,
-    required int confirmationStatus,
+    required String confirmationMode,
+    required String confirmationStatus,
     required DateTime createdAt,
   }) = _ExtractedTransaction;
 

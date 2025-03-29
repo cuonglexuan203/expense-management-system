@@ -10,6 +10,7 @@ import 'package:expense_management_system/shared/http/api_provider.dart';
 import 'package:expense_management_system/shared/http/api_response.dart';
 import 'package:expense_management_system/shared/http/app_exception.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
@@ -25,7 +26,8 @@ class ChatRepository {
   late final TokenRepository _tokenRepository =
       _ref.read(tokenRepositoryProvider);
 
-  // Callback khi tin nhắn được nhận
+  final baseUrl = dotenv.env['BASE_URL'];
+
   VoidCallback? _onMessageReceived;
 
   void setOnMessageReceivedCallback(VoidCallback callback) {
@@ -35,7 +37,7 @@ class ChatRepository {
   Future<void> connect(String accessToken) async {
     _hubConnection = HubConnectionBuilder()
         .withUrl(
-          'https://wzwmrgk9-5284.asse.devtunnels.ms/hubs/finance',
+          '$baseUrl/${ApiEndpoints.hubConnection.finance}',
           options: HttpConnectionOptions(
             accessTokenFactory: () async => accessToken,
           ),
@@ -143,9 +145,7 @@ class ChatRepository {
     }
   }
 
-// Hàm helper để chuyển đổi kiểu dữ liệu phù hợp
   void _convertDataTypes(Map<String, dynamic> data) {
-    // Chuyển đổi các trường ID từ String sang int nếu cần
     final intFields = [
       'id',
       'chatThreadId',
@@ -166,27 +166,24 @@ class ChatRepository {
       }
     }
 
-    // Chuyển đổi userId từ int sang String nếu cần
     if (data.containsKey('userId') && data['userId'] is int) {
-      data['userId'] = data['userId'].toString(); // Sửa lỗi ở đây
+      data['userId'] = data['userId'].toString();
     }
 
-    // Thêm xử lý role nếu là số
     if (data.containsKey('role') && data['role'] is int) {
       int roleValue = data['role'] as int;
-      // Chuyển đổi từ int sang String
       switch (roleValue) {
         case 0:
           data['role'] = 'Unknown';
           break;
         case 1:
-          data['role'] = 'System'; // role=1 là System
+          data['role'] = 'System';
           break;
         case 2:
-          data['role'] = 'User'; // role=2 là User
+          data['role'] = 'User';
           break;
         default:
-          data['role'] = 'System'; // Mặc định là System
+          data['role'] = 'System';
       }
     }
   }
@@ -273,16 +270,19 @@ class ChatRepository {
   Future<Map<String, dynamic>> confirmExtractedTransaction({
     required int transactionId,
     required int walletId,
+    required String status,
   }) async {
     try {
-      final body = {
-        'walletId': walletId,
-      };
+      final body = {'walletId': walletId, 'confirmationStatus': status};
 
-      final response = await _api.post(
-        ApiEndpoints.extractedTransaction.confirmTransaction(transactionId),
-        jsonEncode(body),
-      );
+      // final response = await _api.post(
+      //   ApiEndpoints.extractedTransaction.confirmTransaction(transactionId),
+      //   jsonEncode(body),
+      // );
+      final response = await _api.patch(
+          ApiEndpoints.extractedTransaction
+              .confirmStatusTransaction(transactionId),
+          jsonEncode(body));
       return Map<String, dynamic>.from(response as Map);
     } catch (e) {
       throw AppException.errorWithMessage("Failed to confirm transaction: $e");

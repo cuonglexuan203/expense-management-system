@@ -60,9 +60,10 @@ class _ChatThreadEndpoints {
 class _ExtractedTransactionEndpoints {
   final String base = '${ApiEndpoints.base}/extracted-transactions';
   String confirmTransaction(int id) => '$base/$id/confirm';
+  String confirmStatusTransaction(int id) => '$base/$id/status';
 }
 
 class _HubConnectionEndpoints {
-  final String base = '${ApiEndpoints.base}/hubs';
+  final String base = '$ApiEndpoints/hubs';
   String get finance => '$base/finance';
 }
