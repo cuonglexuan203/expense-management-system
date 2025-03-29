@@ -112,9 +112,10 @@ class TransactionRepository {
     int walletId, {
     int pageNumber = 1,
     int pageSize = 10,
-    String period = 'AllTime', // Default to AllTime
-    String? type, // Optional type filter (Expense/Income)
-    String sort = 'DESC', // Default to newest first
+    String period = 'AllTime',
+    String? type,
+    String sort = 'DESC',
+    String? search,
   }) async {
     try {
       // Build query parameters
@@ -129,6 +130,11 @@ class TransactionRepository {
       // Add type filter if provided
       if (type != null) {
         queryParams['Type'] = type;
+      }
+
+      // Add search parameter if provided
+      if (search != null && search.isNotEmpty) {
+        queryParams['Name'] = search;
       }
 
       final response = await _api.get(

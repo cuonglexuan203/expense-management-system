@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
 import 'package:expense_management_system/feature/home/provider/home_provider.dart';
 import 'package:expense_management_system/feature/transaction/model/transaction.dart';
-import 'package:expense_management_system/feature/transaction/repository/transaction_repository.dart';
+import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
 import 'package:expense_management_system/feature/transaction/widget/transaction_item.dart';
 import 'package:expense_management_system/feature/wallet/model/wallet.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
-import 'package:expense_management_system/feature/wallet/state/wallet_state.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
+import 'package:expense_management_system/shared/constants/enum.dart';
 import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:expense_management_system/shared/pagination/pagination_state.dart';
 import 'package:expense_management_system/shared/route/app_router.dart';
@@ -15,127 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-
-class TransactionFilterParams {
-  final int walletId;
-  final String period;
-  final String? type;
-  final String sort;
-
-  TransactionFilterParams({
-    required this.walletId,
-    this.period = 'AllTime',
-    this.type,
-    this.sort = 'DESC',
-  });
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TransactionFilterParams &&
-          walletId == other.walletId &&
-          period == other.period &&
-          type == other.type &&
-          sort == other.sort;
-
-  @override
-  int get hashCode => Object.hash(walletId, period, type, sort);
-}
-
-// Provider for filtered transactions
-final filteredTransactionsProvider = StateNotifierProvider.family<
-    FilteredTransactionsNotifier,
-    PaginatedState<Transaction>,
-    TransactionFilterParams>(
-  (ref, params) => FilteredTransactionsNotifier(ref, params),
-);
-
-// State notifier for filtered transactions
-class FilteredTransactionsNotifier
-    extends StateNotifier<PaginatedState<Transaction>> {
-  final Ref _ref;
-  final TransactionFilterParams params;
-
-  FilteredTransactionsNotifier(this._ref, this.params)
-      : super(PaginatedState.initial<Transaction>()) {
-    fetchNextPage();
-  }
-
-  Future<void> fetchNextPage() async {
-    if (state.isLoading || state.hasReachedEnd) return;
-
-    state = state.copyWith(isLoading: true);
-    final repository = _ref.read(transactionRepositoryProvider);
-
-    try {
-      final response = await repository.getTransactionsByWalletPaginated(
-        params.walletId,
-        pageNumber: state.paginationInfo.pageNumber,
-        pageSize: state.paginationInfo.pageSize,
-        period: params.period,
-        type: params.type,
-        sort: params.sort,
-      );
-
-      response.when(
-        success: (paginatedResponse) {
-          state = state.copyWith(
-            items: [...state.items, ...paginatedResponse.items],
-            paginationInfo: paginatedResponse.paginationInfo,
-            isLoading: false,
-            hasReachedEnd: !paginatedResponse.paginationInfo.hasNextPage,
-          );
-        },
-        error: (error) {
-          state = state.copyWith(
-            isLoading: false,
-            errorMessage: error.toString(),
-          );
-        },
-      );
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
-    }
-  }
-
-  Future<void> refresh() async {
-    state = PaginatedState.initial<Transaction>();
-    await fetchNextPage();
-  }
-}
-
-enum TransactionPeriod {
-  allTime('All Time', 'AllTime'),
-  currentWeek('This Week', 'CurrentWeek'),
-  currentMonth('This Month', 'CurrentMonth'),
-  currentYear('This Year', 'CurrentYear');
-
-  final String label;
-  final String apiValue;
-  const TransactionPeriod(this.label, this.apiValue);
-}
-
-enum TransactionType {
-  none('All', null),
-  expense('Expense', 'Expense'),
-  income('Income', 'Income');
-
-  final String label;
-  final String? apiValue;
-  const TransactionType(this.label, this.apiValue);
-}
-
-enum TransactionSort {
-  desc('Newest First', 'DESC'),
-  asc('Oldest First', 'ASC');
-
-  final String label;
-  final String apiValue;
-  const TransactionSort(this.label, this.apiValue);
-}
 
 class TransactionPage extends ConsumerStatefulWidget {
   final int walletId;
@@ -148,11 +29,13 @@ class TransactionPage extends ConsumerStatefulWidget {
 
 class _TransactionPageState extends ConsumerState<TransactionPage>
     with SingleTickerProviderStateMixin {
-  final ScrollController _scrollController = ScrollController();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  // Filter state
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+  Timer? _debounce;
+
   TransactionPeriod _selectedPeriod = TransactionPeriod.allTime;
   TransactionType _selectedType = TransactionType.none;
   TransactionSort _selectedSort = TransactionSort.desc;
@@ -167,8 +50,10 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
       period: _selectedPeriod.apiValue,
       type: _selectedType.apiValue,
       sort: _selectedSort.apiValue,
+      search: null,
     );
-    _scrollController.addListener(_onScroll);
+
+    _searchController.addListener(_onSearchChanged);
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -184,23 +69,36 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _debounce?.cancel();
     _animationController.dispose();
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_isBottom) {
-      _loadMoreTransactions();
-    }
-  }
-
-  bool get _isBottom {
-    if (!_scrollController.hasClients) return false;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.offset;
-    return currentScroll >= (maxScroll - 200);
+  // Search handling with debounce
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      // Only update if the search term has changed
+      if (_filterParams.search != _searchController.text) {
+        setState(() {
+          _filterParams = TransactionFilterParams(
+            walletId: widget.walletId,
+            period: _selectedPeriod.apiValue,
+            type: _selectedType.apiValue,
+            sort: _selectedSort.apiValue,
+            search: _searchController.text.isNotEmpty
+                ? _searchController.text
+                : null,
+          );
+          // Refresh the transactions list with new search parameter
+          ref
+              .read(filteredTransactionsProvider(_filterParams).notifier)
+              .refresh();
+        });
+      }
+    });
   }
 
   void _loadMoreTransactions() {
@@ -216,7 +114,24 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
         period: _selectedPeriod.apiValue,
         type: _selectedType.apiValue,
         sort: _selectedSort.apiValue,
+        search:
+            _searchController.text.isNotEmpty ? _searchController.text : null,
       );
+    });
+  }
+
+  void _clearSearch() {
+    setState(() {
+      _searchController.clear();
+      _filterParams = TransactionFilterParams(
+        walletId: widget.walletId,
+        period: _selectedPeriod.apiValue,
+        type: _selectedType.apiValue,
+        sort: _selectedSort.apiValue,
+        search: null,
+      );
+      // Refresh the transactions list
+      ref.read(filteredTransactionsProvider(_filterParams).notifier).refresh();
     });
   }
 
@@ -237,23 +152,33 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
 
             // Scrollable content
             Expanded(
-              child: RefreshIndicator(
-                color: ColorName.blue,
-                onRefresh: () async {
-                  await ref
-                      .read(
-                          filteredTransactionsProvider(_filterParams).notifier)
-                      .refresh();
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification is ScrollUpdateNotification) {
+                    if (notification.metrics.pixels >=
+                        notification.metrics.maxScrollExtent - 300) {
+                      _loadMoreTransactions();
+                    }
+                  }
+                  return false;
                 },
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    children: [
-                      _buildWalletSummary(),
-                      _buildFiltersSection(),
-                      _buildTransactionsListContent(transactionState),
-                    ],
+                child: RefreshIndicator(
+                  color: ColorName.blue,
+                  onRefresh: () async {
+                    await ref
+                        .read(filteredTransactionsProvider(_filterParams)
+                            .notifier)
+                        .refresh();
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        _buildWalletSummary(),
+                        _buildFiltersSection(),
+                        _buildTransactionsListContent(transactionState),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -261,7 +186,6 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
           ],
         ),
       ),
-      // floatingActionButton: _buildFloatingActionButton(),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: ref.watch(currentNavIndexProvider),
         onTap: (index) =>
@@ -305,115 +229,169 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title Row with illustrations
           Row(
             children: [
-              // Main title with dynamic design
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Transactions',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Nunito',
-                        color: Color(0xFF2D3142),
-                        letterSpacing: -0.5,
+              if (!_isSearching) ...[
+                // Regular title view
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Transactions',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          fontFamily: 'Nunito',
+                          color: Color(0xFF2D3142),
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      height: 4,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: ColorName.blue,
-                        borderRadius: BorderRadius.circular(2),
+                      const SizedBox(height: 4),
+                      Container(
+                        height: 4,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: ColorName.blue,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-
-              // Action buttons - search and filter
-              Row(
-                children: [
-                  Container(
+                // Search icon button
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.search),
+                    color: ColorName.blue,
+                    iconSize: 24,
+                    onPressed: () {
+                      setState(() {
+                        _isSearching = true;
+                      });
+                    },
+                  ),
+                ),
+              ] else ...[
+                // Search UI
+                Expanded(
+                  child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 10,
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.search),
-                      color: ColorName.blue,
-                      iconSize: 24,
-                      onPressed: () {
-                        // Implement search
+                    child: TextField(
+                      controller: _searchController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: 'Search transactions by name...',
+                        hintStyle: TextStyle(
+                          fontSize: 16,
+                          color: const Color(0xFF2D3142).withOpacity(0.5),
+                          fontFamily: 'Nunito',
+                        ),
+                        border: InputBorder.none,
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 15),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: ColorName.blue,
+                          size: 20,
+                        ),
+                        suffixIcon: _searchController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, size: 20),
+                                onPressed: _clearSearch,
+                                color: Colors.grey[600],
+                              )
+                            : null,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Nunito',
+                        color: Color(0xFF2D3142),
+                      ),
+                      onSubmitted: (value) {
+                        // Trigger search on submit
+                        _onSearchChanged();
                       },
                     ),
                   ),
-                  // const SizedBox(width: 10),
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white,
-                  //     borderRadius: BorderRadius.circular(15),
-                  //     boxShadow: [
-                  //       BoxShadow(
-                  //         color: Colors.black.withOpacity(0.08),
-                  //         blurRadius: 10,
-                  //         offset: const Offset(0, 2),
-                  //       ),
-                  //     ],
-                  //   ),
-                  //   child: IconButton(
-                  //     icon: const Icon(Icons.sort),
-                  //     color: ColorName.blue,
-                  //     onPressed: () {
-                  //       // Show quick sort options
-                  //     },
-                  //   ),
-                  // ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                // Close search button
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.close),
+                    color: const Color(0xFF2D3142),
+                    onPressed: () {
+                      setState(() {
+                        _isSearching = false;
+                        _clearSearch();
+                      });
+                    },
+                  ),
+                ),
+              ],
             ],
           ),
-
-          // Subtitle/description (optional)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              'Track your financial activity',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Nunito',
-                color: const Color(0xFF2D3142).withOpacity(0.6),
+          if (!_isSearching)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Track your financial activity',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Nunito',
+                  color: const Color(0xFF2D3142).withOpacity(0.6),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: () {
-        // Navigate to add transaction page
-      },
-      backgroundColor: ColorName.blue,
-      elevation: 4,
-      child: const Icon(Icons.add, color: Colors.white, size: 28),
-    );
-  }
+  // Widget _buildFloatingActionButton() {
+  //   return FloatingActionButton(
+  //     onPressed: () {
+  //       // Navigate to add transaction page
+  //     },
+  //     backgroundColor: ColorName.blue,
+  //     elevation: 4,
+  //     child: const Icon(Icons.add, color: Colors.white, size: 28),
+  //   );
+  // }
 
   Widget _buildWalletSummary() {
     return ref.watch(walletDetailNotifierProvider(widget.walletId)).maybeWhen(
@@ -772,7 +750,53 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
       return _buildEmptyState();
     }
 
-    // Group transactions by date
+    // Display search results information if search is active
+    Widget searchInfoBanner = const SizedBox.shrink();
+    if (_filterParams.search != null && _filterParams.search!.isNotEmpty) {
+      searchInfoBanner = Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.blue.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.search, size: 18, color: ColorName.blue),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Search results for "${_filterParams.search}"',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: ColorName.blue,
+                  fontFamily: 'Nunito',
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: _clearSearch,
+              borderRadius: BorderRadius.circular(12),
+              child: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Text(
+                  'Clear',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: ColorName.blue,
+                    fontFamily: 'Nunito',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     final Map<String, List<Transaction>> groupedTransactions = {};
 
     for (var transaction in transactionState.items) {
@@ -800,11 +824,51 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
           return _buildDateSection(date, transactions);
         }).toList(),
         if (transactionState.isLoading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: Center(child: CircularProgressIndicator()),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Center(
+              child: Column(
+                children: [
+                  const CircularProgressIndicator(
+                    color: ColorName.blue,
+                    strokeWidth: 3,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Loading more transactions...',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                      fontFamily: 'Nunito',
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        const SizedBox(height: 80),
+        if (transactionState.hasReachedEnd && transactionState.items.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(1, 16, 1, 50),
+            child: Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'All transactions loaded',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                    fontFamily: 'Nunito',
+                  ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
