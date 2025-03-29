@@ -34,8 +34,7 @@ namespace EMS.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<AiServiceOptions>(configuration.GetSection(AiServiceOptions.AiService));
-            services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.Cloudinary));
+            ConfigureOptions(services, configuration);
 
             #region Add services
             AddSingletonServices(services);
@@ -51,6 +50,12 @@ namespace EMS.Infrastructure
             services.AddRedisCaching(configuration);
 
             return services;
+        }
+
+        private static void ConfigureOptions(IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<AiServiceOptions>(configuration.GetSection(AiServiceOptions.AiService));
+            services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.Cloudinary));
         }
 
         private static void AddHttpClients(IServiceCollection services)

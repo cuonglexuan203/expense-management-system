@@ -10,7 +10,7 @@ namespace EMS.Core.Entities
         public string Url { get; set; } = default!;
         public string? SecureUrl { get; set; } = default!;
         public string? ThumbnailUrl { get; set; }
-        public int Size { get; set; }
+        public long Size { get; set; }
         public string Extension { get; set; } = default!;
         public MediaType Type { get; set; }
         public string? PublicId { get; set; }

@@ -36,8 +36,8 @@ namespace EMS.Infrastructure.Services
             _context = context;
             _mapper = mapper;
         }
-
-        public async Task<Media> UploadMediaAsync(
+        public async Task<MediaDto> UploadMediaAsync(
+            Media? media,
             Stream fileStream,
             string fileName,
             string contentType,
@@ -53,15 +53,13 @@ namespace EMS.Infrastructure.Services
                     mediaType = DetermineMediaType(contentType);
                 }
 
-                var media = new Media
-                {
-                    FileName = fileName,
-                    ContentType = contentType,
-                    Extension = Path.GetExtension(fileName).Trim('.').ToLowerInvariant(),
-                    Type = mediaType.Value,
-                    Status = MediaStatus.Uploading,
-                    Size = (int)fileStream.Length,
-                };
+                media ??= new Media();
+                media.FileName = fileName;
+                media.ContentType = contentType;
+                media.Extension = Path.GetExtension(fileName).Trim('.').ToLowerInvariant();
+                media.Type = mediaType.Value;
+                media.Status = MediaStatus.Uploading;
+                media.Size = fileStream.Length;
 
                 _context.Media.Add(media);
                 await _context.SaveChangesAsync();
@@ -109,7 +107,7 @@ namespace EMS.Infrastructure.Services
 
                     _logger.LogInformation("Successfully uploaded media: {MediaId}, {PublicId}", media.Id, media.PublicId);
 
-                    return media;
+                    return _mapper.Map<MediaDto>(media);
                 }
                 catch (Exception ex)
                 {
@@ -127,6 +125,16 @@ namespace EMS.Infrastructure.Services
                 _logger.LogError(ex, "Unhandled error during media upload: {Message}", ex.Message);
                 throw;
             }
+        }
+
+        public Task<MediaDto> UploadMediaAsync(
+            Stream fileStream,
+            string fileName,
+            string contentType,
+            MediaType? mediaType = null,
+            CancellationToken cancellationToken = default)
+        {
+            return UploadMediaAsync(null, fileStream, fileName, contentType, mediaType, cancellationToken);
         }
 
         private MediaType DetermineMediaType(string contentType)
@@ -228,7 +236,7 @@ namespace EMS.Infrastructure.Services
 
         public string GetThumbnailUrl(Media media)
         {
-            if(!string.IsNullOrEmpty(media.ThumbnailUrl))
+            if (!string.IsNullOrEmpty(media.ThumbnailUrl))
             {
                 return media.ThumbnailUrl;
             }

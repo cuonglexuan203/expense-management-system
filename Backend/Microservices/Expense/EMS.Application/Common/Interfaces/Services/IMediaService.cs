@@ -7,9 +7,20 @@ namespace EMS.Application.Common.Interfaces.Services
     public interface IMediaService
     {
         /// <summary>
+        /// Uploads media file to storage and persists database record
+        /// </summary>
+        Task<MediaDto> UploadMediaAsync(
+            Media? media,
+            Stream fileStream,
+            string fileName,
+            string contentType,
+            MediaType? mediaType = null,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Uploads media file to storage and creates database record
         /// </summary>
-        Task<Media> UploadMediaAsync(
+        Task<MediaDto> UploadMediaAsync(
             Stream fileStream,
             string fileName,
             string contentType,
