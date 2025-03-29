@@ -1,3 +1,4 @@
+import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_management_system/feature/chat/model/message.dart';
 import 'package:expense_management_system/feature/chat/model/extracted_transaction.dart';
@@ -6,7 +7,7 @@ import 'package:intl/intl.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
-  final Function(int)? onConfirmTransaction;
+  final Function(int, String)? onConfirmTransaction;
 
   const MessageBubble({
     super.key,
@@ -16,7 +17,6 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Kiểm tra role của message (case-insensitive)
     final isUserMessage = message.role.toLowerCase() == "user";
 
     return Align(
@@ -46,7 +46,6 @@ class MessageBubble extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              // Hiển thị thời gian gửi tin nhắn
               Text(
                 DateFormat('HH:mm').format(message.createdAt),
                 style: TextStyle(
@@ -66,7 +65,6 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  // Giữ nguyên phương thức _buildExtractedTransactions và _buildTransactionCard
   Widget _buildExtractedTransactions(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,13 +79,6 @@ class MessageBubble extends StatelessWidget {
 
   Widget _buildTransactionCard(
       BuildContext context, ExtractedTransaction transaction) {
-    // Format currency
-    final amountFormat = NumberFormat.currency(
-      symbol: '',
-      decimalDigits: 0,
-    );
-
-    // Determine transaction type
     String typeText = 'Unknown';
     Color typeColor = Colors.grey;
 
@@ -99,77 +90,135 @@ class MessageBubble extends StatelessWidget {
       typeColor = Colors.green;
     }
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    // Use StatefulBuilder to update the UI after user action
+    return StatefulBuilder(
+      builder: (context, setState) {
+        // Track if the transaction has been processed (confirmed or rejected)
+        bool isProcessed = transaction.confirmationStatus != 'Pending';
+
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    transaction.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: typeColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    typeText,
-                    style: TextStyle(
-                      color: typeColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${amountFormat.format(transaction.amount)} VND',
-                  style: TextStyle(
-                    color: typeColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                  ),
-                ),
-                if (transaction.confirmationStatus == 0 &&
-                    onConfirmTransaction != null)
-                  ElevatedButton(
-                    onPressed: () =>
-                        onConfirmTransaction!(transaction.chatExtractionId),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ColorName.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        transaction.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      'Confirm',
-                      style: TextStyle(color: Colors.white),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: typeColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        typeText,
+                        style: TextStyle(
+                          color: typeColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      transaction.amount.toFormattedString(),
+                      style: TextStyle(
+                        color: typeColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                    if (!isProcessed && onConfirmTransaction != null)
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
+                              // Call confirmation function with 'Confirmed' status
+                              await onConfirmTransaction!(
+                                transaction.chatExtractionId,
+                                'Confirmed',
+                              );
+                              // Update UI to hide buttons
+                              setState(() {
+                                isProcessed = true;
+                              });
+                              // Show success message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Confirmed successfully'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorName.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: const Text(
+                              'Confirm',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () async {
+                              // Call confirmation function with 'Rejected' status
+                              await onConfirmTransaction!(
+                                transaction.chatExtractionId,
+                                'Rejected',
+                              );
+                              // Update UI to hide buttons
+                              setState(() {
+                                isProcessed = true;
+                              });
+                              // Show rejection message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Rejected successfully'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: const Text(
+                              'Reject',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
