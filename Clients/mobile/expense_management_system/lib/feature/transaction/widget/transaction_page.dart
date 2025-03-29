@@ -1,7 +1,6 @@
 import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
-import 'package:expense_management_system/app/widget/custom_header,dart';
+import 'package:expense_management_system/feature/home/provider/home_provider.dart';
 import 'package:expense_management_system/feature/transaction/model/transaction.dart';
-import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
 import 'package:expense_management_system/feature/transaction/repository/transaction_repository.dart';
 import 'package:expense_management_system/feature/transaction/widget/transaction_item.dart';
 import 'package:expense_management_system/feature/wallet/model/wallet.dart';
@@ -10,9 +9,11 @@ import 'package:expense_management_system/feature/wallet/state/wallet_state.dart
 import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:expense_management_system/shared/pagination/pagination_state.dart';
+import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:expense_management_system/shared/util/bottom_nav_bar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 class TransactionFilterParams {
@@ -260,25 +261,44 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
           ],
         ),
       ),
-      floatingActionButton: _buildFloatingActionButton(),
+      // floatingActionButton: _buildFloatingActionButton(),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: ref.watch(currentNavIndexProvider),
         onTap: (index) =>
             BottomNavigationManager.handleNavigation(context, ref, index),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          final selectedWalletId = ref.read(homeNotifierProvider).maybeWhen(
+                loaded: (wallets, selectedIndex) => wallets[selectedIndex].id,
+                orElse: () => null,
+              );
+          if (selectedWalletId != null) {
+            ChatRoute(walletId: selectedWalletId).push(context);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please select a wallet first')),
+            );
+          }
+        },
+        shape: const CircleBorder(),
+        backgroundColor: const Color(0xFF386BF6),
+        child: const Icon(Iconsax.add, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   Widget _buildTitleSection() {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
             Colors.white,
-            const Color(0xFFF8FAFD),
+            Color(0xFFF8FAFD),
           ],
         ),
       ),
@@ -322,7 +342,7 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.08),
@@ -334,32 +354,33 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
                     child: IconButton(
                       icon: const Icon(Icons.search),
                       color: ColorName.blue,
+                      iconSize: 24,
                       onPressed: () {
                         // Implement search
                       },
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.sort),
-                      color: ColorName.blue,
-                      onPressed: () {
-                        // Show quick sort options
-                      },
-                    ),
-                  ),
+                  // const SizedBox(width: 10),
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.white,
+                  //     borderRadius: BorderRadius.circular(15),
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: Colors.black.withOpacity(0.08),
+                  //         blurRadius: 10,
+                  //         offset: const Offset(0, 2),
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   child: IconButton(
+                  //     icon: const Icon(Icons.sort),
+                  //     color: ColorName.blue,
+                  //     onPressed: () {
+                  //       // Show quick sort options
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
             ],
@@ -391,33 +412,6 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
       backgroundColor: ColorName.blue,
       elevation: 4,
       child: const Icon(Icons.add, color: Colors.white, size: 28),
-    );
-  }
-
-  Widget _buildBody(
-      WalletState walletState, PaginatedState<Transaction> transactionState) {
-    return SafeArea(
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Column(
-          children: [
-            _buildWalletSummary(),
-            _buildFiltersSection(),
-            Expanded(
-              child: RefreshIndicator(
-                color: ColorName.blue,
-                onRefresh: () async {
-                  await ref
-                      .read(
-                          filteredTransactionsProvider(_filterParams).notifier)
-                      .refresh();
-                },
-                child: _buildContent(walletState, transactionState),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -765,19 +759,6 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
     );
   }
 
-  Widget _buildContent(
-      WalletState walletState, PaginatedState<Transaction> transactionState) {
-    if (transactionState.isLoading && transactionState.items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (transactionState.items.isEmpty) {
-      return _buildEmptyState();
-    }
-
-    return _buildTransactionsListContent(transactionState);
-  }
-
   Widget _buildTransactionsListContent(
       PaginatedState<Transaction> transactionState) {
     if (transactionState.isLoading && transactionState.items.isEmpty) {
@@ -818,15 +799,11 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
           final transactions = groupedTransactions[date]!;
           return _buildDateSection(date, transactions);
         }).toList(),
-
-        // Loading indicator at the bottom
         if (transactionState.isLoading)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: Center(child: CircularProgressIndicator()),
           ),
-
-        // Add bottom padding to ensure we can scroll past the FAB
         const SizedBox(height: 80),
       ],
     );
@@ -875,49 +852,6 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildTransactionsList(PaginatedState<Transaction> transactionState) {
-    // Group transactions by date
-    final Map<String, List<Transaction>> groupedTransactions = {};
-
-    for (var transaction in transactionState.items) {
-      final date = DateFormat('MMM d, yyyy').format(transaction.occurredAt);
-      if (!groupedTransactions.containsKey(date)) {
-        groupedTransactions[date] = [];
-      }
-      groupedTransactions[date]!.add(transaction);
-    }
-
-    final sortedDates = groupedTransactions.keys.toList()
-      ..sort((a, b) {
-        final dateA = DateFormat('MMM d, yyyy').parse(a);
-        final dateB = DateFormat('MMM d, yyyy').parse(b);
-        return _selectedSort == TransactionSort.desc
-            ? dateB.compareTo(dateA)
-            : dateA.compareTo(dateB);
-      });
-
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: sortedDates.length + (transactionState.isLoading ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == sortedDates.length) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        final date = sortedDates[index];
-        final transactions = groupedTransactions[date]!;
-
-        return _buildDateSection(date, transactions);
-      },
     );
   }
 
