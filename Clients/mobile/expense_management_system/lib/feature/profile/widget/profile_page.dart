@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
 import 'package:expense_management_system/feature/auth/provider/auth_provider.dart';
 import 'package:expense_management_system/shared/util/bottom_nav_bar_manager.dart';
@@ -132,9 +133,8 @@ class ProfilePage extends ConsumerWidget {
             icon: Iconsax.security_safe,
             title: 'Security',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Security feature coming soon')),
-              );
+              AppSnackBar.showInfo(
+                  context: context, message: 'Security feature coming soon');
             },
           ),
           _buildMenuItem(

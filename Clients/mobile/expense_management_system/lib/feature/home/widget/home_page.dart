@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
 import 'package:expense_management_system/feature/home/provider/greeting_provider.dart';
 import 'package:expense_management_system/feature/home/provider/home_provider.dart';
@@ -91,9 +92,8 @@ class _HomePageState extends ConsumerState<HomePage> {
           if (selectedWalletId != null) {
             ChatRoute(walletId: selectedWalletId).push(context);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please select a wallet first')),
-            );
+            AppSnackBar.showWarning(
+                context: context, message: 'Please select a wallet first');
           }
         },
         shape: const CircleBorder(),

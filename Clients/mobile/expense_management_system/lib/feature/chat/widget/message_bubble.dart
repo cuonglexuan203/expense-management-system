@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_management_system/feature/chat/model/message.dart';
@@ -161,12 +162,9 @@ class MessageBubble extends StatelessWidget {
                                 isProcessed = true;
                               });
                               // Show success message
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Confirmed successfully'),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
+                              AppSnackBar.showSuccess(
+                                  context: context,
+                                  message: 'Confirmed successfully');
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: ColorName.blue,
@@ -192,11 +190,9 @@ class MessageBubble extends StatelessWidget {
                                 isProcessed = true;
                               });
                               // Show rejection message
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Rejected successfully'),
-                                  backgroundColor: Colors.red,
-                                ),
+                              AppSnackBar.showSuccess(
+                                context: context,
+                                message: 'Rejected successfully',
                               );
                             },
                             style: ElevatedButton.styleFrom(

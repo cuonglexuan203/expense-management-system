@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/home/provider/home_provider.dart';
 import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:flutter/material.dart';
@@ -40,9 +41,8 @@ class BottomNavigationManager {
         if (walletId != null) {
           context.push('/transactions/$walletId');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please select a wallet first')),
-          );
+          AppSnackBar.showWarning(
+              context: context, message: 'Please select a wallet first');
           // Reset to home tab if no wallet is selected
           ref.read(currentNavIndexProvider.notifier).state = 0;
         }

@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
 import 'package:expense_management_system/feature/chat/model/message.dart';
 import 'package:expense_management_system/feature/chat/provider/chat_provider.dart';
@@ -177,8 +178,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       setState(() {
         isWaitingForResponse = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send message: ${e.toString()}')),
+      AppSnackBar.showError(
+        context: context,
+        message: 'Failed to send messages.',
+        actionLabel: 'Retry',
+        onActionPressed: () {
+          // Handle retry action
+        },
       );
     }
   }
