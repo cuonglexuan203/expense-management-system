@@ -55,14 +55,14 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
                     !e.ChatThread.IsDeleted &&
                     !e.IsDeleted);
 
-            if (specParams.Role != null)
+            if (specParams.Role.HasValue)
             {
                 query = query.Where(e => e.Role == specParams.Role);
             }
 
-            if (specParams.Content != null)
+            if (!string.IsNullOrEmpty(specParams.Content))
             {
-                query = query.Where(e => e.Content != null && e.Content.Contains(specParams.Content));
+                query = query.Where(e => e.Content != null && e.Content.ToLower().Contains(specParams.Content.ToLower()));
             }
 
             if (specParams.Sort == SortDirection.ASC)

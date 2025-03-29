@@ -13,5 +13,12 @@
         public NotFoundException(string? message, Exception? innerException) : base(message, innerException)
         {
         }
+        public static void ThrowIf(bool condition, string message = "Not found exception")
+        {
+            if (condition)
+            {
+                throw new NotFoundException(message);
+            }
+        }
     }
 }

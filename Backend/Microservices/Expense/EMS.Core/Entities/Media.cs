@@ -7,7 +7,7 @@ namespace EMS.Core.Entities
     {
         public string FileName { get; set; } = default!;
         public string? ContentType { get; set; } // MIME
-        public string Url { get; set; } = default!;
+        public string? Url { get; set; } = default!;
         public string? SecureUrl { get; set; } = default!;
         public string? ThumbnailUrl { get; set; }
         public long Size { get; set; }
