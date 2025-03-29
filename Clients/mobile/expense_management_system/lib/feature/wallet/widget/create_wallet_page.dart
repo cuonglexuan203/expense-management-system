@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:expense_management_system/shared/util/number_formatter.dart';
@@ -19,41 +20,31 @@ class CreateWalletPage extends ConsumerWidget {
     ref.listen(walletNotifierProvider, (previous, next) {
       next.whenOrNull(
         success: (wallet) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Row(
-                children: [
-                  Icon(Iconsax.tick_circle, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Wallet created successfully!'),
-                ],
-              ),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
+          AppSnackBar.showSuccess(
+            context: context,
+            message: 'Wallet created successfully!',
           );
           Navigator.pop(context);
         },
         error: (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Row(
-                children: [
-                  Icon(Iconsax.warning_2, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Failed to create wallet'),
-                ],
-              ),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: const Row(
+          //       children: [
+          //         Icon(Iconsax.warning_2, color: Colors.white),
+          //         SizedBox(width: 10),
+          //         Text('Failed to create wallet'),
+          //       ],
+          //     ),
+          //     backgroundColor: Colors.red,
+          //     behavior: SnackBarBehavior.floating,
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(10),
+          //     ),
+          //   ),
+          // );
+          AppSnackBar.showError(
+              context: context, message: 'Failed to create wallet');
         },
       );
     });
@@ -268,7 +259,7 @@ class CreateWalletPage extends ConsumerWidget {
                               Icon(Iconsax.add_circle, color: Colors.white),
                               SizedBox(width: 10),
                               Text(
-                                'CREATE WALLET',
+                                'CREATE',
                                 style: TextStyle(
                                   fontFamily: 'Nunito',
                                   fontSize: 16,
