@@ -248,5 +248,110 @@ class ApiProvider {
     }
   }
 
-  // You can add other HTTP methods (put, delete, patch) following the same pattern
+  Future<APIResponse> put(
+    String path,
+    dynamic body, {
+    String? newBaseUrl,
+    String? token,
+    Map<String, String?>? query,
+    ContentType contentType = ContentType.json,
+  }) async {
+    if (!await _checkConnectivity()) {
+      return const APIResponse.error(AppException.connectivity());
+    }
+
+    final url = newBaseUrl != null ? newBaseUrl + path : baseUrl + path;
+
+    try {
+      final headers = {
+        'accept': '*/*',
+        'Content-Type': _getContentTypeHeader(contentType),
+      };
+
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await _dio.put(
+        url,
+        data: body,
+        queryParameters: query,
+        options: Options(headers: headers),
+      );
+
+      return _handleResponse(response);
+    } on DioError catch (e) {
+      return _handleDioError(e);
+    }
+  }
+
+  Future<APIResponse> delete(
+    String path, {
+    String? newBaseUrl,
+    String? token,
+    Map<String, dynamic>? query,
+  }) async {
+    if (!await _checkConnectivity()) {
+      return const APIResponse.error(AppException.connectivity());
+    }
+
+    final url = newBaseUrl != null ? newBaseUrl + path : baseUrl + path;
+
+    try {
+      final headers = {
+        'accept': '*/*',
+      };
+
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await _dio.delete(
+        url,
+        queryParameters: query,
+        options: Options(headers: headers),
+      );
+
+      return _handleResponse(response);
+    } on DioError catch (e) {
+      return _handleDioError(e);
+    }
+  }
+
+  Future<APIResponse> patch(
+    String path,
+    dynamic body, {
+    String? newBaseUrl,
+    String? token,
+    Map<String, String?>? query,
+    ContentType contentType = ContentType.json,
+  }) async {
+    if (!await _checkConnectivity()) {
+      return const APIResponse.error(AppException.connectivity());
+    }
+
+    final url = newBaseUrl != null ? newBaseUrl + path : baseUrl + path;
+
+    try {
+      final headers = {
+        'accept': '*/*',
+        'Content-Type': _getContentTypeHeader(contentType),
+      };
+
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await _dio.patch(
+        url,
+        data: body,
+        queryParameters: query,
+        options: Options(headers: headers),
+      );
+
+      return _handleResponse(response);
+    } on DioError catch (e) {
+      return _handleDioError(e);
+    }
+  }
 }
