@@ -47,6 +47,7 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
 
             var query = _context.ChatMessages
                 .AsNoTracking()
+                .AsSplitQuery()
                 .Include(e => e.Medias.Where(e => !e.IsDeleted))
                 .Include(e => e.ChatExtraction) // left join
                     .ThenInclude(e => e.ExtractedTransactions // left join
