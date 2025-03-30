@@ -8,6 +8,6 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.get("ping")
+@router.get("/ping")
 def Ping():
     return {"message": "Pong"}
