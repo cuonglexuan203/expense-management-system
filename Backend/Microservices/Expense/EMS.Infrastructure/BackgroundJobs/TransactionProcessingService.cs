@@ -2,7 +2,6 @@
 using EMS.Application.Common.DTOs;
 using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Extensions;
-using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Messaging;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Interfaces.Services.HttpClients;

@@ -1,6 +1,7 @@
 ﻿using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Core.Entities;
 using EMS.Core.ValueObjects;
+using EMS.Infrastructure.Common.Extensions;
 using EMS.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,10 @@ namespace EMS.Infrastructure.Persistence.DbContext
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            builder.AddPostgreExtensions()
+                .MapPostgreDbFunctions()
+                .ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }

@@ -2,6 +2,7 @@
 using EMS.Application.Common.Interfaces.Messaging;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Interfaces.Services.HttpClients;
+using EMS.Application.Common.Interfaces.Storage;
 using EMS.Application.Features.Categories.Services;
 using EMS.Application.Features.Chats.Common.Services;
 using EMS.Application.Features.Chats.Finance.Messaging;
@@ -18,6 +19,7 @@ using EMS.Infrastructure.Persistence.Interceptors;
 using EMS.Infrastructure.Services;
 using EMS.Infrastructure.Services.HttpClients.AiService;
 using EMS.Infrastructure.SignalR;
+using EMS.Infrastructure.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +34,7 @@ namespace EMS.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<AiServiceOptions>(configuration.GetSection(AiServiceOptions.AiService));
+            ConfigureOptions(services, configuration);
 
             #region Add services
             AddSingletonServices(services);
@@ -48,6 +50,12 @@ namespace EMS.Infrastructure
             services.AddRedisCaching(configuration);
 
             return services;
+        }
+
+        private static void ConfigureOptions(IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<AiServiceOptions>(configuration.GetSection(AiServiceOptions.AiService));
+            services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.Cloudinary));
         }
 
         private static void AddHttpClients(IServiceCollection services)
@@ -66,6 +74,10 @@ namespace EMS.Infrastructure
             services.TryAddScoped<IUserPreferenceService, UserPreferenceService>();
             services.TryAddScoped<IChatThreadService, ChatThreadService>();
             services.TryAddScoped<IDatabaseTransactionManager, DatabaseTransactionManager>();
+            services.TryAddScoped<IMediaService, MediaService>();
+
+            // Storage
+            services.TryAddScoped<IStorageProvider, CloudinaryStorageProvider>();
         }
 
         private static void AddSingletonServices(IServiceCollection services)

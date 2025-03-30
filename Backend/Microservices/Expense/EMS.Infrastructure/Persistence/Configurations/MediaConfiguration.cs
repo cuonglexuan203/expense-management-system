@@ -15,19 +15,24 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .HasMaxLength(31);
 
             builder.Property(e => e.Url)
-                .HasMaxLength(500);
+                .HasMaxLength(1023);
 
             builder.Property(e => e.Extension)
                 .HasMaxLength(15);
 
             builder.Property(e => e.Type)
-                .HasConversion<string>();
+                .HasConversion<string>()
+                .HasMaxLength(15);
 
             builder.Property(e => e.AltText)
                 .HasMaxLength(255);
 
             builder.Property(e => e.Caption)
                 .HasMaxLength(255);
+
+            builder.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(15);
         }
     }
 }

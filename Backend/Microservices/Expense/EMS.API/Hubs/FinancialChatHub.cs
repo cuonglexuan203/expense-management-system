@@ -75,5 +75,32 @@ namespace EMS.API.Hubs
                 throw;
             }
         }
+
+        public async Task<ChatMessageDto> SendMessageWithFiles(int walletId, int chatThreadId, string text)
+        {
+            var userId = Context.UserIdentifier!;
+            _logger.LogInformation("Message received from {UserId} in chat {ChatThreadId}", userId, chatThreadId);
+
+            var command = new SendMessageCommand
+            {
+                UserId = userId,
+                WalletId = walletId,
+                ChatThreadId = chatThreadId,
+                Text = text,
+                HasFiles = true
+            };
+
+            try
+            {
+                var result = await _sender.Send(command);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing message");
+                throw;
+            }
+        }
     }
 }

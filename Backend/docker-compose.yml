@@ -22,7 +22,7 @@ services:
 
   # Cache
   redis:
-    image: ${DOCKER_REGISTRY-}redis:7.4
+    image: ${DOCKER_REGISTRY-}redis
 
 networks:
   app-network:
