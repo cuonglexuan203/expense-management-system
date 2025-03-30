@@ -44,7 +44,8 @@ namespace EMS.Application.Features.Transactions.Queries.GetTransactions
 
             if (!string.IsNullOrEmpty(specParams.Name))
             {
-                query = query.Where(e => e.Name.Contains(specParams.Name));
+                query = query.Where(e => DatabaseFunctions.Unaccent(e.Name.ToLower())
+                .Contains(DatabaseFunctions.Unaccent(specParams.Name.ToLower())));
             }
 
             if (specParams.WalletId != null)
