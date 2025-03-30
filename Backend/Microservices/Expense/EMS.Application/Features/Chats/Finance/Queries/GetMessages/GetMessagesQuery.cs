@@ -47,6 +47,7 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
 
             var query = _context.ChatMessages
                 .AsNoTracking()
+                .Include(e => e.Medias.Where(e => !e.IsDeleted))
                 .Include(e => e.ChatExtraction) // left join
                     .ThenInclude(e => e.ExtractedTransactions // left join
                         .Where(e => !e.IsDeleted)
@@ -62,7 +63,9 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
 
             if (!string.IsNullOrEmpty(specParams.Content))
             {
-                query = query.Where(e => e.Content != null && e.Content.ToLower().Contains(specParams.Content.ToLower()));
+                query = query.Where(e => e.Content != null 
+                && DatabaseFunctions.Unaccent(e.Content.ToLower())
+                .Contains(DatabaseFunctions.Unaccent(specParams.Content.ToLower())));
             }
 
             if (specParams.Sort == SortDirection.ASC)

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using EMS.Application.Common.DTOs;
 using EMS.Application.Common.Mappings;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
@@ -13,6 +13,7 @@ namespace EMS.Application.Features.Chats.Common.Dtos
         public MessageRole Role { get; set; }
         public string? Content { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
+        public ICollection<MediaDto> Medias { get; set; } = [];
         public ICollection<ExtractedTransactionDto> ExtractedTransactions { get; set; } = [];
     }
 }
