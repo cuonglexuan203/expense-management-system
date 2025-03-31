@@ -59,8 +59,11 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
                 ?? throw new NotFoundException($"Message with Id {request.MessageId} not found");
             var chatThreadId = message.ChatThreadId;
 
+            var userPreferences = await _userPreferenceService.GetUserPreferenceByIdAsync(request.UserId);
+            var defaultCategories = await _categoryService.GetDefaultCategoriesAsync();
+
             // Get transaction extraction
-            var msgExtractionRequest = new MessageExtractionRequest(chatThreadId, message.Content!);
+            var msgExtractionRequest = new MessageExtractionRequest(chatThreadId, message.Content!, defaultCategories, userPreferences);
             var extractionResult = await _aiService.ExtractTransactionAsync(msgExtractionRequest);
 
             // Save system msg
@@ -76,7 +79,6 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
             };
             message.ChatExtraction = chatExtraction;
 
-            var userPreferences = await _userPreferenceService.GetUserPreferenceByIdAsync(request.UserId);
             // Save extracted transactions
             if (extractionResult.CategorizedItems.Length != 0)
             {
@@ -98,11 +100,11 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
                             await _context.Categories
                             .AsNoTracking()
                             .FirstOrDefaultAsync(e => e.Name == item.Category && e.UserId == request.UserId && !e.IsDeleted) :
-                            await _categoryService.GetDefaultCategoryAsync(item.Type);
+                            await _categoryService.GetUnknownCategoryAsync(item.Type);
 
                         if (category == null)
                         {
-                            category = await _categoryService.GetDefaultCategoryAsync(item.Type);
+                            category = await _categoryService.GetUnknownCategoryAsync(item.Type);
                         }
 
                         extractedTransaction.CategoryId = category.Id;

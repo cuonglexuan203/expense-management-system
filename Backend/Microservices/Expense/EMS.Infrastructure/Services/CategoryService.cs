@@ -1,6 +1,9 @@
-﻿using EMS.Application.Common.Interfaces.DbContext;
+﻿using AutoMapper;
+using EMS.Application.Common.Extensions;
+using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Utils;
+using EMS.Application.Features.Categories.Dtos;
 using EMS.Application.Features.Categories.Services;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
@@ -15,31 +18,48 @@ namespace EMS.Infrastructure.Services
         private readonly ILogger<CategoryService> _logger;
         private readonly IApplicationDbContext _context;
         private readonly IDistributedCacheService _cacheService;
+        private readonly IMapper _mapper;
 
         //
-        private const string _defaultCategoryName = "Unknown";
+        private const string _unknownCategoryName = "Unknown";
 
         public CategoryService(
             ILogger<CategoryService> logger,
             IApplicationDbContext context,
-            IDistributedCacheService cacheService)
+            IDistributedCacheService cacheService,
+            IMapper mapper)
         {
             _logger = logger;
             _context = context;
             _cacheService = cacheService;
+            _mapper = mapper;
         }
 
-        public async Task<Category> GetDefaultCategoryAsync(TransactionType type)
+        public async Task<Category> GetUnknownCategoryAsync(TransactionType type)
         {
             return await _cacheService.GetOrSetAsync(
-                CacheKeyGenerator.Generate(CacheKeyGenerator.GeneralKeys.DefaultCategory),
+                CacheKeyGenerator.Generate(CacheKeyGenerator.GeneralKeys.UnknownCategory, type),
                 async () => await _context.Categories
                 .AsNoTracking()
                 .Where(e => !e.IsDeleted &&
                             e.Type == CategoryType.Default &&
                             e.FinancialFlowType == type &&
-                            e.Name == _defaultCategoryName)
-                .FirstOrDefaultAsync() ?? throw new ServerException("Default category not found."), TimeSpan.FromDays(1));
+                            e.Name == _unknownCategoryName)
+                .FirstOrDefaultAsync() ?? throw new ServerException("The system unknown category not found."),
+                TimeSpan.FromDays(1));
+        }
+
+        public async Task<List<CategoryDto>> GetDefaultCategoriesAsync()
+        {
+            var categoryDtoList = await _cacheService.GetOrSetAsync(
+                CacheKeyGenerator.Generate(CacheKeyGenerator.GeneralKeys.DefaultCategory),
+                async () => await _context.Categories
+                    .AsNoTracking()
+                    .Where(e => e.Type == CategoryType.Default && !e.IsDeleted)
+                    .ProjectToListAsync<CategoryDto>(_mapper.ConfigurationProvider),
+                TimeSpan.FromDays(1));
+
+            return categoryDtoList;
         }
     }
 }

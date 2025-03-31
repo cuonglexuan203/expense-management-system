@@ -82,8 +82,11 @@ namespace EMS.Infrastructure.BackgroundJobs
                     ?? throw new NotFoundException($"Message with Id {queuedMessage.MessageId} not found");
                 var chatThreadId = message.ChatThreadId;
 
+                var userPreferences = await userPreferenceService.GetUserPreferenceByIdAsync(queuedMessage.UserId);
+                var defaultCategories = await categoryService.GetDefaultCategoriesAsync();
+
                 // Get transaction extraction
-                var msgExtractionRequest = new MessageExtractionRequest(chatThreadId, message.Content!);
+                var msgExtractionRequest = new MessageExtractionRequest(chatThreadId, message.Content!, defaultCategories, userPreferences);
                 var extractionResult = await aiService.ExtractTransactionAsync(msgExtractionRequest);
 
                 // Save system msg
@@ -99,7 +102,6 @@ namespace EMS.Infrastructure.BackgroundJobs
                 };
                 systemMsg.ChatExtraction = chatExtraction; // redundant but for clearer flow
 
-                var userPreferences = await userPreferenceService.GetUserPreferenceByIdAsync(queuedMessage.UserId);
                 // Save extracted transactions
                 if (extractionResult.CategorizedItems.Length != 0)
                 {
@@ -119,11 +121,11 @@ namespace EMS.Infrastructure.BackgroundJobs
                                 await context.Categories
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(e => e.Name == item.Category && e.UserId == queuedMessage.UserId && !e.IsDeleted) :
-                                await categoryService.GetDefaultCategoryAsync(item.Type);
+                                await categoryService.GetUnknownCategoryAsync(item.Type);
 
                             if (category == null)
                             {
-                                category = await categoryService.GetDefaultCategoryAsync(item.Type);
+                                category = await categoryService.GetUnknownCategoryAsync(item.Type);
                             }
 
                             extractedTransaction.CategoryId = category.Id;
