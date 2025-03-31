@@ -17,6 +17,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.SendMessage
         public int WalletId { get; set; }
         public int ChatThreadId { get; set; }
         public string Text { get; set; } = default!;
+        public bool HasFiles { get; set; } = false;
     }
 
     public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, ChatMessageDto>
@@ -61,7 +62,10 @@ namespace EMS.Application.Features.Chats.Finance.Commands.SendMessage
 
             // Asynchronously process the message, intentionally sending an immediate acknowledgment to the frontend to prevent UI freezing.
             //_ = _mediator.Send(new ProcessMessageCommand(userId, request.WalletId, message.Id));
-            await _messageQueue.EnqueueAsync(new(userId, request.WalletId, message.ChatThreadId, message.Id), cancellationToken);
+            if (!request.HasFiles) // Defer enqueue message when media files uploaded successfully
+            {
+                await _messageQueue.EnqueueAsync(new(userId, request.WalletId, message.ChatThreadId, message.Id), cancellationToken);
+            }
 
             return _mapper.Map<ChatMessageDto>(message);
         }

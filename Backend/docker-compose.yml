@@ -1,6 +1,36 @@
 services:
-  ems.api:
-    image: ${DOCKER_REGISTRY-}emsapi
+  portainer:
+    image: portainer/portainer-ce
+
+  # Backend
+  ems-api:
+    image: ${DOCKER_REGISTRY-}ems-api
     build:
       context: .
       dockerfile: Microservices/Expense/EMS.API/Dockerfile
+
+  # AI Microservice
+  ai-service:
+    image: ${DOCKER_REGISTRY-}ai-service
+    build:
+      context: ./Microservices/AI
+      dockerfile: Dockerfile
+
+  # Databases
+  postgres:
+    image: ${DOCKER_REGISTRY-}postgres:17.4
+
+  # Cache
+  redis:
+    image: ${DOCKER_REGISTRY-}redis
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: app_postgres_data
+  redis_data:
+    name: app_redis_data
+  portainer_data:
