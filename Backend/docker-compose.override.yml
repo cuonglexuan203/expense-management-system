@@ -54,6 +54,9 @@ services:
   
       # Logging Configuration
       - Serilog__MinimumLevel__Default=${SERILOG_MINIMUM_LEVEL_DEFAULT}
+      - Serilog__WriteTo__0__Args__path=/app/log/log.txt
+    volumes:
+      - ./Microservices/Expense/Log:/app/log
     networks:
       - app-network
     ports:
@@ -82,6 +85,8 @@ services:
       - GROQ_API_KEY=${GROQ_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      - ./Microservices/AI/logs:/app/logs
     networks:
       - app-network
     ports:
@@ -98,8 +103,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DBNAME}
     volumes:
-      - ./init-scripts:/docker-entrypoint-initdb.d
-      - postgres_data:/data/db
+      - ./deployment/postgresql/init-scripts:/docker-entrypoint-initdb.d
+      - ./deployment/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+      - postgres_data:/var/lib/postgresql/data
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     networks:
       - app-network
     ports:
@@ -109,6 +116,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
 
   # Cache
   redis:
@@ -116,7 +131,7 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes --loglevel verbose --protected-mode no --bind 0.0.0.0
     volumes:
-      - redis_data:/data/db
+      - redis_data:/data
     networks:
       - app-network
     ports:
