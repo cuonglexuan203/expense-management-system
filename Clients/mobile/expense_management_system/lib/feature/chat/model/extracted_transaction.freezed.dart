@@ -25,7 +25,7 @@ mixin _$ExtractedTransaction {
   String? get category => throw _privateConstructorUsedError;
   int get transactionId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  int get amount => throw _privateConstructorUsedError;
+  double get amount => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
   DateTime get occurredAt => throw _privateConstructorUsedError;
   String get confirmationMode => throw _privateConstructorUsedError;
@@ -54,7 +54,7 @@ abstract class $ExtractedTransactionCopyWith<$Res> {
       String? category,
       int transactionId,
       String name,
-      int amount,
+      double amount,
       String type,
       DateTime occurredAt,
       String confirmationMode,
@@ -114,7 +114,7 @@ class _$ExtractedTransactionCopyWithImpl<$Res,
       amount: null == amount
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as double,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -153,7 +153,7 @@ abstract class _$$ExtractedTransactionImplCopyWith<$Res>
       String? category,
       int transactionId,
       String name,
-      int amount,
+      double amount,
       String type,
       DateTime occurredAt,
       String confirmationMode,
@@ -210,7 +210,7 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
       amount: null == amount
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as double,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -265,7 +265,7 @@ class _$ExtractedTransactionImpl implements _ExtractedTransaction {
   @override
   final String name;
   @override
-  final int amount;
+  final double amount;
   @override
   final String type;
   @override
@@ -348,7 +348,7 @@ abstract class _ExtractedTransaction implements ExtractedTransaction {
       final String? category,
       required final int transactionId,
       required final String name,
-      required final int amount,
+      required final double amount,
       required final String type,
       required final DateTime occurredAt,
       required final String confirmationMode,
@@ -369,7 +369,7 @@ abstract class _ExtractedTransaction implements ExtractedTransaction {
   @override
   String get name;
   @override
-  int get amount;
+  double get amount;
   @override
   String get type;
   @override

@@ -14,7 +14,7 @@ _$ExtractedTransactionImpl _$$ExtractedTransactionImplFromJson(
       category: json['category'] as String?,
       transactionId: (json['transactionId'] as num).toInt(),
       name: json['name'] as String,
-      amount: (json['amount'] as num).toInt(),
+      amount: (json['amount'] as num).toDouble(),
       type: json['type'] as String,
       occurredAt: DateTime.parse(json['occurredAt'] as String),
       confirmationMode: json['confirmationMode'] as String,

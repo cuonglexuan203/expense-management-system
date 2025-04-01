@@ -257,6 +257,8 @@ class ProfilePage extends ConsumerWidget {
         if (shouldLogout) {
           await ref.read(authNotifierProvider.notifier).logout();
           if (context.mounted) {
+            AppSnackBar.showSuccess(
+                context: context, message: 'Log out successfully');
             context.go('/signIn');
           }
         }

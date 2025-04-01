@@ -9,6 +9,7 @@ class ApiEndpoints {
   static final chatThread = _ChatThreadEndpoints();
   static final extractedTransaction = _ExtractedTransactionEndpoints();
   static final hubConnection = _HubConnectionEndpoints();
+  static final media = _MediaEndpoints();
 }
 
 class _AuthEndpoints {
@@ -66,4 +67,9 @@ class _ExtractedTransactionEndpoints {
 class _HubConnectionEndpoints {
   final String base = '$ApiEndpoints/hubs';
   String get finance => '$base/finance';
+}
+
+class _MediaEndpoints {
+  final String base = '${ApiEndpoints.base}/medias';
+  String uploadFile(int id) => '$base/messages/$id';
 }

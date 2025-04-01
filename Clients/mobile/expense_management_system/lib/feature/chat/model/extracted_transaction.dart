@@ -11,7 +11,7 @@ class ExtractedTransaction with _$ExtractedTransaction {
     String? category,
     required int transactionId,
     required String name,
-    required int amount,
+    required double amount,
     required String type,
     required DateTime occurredAt,
     required String confirmationMode,

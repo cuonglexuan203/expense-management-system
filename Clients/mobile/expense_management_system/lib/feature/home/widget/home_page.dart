@@ -13,7 +13,6 @@ import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:expense_management_system/shared/util/bottom_nav_bar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomePage extends ConsumerStatefulWidget {

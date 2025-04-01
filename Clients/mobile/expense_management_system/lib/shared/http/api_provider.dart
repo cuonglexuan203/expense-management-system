@@ -3,12 +3,13 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:expense_management_system/shared/constants/enum.dart';
 import 'package:expense_management_system/shared/http/api_response.dart';
 import 'package:expense_management_system/shared/http/app_exception.dart';
 import 'package:expense_management_system/shared/http/interceptor/auth_interceptor.dart';
 import 'package:expense_management_system/shared/http/interceptor/dio_connectivity_request_retrier.dart';
 import 'package:expense_management_system/shared/http/interceptor/retry_interceptor.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -60,7 +61,7 @@ class NetworkConfig {
   });
 }
 
-enum ContentType { urlEncoded, json }
+// enum ContentType { urlEncoded, json,  }
 
 final apiProvider = Provider<ApiProvider>((ref) {
   final dio = ref.watch(dioProvider);
