@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace EMS.API.Controllers.v1
 {
     [Authorize]
-    [ApiRoute("user-preferences")]
-    public class UserPreferenceController : ApiControllerBase
+    [ApiRoute("users")]
+    public class UserController : ApiControllerBase
     {
         private readonly ISender _sender;
         private readonly ICurrentUserService _currentUserService;
 
-        public UserPreferenceController(
+        public UserController(
             ISender sender,
             ICurrentUserService currentUserService)
         {
@@ -22,10 +22,10 @@ namespace EMS.API.Controllers.v1
             _currentUserService = currentUserService;
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{userId}/preferences")]
         public async Task<IActionResult> GetUserPreferences(string userId)
         {
-            if(userId != _currentUserService.Id)
+            if (userId != _currentUserService.Id)
             {
                 return BadRequest();
             }
