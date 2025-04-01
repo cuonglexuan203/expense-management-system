@@ -1,4 +1,5 @@
 import 'package:expense_management_system/feature/transaction/model/transaction.dart';
+import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -131,7 +132,7 @@ class TransactionItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${isIncome ? '+' : '-'}${transaction.amount.toStringAsFixed(2)}',
+                        '${isIncome ? '+' : '-'}${transaction.amount.toFormattedString()}',
                         style: TextStyle(
                           fontFamily: 'Nunito',
                           fontWeight: FontWeight.w800,

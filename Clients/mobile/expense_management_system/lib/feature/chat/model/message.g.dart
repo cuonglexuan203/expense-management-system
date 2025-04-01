@@ -14,6 +14,10 @@ _$MessageImpl _$$MessageImplFromJson(Map<String, dynamic> json) =>
       role: json['role'] as String,
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      medias: (json['medias'] as List<dynamic>?)
+              ?.map((e) => Media.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       extractedTransactions: (json['extractedTransactions'] as List<dynamic>?)
               ?.map((e) =>
                   ExtractedTransaction.fromJson(e as Map<String, dynamic>))
@@ -29,5 +33,6 @@ Map<String, dynamic> _$$MessageImplToJson(_$MessageImpl instance) =>
       'role': instance.role,
       'content': instance.content,
       'createdAt': instance.createdAt.toIso8601String(),
+      'medias': instance.medias,
       'extractedTransactions': instance.extractedTransactions,
     };

@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/app/widget/bottom_nav_bar.dart';
 import 'package:expense_management_system/feature/home/provider/greeting_provider.dart';
 import 'package:expense_management_system/feature/home/provider/home_provider.dart';
@@ -12,7 +13,6 @@ import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:expense_management_system/shared/util/bottom_nav_bar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -91,9 +91,8 @@ class _HomePageState extends ConsumerState<HomePage> {
           if (selectedWalletId != null) {
             ChatRoute(walletId: selectedWalletId).push(context);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please select a wallet first')),
-            );
+            AppSnackBar.showWarning(
+                context: context, message: 'Please select a wallet first');
           }
         },
         shape: const CircleBorder(),
