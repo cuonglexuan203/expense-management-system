@@ -9,17 +9,15 @@ class TransactionType(Enum):
 
 
 class Transaction(BaseModel):
-    name: str = Field(description="Name of the item from the user query")
+    name: str = Field(description="Name of the item.")
     category: str | None = Field(
         default=None,
-        description="Category in available categories. Do not refer in output if do not match any",
+        description="Category of the item (from available categories, omit if no match).",
     )
-    type: str = Field(
-        description="Transaction type, either exactly 'Expense' or 'Income'"
-    )
-    amount: float = Field(description="Monetary amount of the transaction")
-    currency: str = Field(default="USD", description="Currency code in ISO format")
+    type: str = Field(description="Transaction type ('Expense' or 'Income').")
+    amount: float = Field(description="Monetary amount.")
+    currency: str = Field(default="USD", description="Currency code (ISO format).")
     occurred_at: str = Field(
-        default=datetime.datetime.now(datetime.timezone.utc),
-        description="The time when the transaction occurred, using current time if not mentioned",
+        default=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        description="Transaction timestamp (ISO format, use current time if not specified).",
     )

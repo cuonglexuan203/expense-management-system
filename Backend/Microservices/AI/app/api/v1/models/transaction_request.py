@@ -1,4 +1,3 @@
-from typing import Any
 from pydantic import BaseModel, Field
 
 from app.api.v1.models.user_preferences import UserPreferences
@@ -19,10 +18,10 @@ class ImageTransactionRequest(BaseModel):
     """Request model for image-based transaction extraction."""
 
     user_id: str = Field(description="Unique identifier of the user")
-    image_data: str = Field(description="Base64 encoded image data or bytes")
     message: str | None = Field(default="", description="Optional text message context")
+    image_urls: list[str] = Field(description="Image urls")
     categories: list[str] = Field(description="The available categories")
-    user_preferences: dict[str, Any] = Field(
+    user_preferences: UserPreferences = Field(
         description="The user preferences: currency code, language"
     )
 
@@ -34,6 +33,6 @@ class AudioTransactionRequest(BaseModel):
     audio_data: str = Field(description="Base64 encoded audio data or bytes")
     message: str | None = Field(default="", description="Optional text message context")
     categories: list[str] = Field(description="The available categories")
-    user_preferences: dict[str, Any] = Field(
+    user_preferences: UserPreferences = Field(
         description="The user preferences: currency code, language"
     )

@@ -79,6 +79,21 @@ class TextExtractor(BaseExtractor):
             partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
+        # formatted_prompt = prompt.format_prompt(
+        #     **{
+        #         "today": "2025",
+        #         "language": preferences.language or "English",
+        #         "categories": ", ".join(categories),
+        #         "preferences": preferences,
+        #         "default_currency": "USD",
+        #         "currency_code": preferences.currency_code,
+        #         "currency_slangs": currency_slang,
+        #         "query": user_message,
+        #     }
+        # )
+
+        # print(formatted_prompt.to_string())
+
         chain = prompt | model | parser
 
         today = datetime.datetime.now(datetime.timezone.utc)
@@ -87,7 +102,7 @@ class TextExtractor(BaseExtractor):
             {
                 "today": today,
                 "language": preferences.language or "English",
-                "categories": categories,
+                "categories": ", ".join(categories),
                 "preferences": preferences,
                 "default_currency": "USD",
                 "currency_code": preferences.currency_code,
