@@ -1,8 +1,13 @@
-from fastapi import APIRouter
-from langchain_core.output_parsers import JsonOutputParser
+from typing import Annotated
+from fastapi import APIRouter, Depends, HTTPException
+from langchain_core.output_parsers import PydanticOutputParser
 from app.api.v1.models import Transaction
+from app.api.v1.models.transaction_request import TextTransactionRequest
+from app.api.v1.models.transaction_response import TransactionResponse
 from app.core.logging import get_logger
+from app.core.security import get_api_key
 from app.schemas.llm_config import LLMConfig
+from app.services.extractors.text_extractor import TextExtractor
 from app.services.llm.output_parsers.transaction_analysis_output import (
     TransactionAnalysisOutput,
 )
@@ -16,7 +21,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.post("/extract-transaction")
+@router.post("/extract-transaction", deprecated=True)
 async def extract_transaction(transaction: Transaction):
     model = LLMFactory.create(
         LLMConfig(
@@ -24,7 +29,7 @@ async def extract_transaction(transaction: Transaction):
         )
     )
 
-    parser = JsonOutputParser(pydantic_object=TransactionAnalysisOutput)
+    parser = PydanticOutputParser(pydantic_object=TransactionAnalysisOutput)
 
     prompt = PromptTemplate(
         input=["input"],
@@ -33,8 +38,42 @@ async def extract_transaction(transaction: Transaction):
     )
 
     chain = prompt | model | parser
-    res = chain.invoke({"input": transaction.query})
-
+    res = await chain.ainvoke({"input": transaction.query})
     # logger.info(res)
 
     return res
+
+
+@router.post("/text", response_model=TransactionResponse)
+async def extract_from_text(
+    request: TextTransactionRequest, api_key: Annotated[str, Depends(get_api_key)]
+):
+    """Extract transactions from text message."""
+    try:
+        extractor = TextExtractor(
+            LLMConfig(
+                provider=LLMProvider.GOOGLE,
+                model=LLMModel.GEMINI_20_FLASH,
+                temperature=0,
+            )
+        )
+        result = await extractor.extract(
+            request.user_id,
+            {
+                "message": request.message,
+                "categories": request.categories,
+                "user_preferences": request.user_preferences,
+            },
+        )
+
+        return TransactionResponse(
+            transactions=result.transactions,
+            introduction=result.introduction,
+            message="Successfully extracted transactions from text",
+        )
+
+    except Exception as e:
+        logger.error(f"Error extracting transactions from text: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Error extracting transactions from text: {str(e)}"
+        )
