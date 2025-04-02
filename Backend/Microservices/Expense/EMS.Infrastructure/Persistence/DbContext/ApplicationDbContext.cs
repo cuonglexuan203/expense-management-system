@@ -32,6 +32,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
         public DbSet<ChatExtraction> ChatExtractions { get; set; }
         public DbSet<ExtractedTransaction> ExtractedTransactions { get; set; }
         public DbSet<Currency> Currencies { get; set; }
+        public DbSet<CurrencySlang> CurrencySlangs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
