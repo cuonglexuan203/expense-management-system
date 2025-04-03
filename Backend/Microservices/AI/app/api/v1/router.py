@@ -6,7 +6,7 @@ api_router = APIRouter()
 
 api_router.include_router(
     extractions.router,
-    prefix="/transactions",
+    prefix="/extractions",
     tags=["Transaction Extraction"],
 )
 

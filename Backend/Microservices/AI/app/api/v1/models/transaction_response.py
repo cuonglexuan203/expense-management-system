@@ -12,4 +12,3 @@ class TransactionResponse(BaseModel):
 
     introduction: str = Field(..., description="Summary of the extraction results")
     message: str = Field(..., description="Message about the extraction process")
-    # error: str | None = Field(default=None, description="Error message if any")

@@ -78,16 +78,50 @@ namespace EMS.Infrastructure.BackgroundJobs
                 // Retrieve msg from db
                 var message = await context.ChatMessages
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(e => e.Id == queuedMessage.MessageId && e.ChatThreadId == queuedMessage.ChatThreadId && !e.IsDeleted)
+                    .Where(e => e.Id == queuedMessage.MessageId && e.ChatThreadId == queuedMessage.ChatThreadId && !e.IsDeleted)
+                    .Include(e => e.Medias.Where(media => !media.IsDeleted))
+                    .FirstOrDefaultAsync()
                     ?? throw new NotFoundException($"Message with Id {queuedMessage.MessageId} not found");
                 var chatThreadId = message.ChatThreadId;
 
                 var userPreferences = await userPreferenceService.GetUserPreferenceByIdAsync(queuedMessage.UserId);
-                var defaultCategories = await categoryService.GetDefaultCategoriesAsync();
+                var defaultCategories = await categoryService.GetCategoriesAsync(queuedMessage.UserId);
 
-                // Get transaction extraction
-                var msgExtractionRequest = new MessageExtractionRequest(chatThreadId, message.Content!, defaultCategories, userPreferences);
-                var extractionResult = await aiService.ExtractTransactionAsync(msgExtractionRequest);
+                // Get transaction extractions
+                MessageExtractionResponse extractionResult = default!;
+
+                if ((message.MessageTypes & MessageTypes.Image) == MessageTypes.Image)
+                {
+                    extractionResult = await aiService.ExtractTransactionFromImagesAsync(
+                        new (
+                            queuedMessage.UserId,
+                            chatThreadId,
+                            message.Content!,
+                            message.Medias.Where(e => !string.IsNullOrEmpty(e.Url)).Select(e => e.Url!).ToArray(),
+                            defaultCategories.Select(e => e.Name).ToArray(),
+                            userPreferences));
+                }
+                else if ((message.MessageTypes & MessageTypes.Audio) == MessageTypes.Audio)
+                {
+                    extractionResult = await aiService.ExtractTransactionFromAudiosAsync(
+                        new (
+                            queuedMessage.UserId,
+                            chatThreadId,
+                            message.Content!,
+                            message.Medias.Where(e => !string.IsNullOrEmpty(e.Url)).Select(e => e.Url!).ToArray(),
+                            defaultCategories.Select(e => e.Name).ToArray(),
+                            userPreferences));
+                }
+                else
+                {
+                    extractionResult = await aiService.ExtractTransactionAsync(
+                        new (
+                            queuedMessage.UserId,
+                            chatThreadId,
+                            message.Content!,
+                            defaultCategories.Select(e => e.Name).ToArray(),
+                            userPreferences));
+                }
 
                 // Save system msg
                 var systemMsg = ChatMessage.CreateSystemMessage(chatThreadId, extractionResult.Introduction);
@@ -103,9 +137,9 @@ namespace EMS.Infrastructure.BackgroundJobs
                 systemMsg.ChatExtraction = chatExtraction; // redundant but for clearer flow
 
                 // Save extracted transactions
-                if (extractionResult.CategorizedItems.Length != 0)
+                if (extractionResult.Transactions.Length != 0)
                 {
-                    foreach (var item in extractionResult.CategorizedItems)
+                    foreach (var item in extractionResult.Transactions)
                     {
                         try
                         {

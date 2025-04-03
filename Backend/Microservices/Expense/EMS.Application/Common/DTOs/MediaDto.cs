@@ -12,7 +12,7 @@ namespace EMS.Application.Common.DTOs
         public string? ThumbnailUrl { get; set; }
         public long Size { get; set; }
         public string Extension { get; set; } = default!;
-        public MediaType Type { get; set; }
+        public FileType Type { get; set; }
         public string? PublicId { get; set; }
         public string? AssetId { get; set; }
         public string? AltText { get; set; }

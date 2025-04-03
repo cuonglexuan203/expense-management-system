@@ -61,5 +61,15 @@ namespace EMS.Infrastructure.Services
 
             return categoryDtoList;
         }
+
+        public async Task<List<CategoryDto>> GetCategoriesAsync(string userId)
+        {
+            var categoryDtoList = await _context.Categories
+                .AsNoTracking()
+                .Where(e => e.UserId == userId && !e.IsDeleted)
+                .ProjectToListAsync<CategoryDto>(_mapper.ConfigurationProvider);
+
+            return categoryDtoList;
+        }
     }
 }

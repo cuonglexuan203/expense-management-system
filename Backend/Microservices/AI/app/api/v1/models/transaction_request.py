@@ -19,7 +19,7 @@ class ImageTransactionRequest(BaseModel):
 
     user_id: str = Field(description="Unique identifier of the user")
     message: str | None = Field(default="", description="Optional text message context")
-    image_urls: list[str] = Field(description="Image urls")
+    file_urls: list[str] = Field(description="Image urls")
     categories: list[str] = Field(description="The available categories")
     user_preferences: UserPreferences = Field(
         description="The user preferences: currency code, language"
@@ -30,8 +30,8 @@ class AudioTransactionRequest(BaseModel):
     """Request model for audio-based transaction extraction."""
 
     user_id: str = Field(description="Unique identifier of the user")
-    audio_data: str = Field(description="Base64 encoded audio data or bytes")
     message: str | None = Field(default="", description="Optional text message context")
+    file_urls: list[str] = Field(description="Image urls")
     categories: list[str] = Field(description="The available categories")
     user_preferences: UserPreferences = Field(
         description="The user preferences: currency code, language"

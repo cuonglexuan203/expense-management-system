@@ -1,7 +1,7 @@
 ﻿
 namespace EMS.Core.Enums
 {
-    public enum MediaType
+    public enum FileType
     {
         Image,
         Audio,

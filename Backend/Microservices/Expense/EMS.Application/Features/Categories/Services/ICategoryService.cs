@@ -8,5 +8,6 @@ namespace EMS.Application.Features.Categories.Services
     {
         Task<Category> GetUnknownCategoryAsync(TransactionType type);
         Task<List<CategoryDto>> GetDefaultCategoriesAsync();
+        Task<List<CategoryDto>> GetCategoriesAsync(string userId);
     }
 }

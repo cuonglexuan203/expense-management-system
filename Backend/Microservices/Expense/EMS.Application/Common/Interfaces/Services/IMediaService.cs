@@ -14,7 +14,7 @@ namespace EMS.Application.Common.Interfaces.Services
             Stream fileStream,
             string fileName,
             string contentType,
-            MediaType? mediaType = null,
+            FileType? mediaType = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace EMS.Application.Common.Interfaces.Services
             Stream fileStream,
             string fileName,
             string contentType,
-            MediaType? mediaType = null,
+            FileType? mediaType = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>

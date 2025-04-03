@@ -55,7 +55,7 @@ class LLMModel(Enum):
     def for_provider(cls, provider: LLMProvider) -> Tuple["LLMModel", ...]:
         """Return all models for a specific provider"""
         mapping = {
-            LLMProvider.OPENAI: (cls.GPT_4O_MINI,),
+            LLMProvider.OPENAI: (cls.GPT_4O_MINI),
             LLMProvider.GROQ: (
                 cls.LLAMA3_8B_8192,
                 cls.LLAMA3_70B_8192,

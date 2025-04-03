@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using EMS.Infrastructure.Common.Options;
+using EMS.Application.Common.Utils;
 
 namespace EMS.Infrastructure.Services
 {
@@ -41,7 +42,7 @@ namespace EMS.Infrastructure.Services
             Stream fileStream,
             string fileName,
             string contentType,
-            MediaType? mediaType = null,
+            FileType? mediaType = null,
             CancellationToken cancellationToken = default)
         {
             try
@@ -50,7 +51,7 @@ namespace EMS.Infrastructure.Services
 
                 if (mediaType == null)
                 {
-                    mediaType = DetermineMediaType(contentType);
+                    mediaType = FileUtil.GetFileType(contentType);
                 }
 
                 media ??= new Media();
@@ -131,37 +132,10 @@ namespace EMS.Infrastructure.Services
             Stream fileStream,
             string fileName,
             string contentType,
-            MediaType? mediaType = null,
+            FileType? mediaType = null,
             CancellationToken cancellationToken = default)
         {
             return UploadMediaAsync(null, fileStream, fileName, contentType, mediaType, cancellationToken);
-        }
-
-        private MediaType DetermineMediaType(string contentType)
-        {
-            if (string.IsNullOrEmpty(contentType))
-            {
-                return MediaType.Other;
-            }
-
-            contentType = contentType.ToLower();
-
-            if (contentType.StartsWith("image/"))
-                return MediaType.Image;
-
-            if (contentType.StartsWith("video/"))
-                return MediaType.Video;
-
-            if (contentType.StartsWith("audio/"))
-                return MediaType.Audio;
-
-            if (contentType.StartsWith("application/pdf") ||
-            contentType.StartsWith("application/msword") ||
-            contentType.StartsWith("application/vnd.openxmlformats-officedocument") ||
-            contentType.StartsWith("text/"))
-                return MediaType.Document;
-
-            return MediaType.Other;
         }
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
