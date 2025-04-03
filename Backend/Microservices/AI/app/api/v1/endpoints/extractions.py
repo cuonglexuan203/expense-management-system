@@ -116,7 +116,8 @@ async def extract_from_image(
     except Exception as e:
         logger.error(f"Error extracting transactions from image: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Error extracting transactions from image: {str(e)}"
+            status_code=500,
+            detail=f"Error extracting transactions from image: {str(e)}",
         )
 
 
@@ -128,8 +129,8 @@ async def extract_from_audio(
     try:
         extractor = AudioExtractor(
             LLMConfig(
-                provider=LLMProvider.GOOGLE,
-                model=LLMModel.GEMINI_20_FLASH,
+                provider=LLMProvider.OPENAI,
+                model=LLMModel.GPT_4O_MINI_AUDIO_PREVIEW,
                 temperature=0,
             )
         )
@@ -152,5 +153,6 @@ async def extract_from_audio(
     except Exception as e:
         logger.error(f"Error extracting transactions from audio: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Error extracting transactions from audio: {str(e)}"
+            status_code=500,
+            detail=f"Error extracting transactions from audio: {str(e)}",
         )

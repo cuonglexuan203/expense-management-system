@@ -8,10 +8,10 @@ from app.services.llm.output_parsers.transaction_analysis_output import (
     TransactionAnalysisOutput,
 )
 from app.services.llm.output_parsers import transaction_parser
+from langchain_core.messages import HumanMessage
 from langchain_core.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
 )
 
 logger = get_logger(__name__)
@@ -29,7 +29,7 @@ For each transaction include:
 - Type: 'Expense' or 'Income' (infer from context).
 - Amount: Monetary value (extract if present).
 - Currency: Currency code (infer from context or default to '{default_currency}').
-- Occurred At: Date and time of the transaction (infer from context, default to '{today}' and current time if not specified, format as YYYY-MM-DD HH:MM:SS).
+- Occurred At: Date and time of the transaction (infer from context, default to '{today}' and current time if not specified, ISO format).
 
 **From the User's Text Query:**
 Identify all explicit and implicit financial transactions mentioned in the user's message. For each transaction include:
@@ -38,7 +38,7 @@ Identify all explicit and implicit financial transactions mentioned in the user'
 - Type: 'Expense' or 'Income' (infer from context).
 - Amount: Monetary value (extract if present).
 - Currency: Currency code (infer from context or default to '{default_currency}').
-- Occurred At: Date and time of the transaction (infer from context, default to '{today}' and current time if not specified, format as YYYY-MM-DD HH:MM:SS).
+- Occurred At: Date and time of the transaction (infer from context, default to '{today}' and current time if not specified, ISO format).
 
 Useful information:
 - Today: {today}
@@ -81,8 +81,8 @@ class AudioExtractor(BaseExtractor):
             preferences.currency_code
         )
 
-        image_urls: list[str] = input_data.get("image_urls", [])
-        image_contents = self.__get_image_contents__(image_urls)
+        audio_urls: list[str] = input_data.get("audio_urls", [])
+        audio_contents = await self.__get_audio_base64_contents__(audio_urls)
 
         today = datetime.datetime.now(datetime.timezone.utc)
 
@@ -96,8 +96,8 @@ class AudioExtractor(BaseExtractor):
                     "format_instructions": parser.get_format_instructions()
                 },
             ),
-            HumanMessagePromptTemplate.from_template(
-                template=[{"type": "text", "text": user_message}, *image_contents],
+            HumanMessage(
+                content=[{"type": "text", "text": user_message}, *audio_contents]
             ),
         ]
 
@@ -133,6 +133,8 @@ class AudioExtractor(BaseExtractor):
 
         return result
 
+        return None
+
     @staticmethod
     async def __get_audio_base64_contents__(audio_urls: list[str]) -> list[dict]:
         """
@@ -147,11 +149,12 @@ class AudioExtractor(BaseExtractor):
                     audio_data = response.content
                     audio_base64 = base64.b64encode(audio_data).decode("utf-8")
                     base64_contents.append(
-                        {"type": "input_audio", "input_audio": {"data": audio_base64, "format": "m4a"}}
+                        {
+                            "type": "input_audio",
+                            "input_audio": {"data": audio_base64, "format": "wav"},
+                        }
                     )
                 except httpx.HTTPError as e:
                     logger.error(f"Failed to fetch audio from {audio_url}: {e}")
-                    base64_contents.append(
-                        {"type": "audio_base64", "content": "Error fetching audio"}
-                    )
+
         return base64_contents
