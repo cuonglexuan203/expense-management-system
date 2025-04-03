@@ -364,6 +364,23 @@ class _MessageBubbleState extends State<MessageBubble> {
                       );
                     }
                   }),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      DateFormat('MMM d, yyyy').format(transaction.occurredAt),
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        color: Colors.grey[800],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
