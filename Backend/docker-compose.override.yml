@@ -51,6 +51,7 @@ services:
   
       # Service URLs
       - Services__Ai__BaseUrl=${AI_BASEURL}
+      - Services__Ai__ApiKey=${AI_API_KEY}
   
       # Logging Configuration
       - Serilog__MinimumLevel__Default=${SERILOG_MINIMUM_LEVEL_DEFAULT}
@@ -80,6 +81,15 @@ services:
       - SERVER_PORT=8000
       - API_V1_STR=${API_V1_STR}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - API_KEY=${AI_API_KEY}
+      - BACKEND_BASE_URL=http://ems-api:${BE_PORT}
+      - BACKEND_API_KEY=${BE_API_KEY}
+
+      # Redis
+      - REDIS_URL=redis:6379
+      - REDIS_PASSWORD=123456
+      - REDIS_TTL=3600
+      - REDIS_INSTANCE_NAME=${REDIS_INSTANCE_NAME}
   
       # LLM API Keys
       - GROQ_API_KEY=${GROQ_API_KEY}
