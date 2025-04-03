@@ -433,7 +433,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
 
         final tokenRepository = ref.read(tokenRepositoryProvider);
         final accessToken = await tokenRepository.getAccessToken();
-        print('Acesss token: $accessToken');
+        print('Access token: $accessToken');
         if (accessToken != null) {
           await ref.read(chatRepositoryProvider).connect(accessToken);
 

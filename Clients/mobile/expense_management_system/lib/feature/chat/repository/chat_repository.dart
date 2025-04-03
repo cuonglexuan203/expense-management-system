@@ -107,7 +107,7 @@ class ChatRepository {
         if (newAccessToken != null && _shouldReconnect) {
           await connect(newAccessToken);
         } else {
-          throw AppException.errorWithMessage("Làm mới access token thất bại");
+          throw AppException.errorWithMessage("Refresh access token failed");
         }
       } else {
         throw AppException.errorWithMessage("Connection failed: $e");
@@ -195,7 +195,7 @@ class ChatRepository {
         if (accessToken == null) {
           final newToken = await _refreshToken();
           if (newToken == null) {
-            throw AppException.errorWithMessage("Không thể lấy access token");
+            throw AppException.errorWithMessage("Can not get access token");
           }
           await connect(newToken);
         } else {
@@ -207,11 +207,11 @@ class ChatRepository {
           if (newToken != null) {
             await connect(newToken);
           } else {
-            throw AppException.errorWithMessage(
-                "Không thể làm mới access token");
+            throw AppException.errorWithMessage("Can not refresh access token");
           }
         } else {
-          throw AppException.errorWithMessage("Lỗi kết nối: ${e.toString()}");
+          throw AppException.errorWithMessage(
+              "Error connection: ${e.toString()}");
         }
       }
     }
