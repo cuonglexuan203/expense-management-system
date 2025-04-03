@@ -58,7 +58,7 @@ class TransactionAnalyzerAgent(BaseAgent):
                 return TransactionAnalysisOutput(**result["output"])
             else:
                 return TransactionAnalysisOutput(
-                    categorized_items=[],
+                    transactions=[],
                     transaction_type="unknown",
                     introduction="Analysis could not be completed.",
                     total_expenses=0,

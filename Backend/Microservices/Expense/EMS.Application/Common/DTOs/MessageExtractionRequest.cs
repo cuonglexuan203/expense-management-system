@@ -1,4 +1,11 @@
-﻿namespace EMS.Application.Common.DTOs
+﻿using EMS.Application.Features.Preferences.Dtos;
+
+namespace EMS.Application.Common.DTOs
 {
-    public record MessageExtractionRequest(int ChatThreadId, string Query);
+    public record MessageExtractionRequest(
+        string UserId,
+        int ChatThreadId,
+        string Message,
+        string[] Categories,
+        UserPreferenceDto UserPreferences);
 }

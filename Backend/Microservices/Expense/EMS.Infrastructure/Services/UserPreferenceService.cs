@@ -1,6 +1,9 @@
-﻿using EMS.Application.Common.Interfaces.DbContext;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Utils;
+using EMS.Application.Features.Preferences.Dtos;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 using EMS.Core.Exceptions;
@@ -15,38 +18,37 @@ namespace EMS.Infrastructure.Services
         private readonly IApplicationDbContext _context;
         private readonly IDistributedCacheService _cacheService;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IMapper _mapper;
 
         public UserPreferenceService(
             ILogger<UserPreferenceService> logger,
             IApplicationDbContext context,
             IDistributedCacheService cacheService,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            IMapper mapper)
         {
             _logger = logger;
             _context = context;
             _cacheService = cacheService;
             _currentUserService = currentUserService;
+            _mapper = mapper;
         }
 
-        public async Task<UserPreference> GetUserPreferenceAsync(CancellationToken cancellationToken = default)
+        public async Task<UserPreferenceDto> GetUserPreferenceAsync(CancellationToken cancellationToken = default)
         {
             var userId = _currentUserService.Id!;
 
-            return await _cacheService.GetOrSetAsync(
-                CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.GeneralKeys.UserPreference, userId),
-                async () => await _context.UserPreferences
-                .AsNoTracking()
-                .Where(e => !e.IsDeleted && e.UserId == userId)
-                .FirstOrDefaultAsync() ?? throw new ServerException($"User preference of user id {userId} not found."));
+            return await GetUserPreferenceByIdAsync(userId);
         }
 
-        public async Task<UserPreference> GetUserPreferenceByIdAsync(string userId)
+        public async Task<UserPreferenceDto> GetUserPreferenceByIdAsync(string userId)
         {
             return await _cacheService.GetOrSetAsync(
                 CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.GeneralKeys.UserPreference, userId),
                 async () => await _context.UserPreferences
                 .AsNoTracking()
                 .Where(e => !e.IsDeleted && e.UserId == userId)
+                .ProjectTo<UserPreferenceDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync() ?? throw new ServerException($"User preference of user id {userId} not found."));
         }
 

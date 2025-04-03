@@ -12,6 +12,7 @@ class LLMProvider(Enum):
 class LLMModel(Enum):
     # ------------------ OpenAI models ------------------
     GPT_4O_MINI = "gpt-4o-mini"
+    GPT_4O_MINI_AUDIO_PREVIEW = "gpt-4o-mini-audio-preview"
 
     # ------------------ Groq models ------------------
     # (Meta)
@@ -55,7 +56,7 @@ class LLMModel(Enum):
     def for_provider(cls, provider: LLMProvider) -> Tuple["LLMModel", ...]:
         """Return all models for a specific provider"""
         mapping = {
-            LLMProvider.OPENAI: (cls.GPT_4O_MINI,),
+            LLMProvider.OPENAI: (cls.GPT_4O_MINI, cls.GPT_4O_MINI_AUDIO_PREVIEW),
             LLMProvider.GROQ: (
                 cls.LLAMA3_8B_8192,
                 cls.LLAMA3_70B_8192,

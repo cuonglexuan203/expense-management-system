@@ -2,8 +2,10 @@
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Messaging;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Common.Utils;
 using EMS.Application.Features.Chats.Finance.Messaging;
 using EMS.Core.Entities;
+using EMS.Core.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -45,7 +47,6 @@ namespace EMS.Application.Features.Chats.Finance.Commands.UploadMessageFiles
                 var userId = _currentUserService.Id!;
 
                 var message = await _context.ChatMessages
-                    .AsNoTracking()
                     .FirstOrDefaultAsync(e => e.Id == request.MessageId && e.UserId == userId && !e.IsDeleted)
                     ?? throw new NotFoundException($"Chat message with id {request.MessageId} not found.");
 
@@ -58,11 +59,30 @@ namespace EMS.Application.Features.Chats.Finance.Commands.UploadMessageFiles
                     Medias = []
                 };
 
+                MessageTypes messageTypes = MessageTypes.None;
                 // OPTIMIZE: upload in parallel
                 foreach (var file in request.Files)
                 {
                     try
                     {
+                        switch (FileUtil.GetFileType(file.ContentType))
+                        {
+                            case FileType.Image:
+                                {
+                                    messageTypes |= MessageTypes.Image;
+                                    break;
+                                }
+                            case FileType.Video:
+                                {
+                                    messageTypes |= MessageTypes.Video;
+                                    break;
+                                }
+                            case FileType.Audio:
+                                {
+                                    messageTypes |= MessageTypes.Audio;
+                                    break;
+                                }
+                        }
                         var media = new Media { ChatMessageId = request.MessageId };
                         var mediaDto = await _mediaService.UploadMediaAsync(
                             media,
@@ -81,6 +101,9 @@ namespace EMS.Application.Features.Chats.Finance.Commands.UploadMessageFiles
                             ex.Message);
                     }
                 }
+
+                message.MessageTypes |= messageTypes;
+                await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Finished upload files for message {MessageId}: {UploadedFile}/{ReceivedFile}",
                     request.MessageId,

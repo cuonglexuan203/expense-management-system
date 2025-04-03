@@ -5,6 +5,7 @@ using EMS.Application.Features.Categories.Commands.UpdateCategory;
 using EMS.Application.Features.Categories.Dtos;
 using EMS.Application.Features.Categories.Queries.GetCategories;
 using EMS.Application.Features.Categories.Queries.GetCategoryById;
+using EMS.Application.Features.Categories.Queries.GetDefaultCategories;
 using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -59,6 +60,14 @@ namespace EMS.API.Controllers.v1
         {
             await _sender.Send(new DeleteCategoryCommand(id));
             return NoContent();
+        }
+
+        [HttpGet("defaults")]
+        public async Task<IActionResult> GetDefaultCategories()
+        {
+            var result = await _sender.Send(new GetDefaultCategoriesQuery());
+
+            return Ok(result);
         }
     }
 }

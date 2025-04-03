@@ -18,11 +18,11 @@ services:
 
   # Databases
   postgres:
-    image: ${DOCKER_REGISTRY-}postgres:17.4
+    image: ${DOCKER_REGISTRY-}postgres:17.4-alpine3.21
 
   # Cache
   redis:
-    image: ${DOCKER_REGISTRY-}redis
+    image: ${DOCKER_REGISTRY-}redis:7.4.2-alpine3.21
 
 networks:
   app-network:

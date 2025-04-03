@@ -23,6 +23,7 @@
     <Folder Include="Common\Validators\" />
     <Folder Include="Features\Chats\Assistant\" />
     <Folder Include="Features\Chats\Commands\" />
+    <Folder Include="Features\Preferences\Services\" />
   </ItemGroup>
 
 </Project>

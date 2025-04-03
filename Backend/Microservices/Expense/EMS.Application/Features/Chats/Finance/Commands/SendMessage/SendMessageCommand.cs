@@ -5,6 +5,7 @@ using EMS.Application.Common.Interfaces.Messaging;
 using EMS.Application.Features.Chats.Common.Dtos;
 using EMS.Application.Features.Chats.Finance.Messaging;
 using EMS.Core.Entities;
+using EMS.Core.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -55,6 +56,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.SendMessage
             // Save a new message
             var userId = request.UserId;
             var message = ChatMessage.CreateUserMessage(userId!, request.ChatThreadId, request.Text);
+
             _context.ChatMessages.Add(message);
             await _context.SaveChangesAsync();
 

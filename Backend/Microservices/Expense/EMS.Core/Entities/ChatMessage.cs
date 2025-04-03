@@ -3,12 +3,13 @@ using EMS.Core.Enums;
 
 namespace EMS.Core.Entities
 {
-    public class ChatMessage: BaseAuditableEntity<int>
+    public class ChatMessage : BaseAuditableEntity<int>
     {
         public int ChatThreadId { get; set; }
         public string? UserId { get; set; }
         public MessageRole Role { get; set; } = MessageRole.User;
         public string? Content { get; set; }
+        public MessageTypes MessageTypes { get; set; }
 
         // Navigations
         public ChatThread ChatThread { get; set; } = default!;
@@ -18,26 +19,28 @@ namespace EMS.Core.Entities
         //public ICollection<ExtractedTransaction> ExtractedTransactions { get; set; } = [];
 
         #region Behaviors
-        public static ChatMessage CreateUserMessage(string userId, int chatThreadId, string? content)
+        public static ChatMessage CreateUserMessage(string userId, int chatThreadId, string? content, MessageTypes messageTypes = MessageTypes.Text)
         {
             var message = new ChatMessage
             {
                 UserId = userId,
                 ChatThreadId = chatThreadId,
                 Role = MessageRole.User,
-                Content = content
+                Content = content,
+                MessageTypes = messageTypes
             };
 
             return message;
         }
 
-        public static ChatMessage CreateSystemMessage(int chatThreadId, string? content)
+        public static ChatMessage CreateSystemMessage(int chatThreadId, string? content, MessageTypes messageTypes = MessageTypes.Text)
         {
             var message = new ChatMessage
             {
                 ChatThreadId = chatThreadId,
                 Role = MessageRole.System,
-                Content = content
+                Content = content,
+                MessageTypes = messageTypes
             };
 
             return message;

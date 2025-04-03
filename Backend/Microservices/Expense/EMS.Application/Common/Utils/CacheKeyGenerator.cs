@@ -19,6 +19,7 @@
 
         public static class GeneralKeys
         {
+            public const string UnknownCategory = "unknown_category";
             public const string DefaultCategory = "default_category";
             public const string UserPreference = "user_preference";
         }
