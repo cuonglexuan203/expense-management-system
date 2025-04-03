@@ -87,8 +87,11 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
   }
 
   Widget _buildCard(Wallet wallet) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isSmallScreen ? 15 : 20),
       decoration: BoxDecoration(
         color: ColorName.blue.withOpacity(0.5),
         borderRadius: BorderRadius.circular(25),
@@ -102,104 +105,168 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Total Balance',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Nunito',
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    wallet.balance.toFormattedString() ?? '0',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Balance By Period',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Nunito',
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    wallet.balanceByPeriod.toFormattedString() ?? '0',
-                    style: TextStyle(
-                      color: wallet.balanceByPeriod < 0
-                          ? Colors.red
-                          : ColorName.green,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                    ),
-                  ),
-                ],
-              ),
-              // IconButton(
-              //   icon: const Icon(
-              //     Iconsax.more,
-              //     color: Colors.white,
-              //   ),
-              //   onPressed: () {},
-              // ),
-            ],
-          ),
-          const SizedBox(height: 15),
-          // Time filter row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(child: _buildTimeFilterButton('AllTime', 'All')),
-              Expanded(child: _buildTimeFilterButton('CurrentWeek', 'Week')),
-              Expanded(child: _buildTimeFilterButton('CurrentMonth', 'Month')),
-              Expanded(child: _buildTimeFilterButton('CurrentYear', 'Year')),
-            ],
+          // Balance section
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return constraints.maxWidth < 380
+                  ? Column(
+                      children: [
+                        _buildTotalBalance(wallet),
+                        const SizedBox(height: 12),
+                        _buildPeriodBalance(wallet),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildTotalBalance(wallet),
+                        _buildPeriodBalance(wallet),
+                      ],
+                    );
+            },
           ),
 
           const SizedBox(height: 15),
-          Row(
-            children: [
-              Expanded(
-                child: _buildIncomeExpenseItem(
-                  icon: Icons.arrow_downward,
-                  label: 'Income',
-                  amount: _safeFormatAmount(wallet.income),
-                  iconColor: Colors.green,
-                ),
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: _buildIncomeExpenseItem(
-                  icon: Icons.arrow_upward,
-                  label: 'Expenses',
-                  amount: _safeFormatAmount(wallet.expense),
-                  iconColor: Colors.red,
-                ),
-              ),
-            ],
+
+          // Time filter row - Now with scrolling for very small screens
+          SizedBox(
+            height: 40,
+            child: isSmallScreen
+                ? ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _buildTimeFilterButton('AllTime', 'All'),
+                      _buildTimeFilterButton('CurrentWeek', 'Week'),
+                      _buildTimeFilterButton('CurrentMonth', 'Month'),
+                      _buildTimeFilterButton('CurrentYear', 'Year'),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(child: _buildTimeFilterButton('AllTime', 'All')),
+                      Expanded(
+                          child: _buildTimeFilterButton('CurrentWeek', 'Week')),
+                      Expanded(
+                          child:
+                              _buildTimeFilterButton('CurrentMonth', 'Month')),
+                      Expanded(
+                          child: _buildTimeFilterButton('CurrentYear', 'Year')),
+                    ],
+                  ),
+          ),
+
+          const SizedBox(height: 15),
+
+          // Income/Expense row - Converts to column on small screens
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return constraints.maxWidth < 300
+                  ? Column(
+                      children: [
+                        _buildIncomeExpenseItem(
+                          icon: Icons.trending_up,
+                          label: 'Income',
+                          amount: _safeFormatAmount(wallet.income),
+                          iconColor: Colors.green,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildIncomeExpenseItem(
+                          icon: Icons.trending_down,
+                          label: 'Expenses',
+                          amount: _safeFormatAmount(wallet.expense),
+                          iconColor: Colors.red,
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: _buildIncomeExpenseItem(
+                            icon: Icons.trending_up,
+                            label: 'Income',
+                            amount: _safeFormatAmount(wallet.income),
+                            iconColor: Colors.green,
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: _buildIncomeExpenseItem(
+                            icon: Icons.trending_down,
+                            label: 'Expenses',
+                            amount: _safeFormatAmount(wallet.expense),
+                            iconColor: Colors.red,
+                          ),
+                        ),
+                      ],
+                    );
+            },
           ),
         ],
       ),
+    );
+  }
+
+// Helper methods for cleaner code
+  Widget _buildTotalBalance(Wallet wallet) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Total Balance',
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Nunito',
+          ),
+        ),
+        const SizedBox(height: 8),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            wallet.balance.toFormattedString() ?? '0',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Nunito',
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPeriodBalance(Wallet wallet) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Balance By Period',
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Nunito',
+          ),
+        ),
+        const SizedBox(height: 8),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            wallet.balanceByPeriod.toFormattedString() ?? '0',
+            style: TextStyle(
+              color: wallet.balanceByPeriod < 0 ? Colors.red : ColorName.green,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Nunito',
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
@@ -242,7 +309,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
     required Color iconColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
       decoration: BoxDecoration(
         color: const Color(0xFF386BF6),
         borderRadius: BorderRadius.circular(24),
@@ -257,51 +324,84 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: iconColor.withOpacity(0.6),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Nunito',
-                ),
-              ),
-            ],
+          // Responsive row for icon and label
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isNarrow = constraints.maxWidth < 140;
+
+              return isNarrow
+                  ? Column(
+                      children: [
+                        _buildIconContainer(icon, iconColor),
+                        const SizedBox(height: 8),
+                        Text(
+                          label,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito',
+                          ),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildIconContainer(icon, iconColor),
+                        const SizedBox(width: 8),
+                        Text(
+                          label,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito',
+                          ),
+                        ),
+                      ],
+                    );
+            },
           ),
           const SizedBox(height: 8),
-          Text(
-            amount,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Nunito',
+          // Amount text with overflow handling
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              amount,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Nunito',
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+// Helper method for icon container
+  Widget _buildIconContainer(IconData icon, Color iconColor) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: iconColor.withOpacity(0.6),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Icon(
+        icon,
+        color: iconColor,
+        size: 20, // Smaller icon size
       ),
     );
   }

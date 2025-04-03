@@ -117,7 +117,6 @@ class ChatNotifier extends StateNotifier<ChatState> {
           _paginationInfo = paginationInfo;
           _currentPage = nextPage;
 
-          // Thay đổi ở đây: thêm tin nhắn cũ vào đầu danh sách
           final allMessages = [...newMessages, ...currentMessages];
           state = ChatState.loaded(allMessages);
         },
@@ -130,13 +129,39 @@ class ChatNotifier extends StateNotifier<ChatState> {
     }
   }
 
-  void addReceivedMessage(Message message) {
+  void addReceivedMessage(Message? message) {
     final currentMessages = state.maybeWhen(
       loaded: (messages) => List<Message>.from(messages),
       orElse: () => <Message>[],
     );
 
     final updatedMessages = [message, ...currentMessages];
+    state = ChatState.loaded(updatedMessages);
+  }
+
+  // void addReceivedMessageWithFiles(Message message) {
+  //   final currentMessages = state.maybeWhen(
+  //     loaded: (messages) => List<Message>.from(messages),
+  //     orElse: () => <Message>[],
+  //   );
+
+  //   final updatedMessages = [message, ...currentMessages];
+  //   state = ChatState.loaded(updatedMessages);
+  // }
+
+  void updateMessage(Message updatedMessage) {
+    final currentMessages = state.maybeWhen(
+      loaded: (messages) => List<Message>.from(messages),
+      orElse: () => <Message>[],
+    );
+
+    final updatedMessages = currentMessages.map((message) {
+      if (message.id == updatedMessage.id) {
+        return updatedMessage;
+      }
+      return message;
+    }).toList();
+
     state = ChatState.loaded(updatedMessages);
   }
 }

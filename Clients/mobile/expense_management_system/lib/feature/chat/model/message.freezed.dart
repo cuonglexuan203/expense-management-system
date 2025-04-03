@@ -26,6 +26,7 @@ mixin _$Message {
   String get role => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
+  List<Media> get medias => throw _privateConstructorUsedError;
   List<ExtractedTransaction> get extractedTransactions =>
       throw _privateConstructorUsedError;
 
@@ -50,6 +51,7 @@ abstract class $MessageCopyWith<$Res> {
       String role,
       String content,
       DateTime createdAt,
+      List<Media> medias,
       List<ExtractedTransaction> extractedTransactions});
 }
 
@@ -74,6 +76,7 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
     Object? role = null,
     Object? content = null,
     Object? createdAt = null,
+    Object? medias = null,
     Object? extractedTransactions = null,
   }) {
     return _then(_value.copyWith(
@@ -101,6 +104,10 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      medias: null == medias
+          ? _value.medias
+          : medias // ignore: cast_nullable_to_non_nullable
+              as List<Media>,
       extractedTransactions: null == extractedTransactions
           ? _value.extractedTransactions
           : extractedTransactions // ignore: cast_nullable_to_non_nullable
@@ -123,6 +130,7 @@ abstract class _$$MessageImplCopyWith<$Res> implements $MessageCopyWith<$Res> {
       String role,
       String content,
       DateTime createdAt,
+      List<Media> medias,
       List<ExtractedTransaction> extractedTransactions});
 }
 
@@ -145,6 +153,7 @@ class __$$MessageImplCopyWithImpl<$Res>
     Object? role = null,
     Object? content = null,
     Object? createdAt = null,
+    Object? medias = null,
     Object? extractedTransactions = null,
   }) {
     return _then(_$MessageImpl(
@@ -172,6 +181,10 @@ class __$$MessageImplCopyWithImpl<$Res>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      medias: null == medias
+          ? _value._medias
+          : medias // ignore: cast_nullable_to_non_nullable
+              as List<Media>,
       extractedTransactions: null == extractedTransactions
           ? _value._extractedTransactions
           : extractedTransactions // ignore: cast_nullable_to_non_nullable
@@ -190,8 +203,10 @@ class _$MessageImpl implements _Message {
       required this.role,
       required this.content,
       required this.createdAt,
+      final List<Media> medias = const [],
       final List<ExtractedTransaction> extractedTransactions = const []})
-      : _extractedTransactions = extractedTransactions;
+      : _medias = medias,
+        _extractedTransactions = extractedTransactions;
 
   factory _$MessageImpl.fromJson(Map<String, dynamic> json) =>
       _$$MessageImplFromJson(json);
@@ -208,6 +223,15 @@ class _$MessageImpl implements _Message {
   final String content;
   @override
   final DateTime createdAt;
+  final List<Media> _medias;
+  @override
+  @JsonKey()
+  List<Media> get medias {
+    if (_medias is EqualUnmodifiableListView) return _medias;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_medias);
+  }
+
   final List<ExtractedTransaction> _extractedTransactions;
   @override
   @JsonKey()
@@ -220,7 +244,7 @@ class _$MessageImpl implements _Message {
 
   @override
   String toString() {
-    return 'Message(id: $id, chatThreadId: $chatThreadId, userId: $userId, role: $role, content: $content, createdAt: $createdAt, extractedTransactions: $extractedTransactions)';
+    return 'Message(id: $id, chatThreadId: $chatThreadId, userId: $userId, role: $role, content: $content, createdAt: $createdAt, medias: $medias, extractedTransactions: $extractedTransactions)';
   }
 
   @override
@@ -236,6 +260,7 @@ class _$MessageImpl implements _Message {
             (identical(other.content, content) || other.content == content) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
+            const DeepCollectionEquality().equals(other._medias, _medias) &&
             const DeepCollectionEquality()
                 .equals(other._extractedTransactions, _extractedTransactions));
   }
@@ -250,6 +275,7 @@ class _$MessageImpl implements _Message {
       role,
       content,
       createdAt,
+      const DeepCollectionEquality().hash(_medias),
       const DeepCollectionEquality().hash(_extractedTransactions));
 
   /// Create a copy of Message
@@ -276,6 +302,7 @@ abstract class _Message implements Message {
       required final String role,
       required final String content,
       required final DateTime createdAt,
+      final List<Media> medias,
       final List<ExtractedTransaction> extractedTransactions}) = _$MessageImpl;
 
   factory _Message.fromJson(Map<String, dynamic> json) = _$MessageImpl.fromJson;
@@ -292,6 +319,8 @@ abstract class _Message implements Message {
   String get content;
   @override
   DateTime get createdAt;
+  @override
+  List<Media> get medias;
   @override
   List<ExtractedTransaction> get extractedTransactions;
 

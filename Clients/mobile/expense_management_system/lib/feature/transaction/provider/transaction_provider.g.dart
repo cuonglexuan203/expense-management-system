@@ -7,7 +7,7 @@ part of 'transaction_provider.dart';
 // **************************************************************************
 
 String _$paginatedTransactionsHash() =>
-    r'47d36c28d6ec156f3e73cffd591734c61515ef1d';
+    r'c0cbae91171d6a25490a79b41911d4317ec84dcf';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -176,7 +176,7 @@ class _PaginatedTransactionsProviderElement
 }
 
 String _$transactionNotifierHash() =>
-    r'998ef68c9d73dfe633f09078976e30362d0064ec';
+    r'aecc92be58dcc4c1f710704d6ab4a21591511fe3';
 
 /// See also [TransactionNotifier].
 @ProviderFor(TransactionNotifier)

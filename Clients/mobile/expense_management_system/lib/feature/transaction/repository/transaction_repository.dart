@@ -106,17 +106,40 @@ class TransactionRepository {
     }
   }
 
+  // Updated method in TransactionRepository
   Future<APIResponse<PaginatedResponse<Transaction>>>
-      getTransactionsByWalletPaginated(int walletId,
-          {int pageNumber = 1, int pageSize = 10}) async {
+      getTransactionsByWalletPaginated(
+    int walletId, {
+    int pageNumber = 1,
+    int pageSize = 10,
+    String period = 'AllTime',
+    String? type,
+    String sort = 'DESC',
+    String? search,
+  }) async {
     try {
+      // Build query parameters
+      final Map<String, dynamic> queryParams = {
+        'WalletId': walletId,
+        'PageNumber': pageNumber.toString(),
+        'PageSize': pageSize.toString(),
+        'Period': period,
+        'Sort': sort,
+      };
+
+      // Add type filter if provided
+      if (type != null) {
+        queryParams['Type'] = type;
+      }
+
+      // Add search parameter if provided
+      if (search != null && search.isNotEmpty) {
+        queryParams['Name'] = search;
+      }
+
       final response = await _api.get(
         ApiEndpoints.transaction.getAll,
-        query: {
-          'WalletId': walletId,
-          'PageNumber': pageNumber.toString(),
-          'PageSize': pageSize.toString(),
-        },
+        query: queryParams,
       );
 
       return response.when(
@@ -135,7 +158,9 @@ class TransactionRepository {
                     final transaction = Transaction.fromJson(safeItem);
                     transactions.add(transaction);
                   }
-                } catch (e) {}
+                } catch (e) {
+                  // Handle parsing errors for individual items
+                }
               }
               final paginationInfo = PaginationInfo.fromJson(data);
 

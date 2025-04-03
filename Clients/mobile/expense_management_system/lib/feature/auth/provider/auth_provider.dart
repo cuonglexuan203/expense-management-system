@@ -25,11 +25,7 @@ class AuthNotifier extends _$AuthNotifier {
     state = await _loginRepository.signUp(name, email, password);
   }
 
-  late final TokenRepository _tokenRepository =
-      ref.read(tokenRepositoryProvider);
-
   Future<void> logout() async {
-    await _tokenRepository.remove();
-    state = const AuthState.loggedOut();
+    state = await _loginRepository.logout();
   }
 }

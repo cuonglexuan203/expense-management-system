@@ -20,16 +20,16 @@ ExtractedTransaction _$ExtractedTransactionFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ExtractedTransaction {
+  int get id => throw _privateConstructorUsedError;
   int get chatExtractionId => throw _privateConstructorUsedError;
-  int get chatMessageId => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
   int get transactionId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  int get amount => throw _privateConstructorUsedError;
-  int get type => throw _privateConstructorUsedError;
+  double get amount => throw _privateConstructorUsedError;
+  String get type => throw _privateConstructorUsedError;
   DateTime get occurredAt => throw _privateConstructorUsedError;
-  int get confirmationMode => throw _privateConstructorUsedError;
-  int get confirmationStatus => throw _privateConstructorUsedError;
+  String get confirmationMode => throw _privateConstructorUsedError;
+  String get confirmationStatus => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this ExtractedTransaction to a JSON map.
@@ -49,16 +49,16 @@ abstract class $ExtractedTransactionCopyWith<$Res> {
       _$ExtractedTransactionCopyWithImpl<$Res, ExtractedTransaction>;
   @useResult
   $Res call(
-      {int chatExtractionId,
-      int chatMessageId,
+      {int id,
+      int chatExtractionId,
       String? category,
       int transactionId,
       String name,
-      int amount,
-      int type,
+      double amount,
+      String type,
       DateTime occurredAt,
-      int confirmationMode,
-      int confirmationStatus,
+      String confirmationMode,
+      String confirmationStatus,
       DateTime createdAt});
 }
 
@@ -78,8 +78,8 @@ class _$ExtractedTransactionCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? chatExtractionId = null,
-    Object? chatMessageId = null,
     Object? category = freezed,
     Object? transactionId = null,
     Object? name = null,
@@ -91,13 +91,13 @@ class _$ExtractedTransactionCopyWithImpl<$Res,
     Object? createdAt = null,
   }) {
     return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
       chatExtractionId: null == chatExtractionId
           ? _value.chatExtractionId
           : chatExtractionId // ignore: cast_nullable_to_non_nullable
-              as int,
-      chatMessageId: null == chatMessageId
-          ? _value.chatMessageId
-          : chatMessageId // ignore: cast_nullable_to_non_nullable
               as int,
       category: freezed == category
           ? _value.category
@@ -114,11 +114,11 @@ class _$ExtractedTransactionCopyWithImpl<$Res,
       amount: null == amount
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as double,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       occurredAt: null == occurredAt
           ? _value.occurredAt
           : occurredAt // ignore: cast_nullable_to_non_nullable
@@ -126,11 +126,11 @@ class _$ExtractedTransactionCopyWithImpl<$Res,
       confirmationMode: null == confirmationMode
           ? _value.confirmationMode
           : confirmationMode // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       confirmationStatus: null == confirmationStatus
           ? _value.confirmationStatus
           : confirmationStatus // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -148,16 +148,16 @@ abstract class _$$ExtractedTransactionImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int chatExtractionId,
-      int chatMessageId,
+      {int id,
+      int chatExtractionId,
       String? category,
       int transactionId,
       String name,
-      int amount,
-      int type,
+      double amount,
+      String type,
       DateTime occurredAt,
-      int confirmationMode,
-      int confirmationStatus,
+      String confirmationMode,
+      String confirmationStatus,
       DateTime createdAt});
 }
 
@@ -174,8 +174,8 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? chatExtractionId = null,
-    Object? chatMessageId = null,
     Object? category = freezed,
     Object? transactionId = null,
     Object? name = null,
@@ -187,13 +187,13 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
     Object? createdAt = null,
   }) {
     return _then(_$ExtractedTransactionImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
       chatExtractionId: null == chatExtractionId
           ? _value.chatExtractionId
           : chatExtractionId // ignore: cast_nullable_to_non_nullable
-              as int,
-      chatMessageId: null == chatMessageId
-          ? _value.chatMessageId
-          : chatMessageId // ignore: cast_nullable_to_non_nullable
               as int,
       category: freezed == category
           ? _value.category
@@ -210,11 +210,11 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
       amount: null == amount
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as double,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       occurredAt: null == occurredAt
           ? _value.occurredAt
           : occurredAt // ignore: cast_nullable_to_non_nullable
@@ -222,11 +222,11 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
       confirmationMode: null == confirmationMode
           ? _value.confirmationMode
           : confirmationMode // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       confirmationStatus: null == confirmationStatus
           ? _value.confirmationStatus
           : confirmationStatus // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -239,8 +239,8 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ExtractedTransactionImpl implements _ExtractedTransaction {
   const _$ExtractedTransactionImpl(
-      {required this.chatExtractionId,
-      required this.chatMessageId,
+      {required this.id,
+      required this.chatExtractionId,
       this.category,
       required this.transactionId,
       required this.name,
@@ -255,9 +255,9 @@ class _$ExtractedTransactionImpl implements _ExtractedTransaction {
       _$$ExtractedTransactionImplFromJson(json);
 
   @override
-  final int chatExtractionId;
+  final int id;
   @override
-  final int chatMessageId;
+  final int chatExtractionId;
   @override
   final String? category;
   @override
@@ -265,21 +265,21 @@ class _$ExtractedTransactionImpl implements _ExtractedTransaction {
   @override
   final String name;
   @override
-  final int amount;
+  final double amount;
   @override
-  final int type;
+  final String type;
   @override
   final DateTime occurredAt;
   @override
-  final int confirmationMode;
+  final String confirmationMode;
   @override
-  final int confirmationStatus;
+  final String confirmationStatus;
   @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'ExtractedTransaction(chatExtractionId: $chatExtractionId, chatMessageId: $chatMessageId, category: $category, transactionId: $transactionId, name: $name, amount: $amount, type: $type, occurredAt: $occurredAt, confirmationMode: $confirmationMode, confirmationStatus: $confirmationStatus, createdAt: $createdAt)';
+    return 'ExtractedTransaction(id: $id, chatExtractionId: $chatExtractionId, category: $category, transactionId: $transactionId, name: $name, amount: $amount, type: $type, occurredAt: $occurredAt, confirmationMode: $confirmationMode, confirmationStatus: $confirmationStatus, createdAt: $createdAt)';
   }
 
   @override
@@ -287,10 +287,9 @@ class _$ExtractedTransactionImpl implements _ExtractedTransaction {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ExtractedTransactionImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.chatExtractionId, chatExtractionId) ||
                 other.chatExtractionId == chatExtractionId) &&
-            (identical(other.chatMessageId, chatMessageId) ||
-                other.chatMessageId == chatMessageId) &&
             (identical(other.category, category) ||
                 other.category == category) &&
             (identical(other.transactionId, transactionId) ||
@@ -312,8 +311,8 @@ class _$ExtractedTransactionImpl implements _ExtractedTransaction {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      id,
       chatExtractionId,
-      chatMessageId,
       category,
       transactionId,
       name,
@@ -344,25 +343,25 @@ class _$ExtractedTransactionImpl implements _ExtractedTransaction {
 
 abstract class _ExtractedTransaction implements ExtractedTransaction {
   const factory _ExtractedTransaction(
-      {required final int chatExtractionId,
-      required final int chatMessageId,
+      {required final int id,
+      required final int chatExtractionId,
       final String? category,
       required final int transactionId,
       required final String name,
-      required final int amount,
-      required final int type,
+      required final double amount,
+      required final String type,
       required final DateTime occurredAt,
-      required final int confirmationMode,
-      required final int confirmationStatus,
+      required final String confirmationMode,
+      required final String confirmationStatus,
       required final DateTime createdAt}) = _$ExtractedTransactionImpl;
 
   factory _ExtractedTransaction.fromJson(Map<String, dynamic> json) =
       _$ExtractedTransactionImpl.fromJson;
 
   @override
-  int get chatExtractionId;
+  int get id;
   @override
-  int get chatMessageId;
+  int get chatExtractionId;
   @override
   String? get category;
   @override
@@ -370,15 +369,15 @@ abstract class _ExtractedTransaction implements ExtractedTransaction {
   @override
   String get name;
   @override
-  int get amount;
+  double get amount;
   @override
-  int get type;
+  String get type;
   @override
   DateTime get occurredAt;
   @override
-  int get confirmationMode;
+  String get confirmationMode;
   @override
-  int get confirmationStatus;
+  String get confirmationStatus;
   @override
   DateTime get createdAt;
 

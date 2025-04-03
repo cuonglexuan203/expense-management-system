@@ -6,6 +6,8 @@ import 'package:expense_management_system/app/widget/app_start_page.dart';
 import 'package:expense_management_system/feature/auth/widget/sign_in_page.dart';
 import 'package:expense_management_system/feature/auth/widget/sign_up_page.dart';
 import 'package:expense_management_system/feature/chat/widget/chat_page.dart';
+import 'package:expense_management_system/feature/profile/widget/profile_page.dart';
+import 'package:expense_management_system/feature/transaction/widget/transaction_page.dart';
 import 'package:expense_management_system/feature/wallet/widget/create_wallet_page.dart';
 import 'package:expense_management_system/feature/wallet/widget/wallet_detail_page.dart';
 import 'package:flutter/material.dart';
@@ -68,13 +70,14 @@ class SignUpRoute extends GoRouteData {
 
 @TypedGoRoute<ChatRoute>(path: ChatRoute.path)
 class ChatRoute extends GoRouteData {
-  const ChatRoute();
+  const ChatRoute({required this.walletId});
 
-  static const path = '/chat';
+  final int walletId;
+  static const path = '/chat/:walletId';
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const ChatPage();
+    return ChatPage(walletId: walletId);
   }
 }
 
@@ -120,6 +123,31 @@ class WalletDetailRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return WalletDetailPage(walletId: id);
+  }
+}
+
+@TypedGoRoute<TransactionRoute>(path: TransactionRoute.path)
+class TransactionRoute extends GoRouteData {
+  const TransactionRoute({required this.walletId});
+
+  final int walletId;
+  static const path = '/transactions/:walletId';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return TransactionPage(walletId: walletId);
+  }
+}
+
+@TypedGoRoute<ProfileRoute>(path: ProfileRoute.path)
+class ProfileRoute extends GoRouteData {
+  const ProfileRoute();
+
+  static const path = '/profile';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const ProfilePage();
   }
 }
 

@@ -20,7 +20,7 @@ mixin _$ChatState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Message> messages) loaded,
+    required TResult Function(List<Message?> messages) loaded,
     required TResult Function(AppException error) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -28,7 +28,7 @@ mixin _$ChatState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Message> messages)? loaded,
+    TResult? Function(List<Message?> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -36,7 +36,7 @@ mixin _$ChatState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Message> messages)? loaded,
+    TResult Function(List<Message?> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) =>
@@ -131,7 +131,7 @@ class _$InitialImpl implements _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Message> messages) loaded,
+    required TResult Function(List<Message?> messages) loaded,
     required TResult Function(AppException error) error,
   }) {
     return initial();
@@ -142,7 +142,7 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Message> messages)? loaded,
+    TResult? Function(List<Message?> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) {
     return initial?.call();
@@ -153,7 +153,7 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Message> messages)? loaded,
+    TResult Function(List<Message?> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) {
@@ -248,7 +248,7 @@ class _$LoadingImpl implements _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Message> messages) loaded,
+    required TResult Function(List<Message?> messages) loaded,
     required TResult Function(AppException error) error,
   }) {
     return loading();
@@ -259,7 +259,7 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Message> messages)? loaded,
+    TResult? Function(List<Message?> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) {
     return loading?.call();
@@ -270,7 +270,7 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Message> messages)? loaded,
+    TResult Function(List<Message?> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) {
@@ -328,7 +328,7 @@ abstract class _$$LoadedImplCopyWith<$Res> {
           _$LoadedImpl value, $Res Function(_$LoadedImpl) then) =
       __$$LoadedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<Message> messages});
+  $Res call({List<Message?> messages});
 }
 
 /// @nodoc
@@ -350,7 +350,7 @@ class __$$LoadedImplCopyWithImpl<$Res>
       null == messages
           ? _value._messages
           : messages // ignore: cast_nullable_to_non_nullable
-              as List<Message>,
+              as List<Message?>,
     ));
   }
 }
@@ -358,11 +358,11 @@ class __$$LoadedImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$LoadedImpl implements _Loaded {
-  const _$LoadedImpl(final List<Message> messages) : _messages = messages;
+  const _$LoadedImpl(final List<Message?> messages) : _messages = messages;
 
-  final List<Message> _messages;
+  final List<Message?> _messages;
   @override
-  List<Message> get messages {
+  List<Message?> get messages {
     if (_messages is EqualUnmodifiableListView) return _messages;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_messages);
@@ -398,7 +398,7 @@ class _$LoadedImpl implements _Loaded {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Message> messages) loaded,
+    required TResult Function(List<Message?> messages) loaded,
     required TResult Function(AppException error) error,
   }) {
     return loaded(messages);
@@ -409,7 +409,7 @@ class _$LoadedImpl implements _Loaded {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Message> messages)? loaded,
+    TResult? Function(List<Message?> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) {
     return loaded?.call(messages);
@@ -420,7 +420,7 @@ class _$LoadedImpl implements _Loaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Message> messages)? loaded,
+    TResult Function(List<Message?> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) {
@@ -469,9 +469,9 @@ class _$LoadedImpl implements _Loaded {
 }
 
 abstract class _Loaded implements ChatState {
-  const factory _Loaded(final List<Message> messages) = _$LoadedImpl;
+  const factory _Loaded(final List<Message?> messages) = _$LoadedImpl;
 
-  List<Message> get messages;
+  List<Message?> get messages;
 
   /// Create a copy of ChatState
   /// with the given fields replaced by the non-null parameter values.
@@ -562,7 +562,7 @@ class _$ErrorImpl implements _Error {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Message> messages) loaded,
+    required TResult Function(List<Message?> messages) loaded,
     required TResult Function(AppException error) error,
   }) {
     return error(this.error);
@@ -573,7 +573,7 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Message> messages)? loaded,
+    TResult? Function(List<Message?> messages)? loaded,
     TResult? Function(AppException error)? error,
   }) {
     return error?.call(this.error);
@@ -584,7 +584,7 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Message> messages)? loaded,
+    TResult Function(List<Message?> messages)? loaded,
     TResult Function(AppException error)? error,
     required TResult orElse(),
   }) {

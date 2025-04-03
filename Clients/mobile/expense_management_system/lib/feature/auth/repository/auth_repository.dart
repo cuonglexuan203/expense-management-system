@@ -12,6 +12,7 @@ import 'package:expense_management_system/shared/util/validator.dart';
 abstract class AuthRepositoryProtocol {
   Future<AuthState> login(String email, String password);
   Future<AuthState> signUp(String name, String email, String password);
+  Future<AuthState> logout();
 }
 
 final authRepositoryProvider = Provider(AuthRepository.new);
@@ -145,5 +146,26 @@ class AuthRepository implements AuthRepositoryProtocol {
     }, error: (error) {
       return AuthState.error(error);
     });
+  }
+
+  @override
+  Future<AuthState> logout() async {
+    try {
+      final logoutResponse = await _api.post(ApiEndpoints.auth.logout, {});
+
+      return logoutResponse.when(
+        success: (_) async {
+          final tokenRepository = _ref.read(tokenRepositoryProvider);
+          await tokenRepository.remove();
+
+          return const AuthState.loggedOut();
+        },
+        error: (error) {
+          return AuthState.error(error);
+        },
+      );
+    } catch (e) {
+      return AuthState.error(AppException.errorWithMessage(e.toString()));
+    }
   }
 }

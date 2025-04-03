@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/category/model/category.dart';
 import 'package:expense_management_system/feature/category/provider/category_provider.dart';
 import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
@@ -48,9 +49,8 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     if (_titleController.text.isEmpty ||
         _amountController.text.isEmpty ||
         _selectedCategoryName == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields')),
-      );
+      AppSnackBar.showWarning(
+          context: context, message: 'Please fill all required fields');
       return;
     }
 
@@ -78,23 +78,18 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
       });
 
       if (transaction != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Transaction added successfully')),
-        );
+        AppSnackBar.showSuccess(
+            context: context, message: 'Transaction added successfully');
         Navigator.pop(context, true);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to add transaction')),
-        );
+        AppSnackBar.showError(
+            context: context, message: 'Failed to add transaction');
       }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      AppSnackBar.showError(context: context, message: 'Something went wrong!');
     }
   }
 
@@ -162,25 +157,18 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                     _selectedCategoryId = category.id;
                     _selectedCategoryName = category.name;
                   });
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Category added successfully')),
-                  );
+                  AppSnackBar.showSuccess(
+                      context: context, message: 'Category added successfully');
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to add category')),
-                  );
+                  AppSnackBar.showError(
+                      context: context, message: 'Failed to add category');
                 }
               }).catchError((e) {
                 if (loadingDialogContext != null &&
                     Navigator.canPop(loadingDialogContext!)) {
                   Navigator.pop(loadingDialogContext!);
                 }
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: $e')),
-                );
+                AppSnackBar.showError(context: context, message: 'Error: $e');
               });
             },
             style: ElevatedButton.styleFrom(

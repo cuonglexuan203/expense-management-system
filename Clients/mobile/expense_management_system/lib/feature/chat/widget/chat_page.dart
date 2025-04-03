@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
 import 'package:expense_management_system/feature/chat/model/message.dart';
 import 'package:expense_management_system/feature/chat/provider/chat_provider.dart';
@@ -8,6 +9,7 @@ import 'package:expense_management_system/shared/http/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   final int walletId;
@@ -25,6 +27,137 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   int? chatThreadId;
   bool isLoading = true;
   bool isWaitingForResponse = false;
+
+  final ImagePicker _imagePicker = ImagePicker();
+  bool _isUploadingImage = false;
+  List<XFile>? _selectedImages;
+
+  Future<void> _pickImage() async {
+    try {
+      final List<XFile>? images = await _imagePicker.pickMultiImage();
+
+      if (images == null || images.isEmpty) return;
+
+      setState(() {
+        _selectedImages = images;
+      });
+    } catch (e) {
+      AppSnackBar.showError(
+        context: context,
+        message: 'Can not select image: ${e.toString()}',
+      );
+    }
+  }
+
+  void _clearSelectedImages() {
+    setState(() {
+      _selectedImages = null;
+    });
+  }
+
+  Future<void> _sendMessage() async {
+    final message = _messageController.text.trim();
+    final hasImages = _selectedImages != null && _selectedImages!.isNotEmpty;
+
+    if (message.isEmpty && !hasImages) {
+      return;
+    }
+
+    if (chatThreadId == null || isWaitingForResponse || _isUploadingImage) {
+      return;
+    }
+
+    _messageController.clear();
+
+    setState(() {
+      isWaitingForResponse = true;
+    });
+
+    try {
+      // Step 1: Send message via WebSocket first
+      final receivedMessage =
+          await ref.read(chatRepositoryProvider).sendMessageViaWebSocket(
+                widget.walletId,
+                chatThreadId!,
+                message,
+              );
+
+      // Step 2: Now we have the message with ID from WebSocket
+      if (hasImages && receivedMessage != null) {
+        setState(() {
+          _isUploadingImage = true;
+        });
+
+        // Set upload processing flag
+        ref.read(chatRepositoryProvider).setUploadProcessingStatus(true);
+
+        try {
+          final uploadedMedia =
+              await ref.read(chatRepositoryProvider).uploadMediaToMessage(
+                    messageId: receivedMessage.id,
+                    walletId: widget.walletId,
+                    files: _selectedImages!,
+                  );
+
+          final updatedMessage = receivedMessage.copyWith(
+            medias: uploadedMedia,
+          );
+          ref.read(chatProvider.notifier).addReceivedMessage(updatedMessage);
+        } finally {
+          // Reset both flags
+          ref.read(chatRepositoryProvider).setUploadProcessingStatus(false);
+
+          setState(() {
+            _selectedImages = null;
+            _isUploadingImage = false;
+            isWaitingForResponse =
+                false; // Only reset here after upload completes
+          });
+        }
+      }
+    } catch (e) {
+      AppSnackBar.showError(
+        context: context,
+        message: 'Failed to send message: ${e.toString()}',
+      );
+    } finally {
+      // QUAN TRỌNG: Luôn reset trạng thái đợi, bất kể thành công hay thất bại
+      setState(() {
+        isWaitingForResponse = false;
+        _isUploadingImage = false;
+      });
+    }
+  }
+
+  // Future<Message?> _findUserMessageByContent(String content) async {
+  //   final messagesState = ref.read(chatProvider);
+  //   final messages = messagesState.maybeWhen(
+  //     loaded: (msgs) => msgs,
+  //     orElse: () => <Message>[],
+  //   );
+
+  //   for (var msg in messages) {
+  //     if (msg.role.toLowerCase() == 'user' && msg.content == content) {
+  //       return msg;
+  //     }
+  //   }
+
+  //   await ref.read(chatProvider.notifier).fetchMessages(chatThreadId!);
+
+  //   final refreshedMessagesState = ref.read(chatProvider);
+  //   final refreshedMessages = refreshedMessagesState.maybeWhen(
+  //     loaded: (msgs) => msgs,
+  //     orElse: () => <Message>[],
+  //   );
+
+  //   for (var msg in refreshedMessages) {
+  //     if (msg.role.toLowerCase() == 'user' && msg.content == content) {
+  //       return msg;
+  //     }
+  //   }
+
+  //   return null;
+  // }
 
   @override
   void initState() {
@@ -93,18 +226,19 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         if (accessToken != null) {
           await ref.read(chatRepositoryProvider).connect(accessToken);
 
-          // Thiết lập callback khi nhận được tin nhắn
           ref.read(chatRepositoryProvider).setOnMessageReceivedCallback(() {
-            setState(() {
-              isWaitingForResponse = false;
-            });
+            // Only handle system messages or reset for non-upload scenarios
+            if (!_isUploadingImage) {
+              setState(() {
+                isWaitingForResponse = false;
+              });
+            }
             _scrollToBottom();
           });
         } else {
           throw AppException.errorWithMessage("Do not have Access Token");
         }
 
-        // Cuộn xuống dưới cùng sau khi tải tin nhắn
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToBottom();
         });
@@ -141,58 +275,61 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     await _initializeChat();
   }
 
-  Future<void> _sendMessage() async {
-    if (_messageController.text.isEmpty ||
-        chatThreadId == null ||
-        isWaitingForResponse) return;
+  // Future<void> _sendMessage() async {
+  //   if (_messageController.text.isEmpty ||
+  //       chatThreadId == null ||
+  //       isWaitingForResponse) return;
 
-    final message = _messageController.text;
-    _messageController.clear();
+  //   final message = _messageController.text;
+  //   _messageController.clear();
 
-    final userMessage = Message(
-      id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
-      chatThreadId: chatThreadId!,
-      userId: 'current_user', // Hoặc lấy userId thực tế từ session
-      role: 'User',
-      content: message,
-      createdAt: DateTime.now(),
-      extractedTransactions: [],
-    );
+  //   final userMessage = Message(
+  //     id: DateTime.now().millisecondsSinceEpoch,
+  //     chatThreadId: chatThreadId!,
+  //     userId: 'current_user',
+  //     role: 'User',
+  //     content: message,
+  //     createdAt: DateTime.now(),
+  //     extractedTransactions: [],
+  //   );
 
-    // Thêm tin nhắn vào provider để hiển thị ngay lập tức
-    ref.read(chatProvider.notifier).addReceivedMessage(userMessage);
+  //   ref.read(chatProvider.notifier).addReceivedMessage(userMessage);
 
-    // Cuộn xuống để hiển thị tin nhắn mới nhất
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
-    });
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     _scrollToBottom();
+  //   });
 
-    setState(() {
-      isWaitingForResponse = true;
-    });
+  //   setState(() {
+  //     isWaitingForResponse = true;
+  //   });
 
-    // Send message through the WebSocket connection
+  //   try {
+  //     await ref.read(chatRepositoryProvider).sendMessageWithFiles(
+  //           widget.walletId,
+  //           chatThreadId!,
+  //           message,
+  //         );
+  //   } catch (e) {
+  //     setState(() {
+  //       isWaitingForResponse = false;
+  //     });
+  //     AppSnackBar.showError(
+  //       context: context,
+  //       message: 'Failed to send messages.',
+  //     );
+  //   }
+  // }
+
+  Future<void> _confirmTransaction(int transactionId, String status) async {
     try {
-      await ref.read(chatRepositoryProvider).sendMessage(
-            widget.walletId,
-            chatThreadId!,
-            message,
+      await ref.read(chatRepositoryProvider).confirmExtractedTransaction(
+            transactionId: transactionId,
+            walletId: widget.walletId,
+            status: status,
           );
     } catch (e) {
-      setState(() {
-        isWaitingForResponse = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send message: ${e.toString()}')),
-      );
+      debugPrint('Error confirming transaction: $e');
     }
-  }
-
-  Future<void> _confirmTransaction(int transactionId) async {
-    await ref.read(chatRepositoryProvider).confirmExtractedTransaction(
-          transactionId: transactionId,
-          walletId: widget.walletId,
-        );
   }
 
   @override
@@ -212,11 +349,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             color: Colors.white,
           ),
         ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
-        ),
+        // shape: const RoundedRectangleBorder(
+        //   borderRadius: BorderRadius.vertical(
+        //     bottom: Radius.circular(20),
+        //   ),
+        // ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -227,9 +364,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 ColorName.chatGradientEnd,
               ],
             ),
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(20),
-            ),
+            // borderRadius: BorderRadius.vertical(
+            //   bottom: Radius.circular(20),
+            // ),
           ),
         ),
       ),
@@ -302,9 +439,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                                   controller: _scrollController,
                                   padding: const EdgeInsets.all(16),
                                   itemCount: messages.length,
-                                  reverse: true, // Đảo ngược thứ tự hiển thị
+                                  reverse: true,
                                   itemBuilder: (context, index) {
                                     final message = messages[index];
+                                    if (message == null) {
+                                      return const SizedBox
+                                          .shrink(); // Skip null messages
+                                    }
                                     return MessageBubble(
                                       message: message,
                                       onConfirmTransaction: _confirmTransaction,
@@ -312,7 +453,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                                   },
                                 ),
                               ),
-                              // Hiển thị typing indicator khi đang đợi phản hồi
                               if (isWaitingForResponse)
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -366,13 +506,61 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Iconsax.image),
+                  color: (_isUploadingImage || isWaitingForResponse)
+                      ? Colors.grey
+                      : ColorName.blue,
+                  onPressed: (_isUploadingImage || isWaitingForResponse)
+                      ? null
+                      : _pickImage,
+                ),
+
+                if (_selectedImages != null && _selectedImages!.isNotEmpty)
+                  GestureDetector(
+                    onTap: _clearSelectedImages,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: ColorName.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border:
+                            Border.all(color: ColorName.blue.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '${_selectedImages!.length} ${_selectedImages!.length > 1 ? "images" : "image"}',
+                            style: const TextStyle(
+                              color: ColorName.blue,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.close,
+                            size: 12,
+                            color: ColorName.blue,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
                 Expanded(
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: isAddTransaction
-                          ? 'Enter your transaction...'
-                          : 'Ask Mina anything...',
+                      hintText:
+                          _selectedImages != null && _selectedImages!.isNotEmpty
+                              ? 'Enter message with image...'
+                              : isAddTransaction
+                                  ? 'Enter your mesage...'
+                                  : 'Ask Mosa...',
                       hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.normal,
@@ -382,13 +570,26 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
-                    enabled: !isWaitingForResponse,
+                    enabled: !isWaitingForResponse && !_isUploadingImage,
                   ),
                 ),
+
+                // Nút gửi
                 IconButton(
-                  icon: const Icon(Iconsax.send_2),
-                  color: isWaitingForResponse ? Colors.grey : ColorName.blue,
-                  onPressed: isWaitingForResponse ? null : _sendMessage,
+                  icon: _isUploadingImage
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: ColorName.blue),
+                        )
+                      : const Icon(Iconsax.send_2),
+                  color: (isWaitingForResponse || _isUploadingImage)
+                      ? Colors.grey
+                      : ColorName.blue,
+                  onPressed: (isWaitingForResponse || _isUploadingImage)
+                      ? null
+                      : _sendMessage,
                 ),
               ],
             ),

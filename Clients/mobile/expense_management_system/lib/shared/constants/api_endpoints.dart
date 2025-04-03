@@ -6,6 +6,10 @@ class ApiEndpoints {
   static final developer = _DeveloperEndpoints();
   static final transaction = _TransactionEndpoints();
   static final wallet = _WalletEndpoints();
+  static final chatThread = _ChatThreadEndpoints();
+  static final extractedTransaction = _ExtractedTransactionEndpoints();
+  static final hubConnection = _HubConnectionEndpoints();
+  static final media = _MediaEndpoints();
 }
 
 class _AuthEndpoints {
@@ -45,4 +49,27 @@ class _WalletEndpoints {
   String getById(String id) => '$base/$id';
   String update(String id) => '$base/$id';
   String get walletSummary => '$base/wallet-summary';
+}
+
+class _ChatThreadEndpoints {
+  final String base = '${ApiEndpoints.base}/chat-threads';
+  String get getAll => base;
+  String getById(String id) => '$base/$id';
+  String getMessageById(int id) => '$base/$id/messages';
+}
+
+class _ExtractedTransactionEndpoints {
+  final String base = '${ApiEndpoints.base}/extracted-transactions';
+  String confirmTransaction(int id) => '$base/$id/confirm';
+  String confirmStatusTransaction(int id) => '$base/$id/status';
+}
+
+class _HubConnectionEndpoints {
+  final String base = '$ApiEndpoints/hubs';
+  String get finance => '$base/finance';
+}
+
+class _MediaEndpoints {
+  final String base = '${ApiEndpoints.base}/medias';
+  String uploadFile(int id) => '$base/messages/$id';
 }
