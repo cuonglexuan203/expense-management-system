@@ -50,7 +50,7 @@ services:
       - Redis__EnableLogging=${REDIS_ENABLE_LOGGING}
   
       # Service URLs
-      - Services__Ai__BaseUrl=${AI_BASEURL}
+      - Services__Ai__BaseUrl=http://ai-service:8000/api/v1
       - Services__Ai__ApiKey=${AI_API_KEY}
   
       # Logging Configuration
@@ -82,7 +82,7 @@ services:
       - API_V1_STR=${API_V1_STR}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - API_KEY=${AI_API_KEY}
-      - BACKEND_BASE_URL=http://ems-api:${BE_PORT}
+      - BACKEND_BASE_URL=http://ems-api:8080
       - BACKEND_API_KEY=${BE_API_KEY}
 
       # Redis
