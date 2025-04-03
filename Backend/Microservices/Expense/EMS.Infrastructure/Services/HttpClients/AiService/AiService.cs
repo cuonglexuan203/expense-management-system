@@ -43,7 +43,7 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync(AiServiceEndpoints.ExtractTransaction, request);
+                var response = await _httpClient.PostAsJsonAsync(AiServiceEndpoints.ExtractTransaction, request, _serializerOptions);
 
                 response.EnsureSuccessStatusCode();
 
