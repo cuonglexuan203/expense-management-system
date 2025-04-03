@@ -421,12 +421,21 @@ class ChatRepository {
   }) async {
     try {
       final formData = FormData();
-
       formData.fields.add(MapEntry('walletId', walletId.toString()));
 
       for (var file in files) {
         final fileName = file.path.split('/').last;
         final extension = fileName.split('.').last.toLowerCase();
+
+        // Determine content type based on extension
+        String contentType;
+        if (['jpg', 'jpeg', 'png', 'gif'].contains(extension)) {
+          contentType = 'image/$extension';
+        } else if (['mp3', 'm4a', 'wav', 'aac'].contains(extension)) {
+          contentType = 'audio/$extension';
+        } else {
+          contentType = 'application/octet-stream';
+        }
 
         formData.files.add(
           MapEntry(
@@ -434,7 +443,8 @@ class ChatRepository {
             await MultipartFile.fromFile(
               file.path,
               filename: fileName,
-              contentType: MediaType('image', extension),
+              contentType: MediaType(
+                  contentType.split('/')[0], contentType.split('/')[1]),
             ),
           ),
         );
@@ -445,8 +455,8 @@ class ChatRepository {
         formData,
         contentType: ContentType.multipartFormData,
       );
-      debugPrint('Response: ${response}');
 
+      // Add proper return value
       return response.when(
         success: (data) {
           final mediaList =
@@ -457,7 +467,7 @@ class ChatRepository {
               .toList();
         },
         error: (error) {
-          debugPrint('Error uploading media: $error');
+          debugPrint('Error processing upload response: $error');
           throw error;
         },
       );

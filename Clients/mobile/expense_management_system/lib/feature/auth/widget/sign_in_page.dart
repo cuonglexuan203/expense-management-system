@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/auth/provider/auth_provider.dart';
 import 'package:expense_management_system/feature/auth/provider/password_visibility_provider.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
@@ -201,10 +202,19 @@ class SignInPage extends ConsumerWidget {
                                                   authNotifierProvider.notifier)
                                               .login(_emailController.text,
                                                   _passwordController.text);
+                                          if (context.mounted) {
+                                            AppSnackBar.showSuccess(
+                                                context: context,
+                                                message: 'Log in successfully');
+                                            context.go('/');
+                                          }
                                         } finally {
-                                          ref
-                                              .read(isLoadingProvider.notifier)
-                                              .state = false;
+                                          if (context.mounted) {
+                                            ref
+                                                .read(
+                                                    isLoadingProvider.notifier)
+                                                .state = false;
+                                          }
                                         }
                                       },
                                 style: ElevatedButton.styleFrom(

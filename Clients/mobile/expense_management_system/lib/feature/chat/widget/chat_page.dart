@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   final int walletId;
@@ -27,6 +29,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   int? chatThreadId;
   bool isLoading = true;
   bool isWaitingForResponse = false;
+
+  //Recording
+  final _audioRecorder = AudioRecorder();
+  String? _recordedAudioPath;
+  bool _isRecording = false;
 
   final ImagePicker _imagePicker = ImagePicker();
   bool _isUploadingImage = false;
@@ -55,17 +62,132 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     });
   }
 
+  Future<void> _startRecording() async {
+    try {
+      if (await _audioRecorder.hasPermission()) {
+        final directory = await getTemporaryDirectory();
+        final filePath =
+            '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.wav';
+
+        await _audioRecorder.start(
+          const RecordConfig(
+            encoder: AudioEncoder.wav,
+            bitRate: 128000,
+            sampleRate: 44100,
+          ),
+          path: filePath,
+        );
+
+        setState(() {
+          _isRecording = true;
+        });
+      } else {
+        AppSnackBar.showError(
+          context: context,
+          message: 'Microphone permission is required.',
+        );
+      }
+    } catch (e) {
+      AppSnackBar.showError(
+        context: context,
+        message: 'Failed to start recording: ${e.toString()}',
+      );
+    }
+  }
+
+// Stop recording function
+  Future<void> _stopRecording() async {
+    try {
+      final filePath = await _audioRecorder.stop();
+      setState(() {
+        _isRecording = false;
+        _recordedAudioPath = filePath;
+      });
+    } catch (e) {
+      AppSnackBar.showError(
+        context: context,
+        message: 'Failed to stop recording: ${e.toString()}',
+      );
+    }
+  }
+
+// Clear recording
+  void _clearRecording() {
+    setState(() {
+      _recordedAudioPath = null;
+    });
+  }
+
   Future<void> _sendMessage() async {
     final message = _messageController.text.trim();
     final hasImages = _selectedImages != null && _selectedImages!.isNotEmpty;
+    final hasAudio = _recordedAudioPath != null;
 
-    if (message.isEmpty && !hasImages) {
+    if (!hasImages && !hasAudio) {
+      if (message.isEmpty) {
+        AppSnackBar.showError(
+          context: context,
+          message: 'Please enter a message to send',
+        );
+        return;
+      }
+
+      try {
+        final tempId = -DateTime.now().millisecondsSinceEpoch;
+
+        final tempUserMessage = Message(
+          id: tempId,
+          chatThreadId: chatThreadId!,
+          userId: 'current_user',
+          role: 'User',
+          content: message,
+          createdAt: DateTime.now(),
+          medias: [],
+          extractedTransactions: [],
+        );
+
+        ref.read(chatProvider.notifier).addReceivedMessage(tempUserMessage);
+
+        await ref.read(chatRepositoryProvider).sendMessage(
+              widget.walletId,
+              chatThreadId!,
+              message,
+            );
+        _messageController.clear();
+      } catch (e) {
+        AppSnackBar.showError(
+          context: context,
+          message: 'Failed to send message: ${e.toString()}',
+        );
+      }
       return;
     }
 
-    if (chatThreadId == null || isWaitingForResponse || _isUploadingImage) {
+    if (message.isEmpty) {
+      AppSnackBar.showError(
+        context: context,
+        message: 'Please enter a message when sending media',
+      );
       return;
     }
+
+    if (chatThreadId == null || isWaitingForResponse || _isUploadingImage)
+      return;
+
+    final tempId = -DateTime.now().millisecondsSinceEpoch;
+
+    final tempUserMessage = Message(
+      id: tempId,
+      chatThreadId: chatThreadId!,
+      userId: 'current_user',
+      role: 'User',
+      content: message,
+      createdAt: DateTime.now(),
+      medias: [],
+      extractedTransactions: [],
+    );
+
+    ref.read(chatProvider.notifier).addReceivedMessage(tempUserMessage);
 
     _messageController.clear();
 
@@ -74,7 +196,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     });
 
     try {
-      // Step 1: Send message via WebSocket first
       final receivedMessage =
           await ref.read(chatRepositoryProvider).sendMessageViaWebSocket(
                 widget.walletId,
@@ -82,51 +203,63 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 message,
               );
 
-      // Step 2: Now we have the message with ID from WebSocket
-      if (hasImages && receivedMessage != null) {
+      if ((hasImages || hasAudio) && receivedMessage != null) {
         setState(() {
           _isUploadingImage = true;
         });
 
-        // Set upload processing flag
         ref.read(chatRepositoryProvider).setUploadProcessingStatus(true);
 
         try {
+          List<XFile> mediaFiles = [];
+
+          if (hasImages) {
+            mediaFiles.addAll(_selectedImages!);
+          }
+
+          if (hasAudio) {
+            mediaFiles.add(XFile(_recordedAudioPath!));
+          }
+
           final uploadedMedia =
               await ref.read(chatRepositoryProvider).uploadMediaToMessage(
                     messageId: receivedMessage.id,
                     walletId: widget.walletId,
-                    files: _selectedImages!,
+                    files: mediaFiles,
                   );
 
           final updatedMessage = receivedMessage.copyWith(
             medias: uploadedMedia,
           );
+
+          ref.read(chatProvider.notifier).removeMessageById(tempId);
           ref.read(chatProvider.notifier).addReceivedMessage(updatedMessage);
         } finally {
-          // Reset both flags
           ref.read(chatRepositoryProvider).setUploadProcessingStatus(false);
 
           setState(() {
             _selectedImages = null;
+            _recordedAudioPath = null;
             _isUploadingImage = false;
-            isWaitingForResponse =
-                false; // Only reset here after upload completes
           });
         }
+      } else if (receivedMessage != null) {
+        ref.read(chatProvider.notifier).updateMessage(receivedMessage);
       }
     } catch (e) {
       AppSnackBar.showError(
         context: context,
         message: 'Failed to send message: ${e.toString()}',
       );
-    } finally {
-      // QUAN TRỌNG: Luôn reset trạng thái đợi, bất kể thành công hay thất bại
       setState(() {
         isWaitingForResponse = false;
         _isUploadingImage = false;
       });
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
   }
 
   // Future<Message?> _findUserMessageByContent(String content) async {
@@ -171,6 +304,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     _messageController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _audioRecorder.dispose();
     ref.read(chatRepositoryProvider).disconnect();
     super.dispose();
   }
@@ -502,10 +636,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
 
           // Input field
+          // In your build method, modify the input row:
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                // Image picker button (existing)
                 IconButton(
                   icon: const Icon(Iconsax.image),
                   color: (_isUploadingImage || isWaitingForResponse)
@@ -516,9 +652,38 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       : _pickImage,
                 ),
 
+                // Add audio recording button
+                IconButton(
+                  icon: _isRecording
+                      ? const Icon(Iconsax.stop, color: Colors.red)
+                      : const Icon(Iconsax.microphone),
+                  color: (_isUploadingImage ||
+                          isWaitingForResponse ||
+                          _isRecording)
+                      ? _isRecording
+                          ? Colors.red
+                          : Colors.grey
+                      : ColorName.blue,
+                  onPressed: (_isUploadingImage || isWaitingForResponse)
+                      ? null
+                      : _isRecording
+                          ? _stopRecording
+                          : _startRecording,
+                ),
+
+                // Show selected media indicators
                 if (_selectedImages != null && _selectedImages!.isNotEmpty)
                   GestureDetector(
                     onTap: _clearSelectedImages,
+                    child: Container(
+                        // Your existing image indicator code
+                        ),
+                  ),
+
+                // Add recorded audio indicator
+                if (_recordedAudioPath != null)
+                  GestureDetector(
+                    onTap: _clearRecording,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
@@ -532,9 +697,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            '${_selectedImages!.length} ${_selectedImages!.length > 1 ? "images" : "image"}',
-                            style: const TextStyle(
+                          const Icon(
+                            Iconsax.audio_square,
+                            size: 14,
+                            color: ColorName.blue,
+                          ),
+                          const SizedBox(width: 4),
+                          const Text(
+                            'Audio',
+                            style: TextStyle(
                               color: ColorName.blue,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -551,30 +722,27 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     ),
                   ),
 
+                // Text field (existing)
                 Expanded(
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText:
-                          _selectedImages != null && _selectedImages!.isNotEmpty
-                              ? 'Enter message with image...'
-                              : isAddTransaction
-                                  ? 'Enter your mesage...'
-                                  : 'Ask Mosa...',
-                      hintStyle: const TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.normal,
-                        fontFamily: 'Nunito',
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
+                      hintText: (_selectedImages != null &&
+                                  _selectedImages!.isNotEmpty) ||
+                              _recordedAudioPath != null
+                          ? 'Enter message with media...'
+                          : isAddTransaction
+                              ? 'Enter your message...'
+                              : 'Ask Mosa...',
+                      // Rest of your existing code
                     ),
-                    enabled: !isWaitingForResponse && !_isUploadingImage,
+                    enabled: !isWaitingForResponse &&
+                        !_isUploadingImage &&
+                        !_isRecording,
                   ),
                 ),
 
-                // Nút gửi
+                // Send button (existing)
                 IconButton(
                   icon: _isUploadingImage
                       ? const SizedBox(
@@ -584,12 +752,39 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                               strokeWidth: 2, color: ColorName.blue),
                         )
                       : const Icon(Iconsax.send_2),
-                  color: (isWaitingForResponse || _isUploadingImage)
+                  color: (isWaitingForResponse ||
+                          _isUploadingImage ||
+                          (_selectedImages != null &&
+                              _selectedImages!.isNotEmpty &&
+                              _messageController.text.trim().isEmpty) ||
+                          (_recordedAudioPath != null &&
+                              _messageController.text.trim().isEmpty))
                       ? Colors.grey
                       : ColorName.blue,
-                  onPressed: (isWaitingForResponse || _isUploadingImage)
+                  onPressed: (isWaitingForResponse ||
+                          _isUploadingImage ||
+                          (_selectedImages != null &&
+                              _selectedImages!.isNotEmpty &&
+                              _messageController.text.trim().isEmpty) ||
+                          (_recordedAudioPath != null &&
+                              _messageController.text.trim().isEmpty))
                       ? null
-                      : _sendMessage,
+                      : () {
+                          final message = _messageController.text.trim();
+                          final hasImages = _selectedImages != null &&
+                              _selectedImages!.isNotEmpty;
+                          final hasAudio = _recordedAudioPath != null;
+
+                          if ((hasImages || hasAudio) && message.isEmpty) {
+                            AppSnackBar.showError(
+                              context: context,
+                              message:
+                                  'Please enter a message when sending media',
+                            );
+                          } else {
+                            _sendMessage();
+                          }
+                        },
                 ),
               ],
             ),

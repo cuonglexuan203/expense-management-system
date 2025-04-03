@@ -139,6 +139,17 @@ class ChatNotifier extends StateNotifier<ChatState> {
     state = ChatState.loaded(updatedMessages);
   }
 
+  void removeMessageById(int id) {
+    final currentMessages = state.maybeWhen(
+      loaded: (messages) => List<Message>.from(messages),
+      orElse: () => <Message>[],
+    );
+
+    final updatedMessages =
+        currentMessages.where((message) => message?.id != id).toList();
+    state = ChatState.loaded(updatedMessages);
+  }
+
   // void addReceivedMessageWithFiles(Message message) {
   //   final currentMessages = state.maybeWhen(
   //     loaded: (messages) => List<Message>.from(messages),
