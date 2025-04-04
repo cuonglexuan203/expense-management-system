@@ -1,4 +1,5 @@
-﻿using EMS.Application.Common.Mappings;
+﻿using AutoMapper;
+using EMS.Application.Common.Mappings;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 
@@ -18,5 +19,11 @@ namespace EMS.Application.Features.Chats.Common.Dtos
         public ConfirmationMode ConfirmationMode { get; set; }
         public ConfirmationStatus ConfirmationStatus { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
+
+        public void Mapping(Profile profile)
+        {
+            profile.CreateMap<ExtractedTransaction, ExtractedTransactionDto>()
+                .ForMember(e => e.Category, opts => opts.MapFrom(src => src.Category != null ? src.Category.Name : null));
+        }
     }
 }

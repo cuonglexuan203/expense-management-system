@@ -8,7 +8,7 @@ namespace EMS.Core.Entities
     {
         public int ChatExtractionId { get; set; }
         //public int ChatMessageId { get; set; }
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
         public int? TransactionId { get; set; }
         public CurrencyCode CurrencyCode { get; set; }
         public string Name { get; set; } = default!;
