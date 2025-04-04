@@ -51,7 +51,7 @@ async def extract_transaction(transaction: Transaction):
 
 @router.post("/text", response_model=TransactionResponse)
 async def extract_from_text(
-    request: TextTransactionRequest, api_key: Annotated[str, Depends(get_api_key)]
+    request: TextTransactionRequest, _: Annotated[str, Depends(get_api_key)]
 ):
     """Extract transactions from text message."""
     try:
@@ -86,7 +86,7 @@ async def extract_from_text(
 
 @router.post("/image", response_model=TransactionResponse)
 async def extract_from_image(
-    request: ImageTransactionRequest, api_key: Annotated[str, Depends(get_api_key)]
+    request: ImageTransactionRequest, _: Annotated[str, Depends(get_api_key)]
 ):
     """Extract transactions from image message."""
     try:
@@ -123,7 +123,7 @@ async def extract_from_image(
 
 @router.post("/audio", response_model=TransactionResponse)
 async def extract_from_audio(
-    request: ImageTransactionRequest, api_key: Annotated[str, Depends(get_api_key)]
+    request: ImageTransactionRequest, _: Annotated[str, Depends(get_api_key)]
 ):
     """Extract transactions from audio message."""
     try:

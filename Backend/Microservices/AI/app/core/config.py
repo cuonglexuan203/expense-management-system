@@ -11,7 +11,8 @@ class Settings(BaseSettings):
     VERSION: str = "0.1.0"
     DEBUG_MODE: bool = False
     LOG_LEVEL: str = "INFO"
-    SERVER_HOST: str = "0.0.0.0"
+    LOG_PATH: str = "logs"
+    SERVER_HOST: str = "127.0.0.1"
     SERVER_PORT: int = 8000
     API_V1_STR: str = "/api/v1"
     ALLOWED_HOSTS: list[str] = ["http://localhost:3000"]

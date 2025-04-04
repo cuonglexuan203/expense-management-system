@@ -1,5 +1,6 @@
 import base64
 import datetime
+from fastapi import HTTPException
 import httpx
 from app.api.v1.models.user_preferences import UserPreferences
 from app.core.logging import get_logger
@@ -13,6 +14,7 @@ from langchain_core.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
 )
+from starlette.status import HTTP_400_BAD_REQUEST
 
 logger = get_logger(__name__)
 
@@ -69,11 +71,11 @@ class AudioExtractor(BaseExtractor):
     async def extract(self, user_id, input_data) -> TransactionAnalysisOutput:
         user_message = input_data.get("message", "")
 
-        if not user_message:
-            logger.warning("Empty message received")
-            return TransactionAnalysisOutput(
-                transactions=[], introduction="No message provided"
-            )
+        # if not user_message:
+        #     logger.warning("Empty message received")
+        #     return TransactionAnalysisOutput(
+        #         transactions=[], introduction="No message provided"
+        #     )
 
         categories: list[str] = input_data.get("categories", [])
         preferences: UserPreferences = input_data.get("user_preferences", {})
@@ -89,6 +91,19 @@ class AudioExtractor(BaseExtractor):
         model = self.create_llm()
         parser = transaction_parser
 
+        human_message = []
+
+        if user_message:
+            human_message.append({"type": "text", "text": user_message})
+
+        if audio_contents:
+            human_message.extend(audio_contents)
+
+        if not human_message:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST, detail="Please provide audio(s)."
+            )
+
         messages = [
             SystemMessagePromptTemplate.from_template(
                 template=SYSTEM_MESSAGE,
@@ -96,9 +111,7 @@ class AudioExtractor(BaseExtractor):
                     "format_instructions": parser.get_format_instructions()
                 },
             ),
-            HumanMessage(
-                content=[{"type": "text", "text": user_message}, *audio_contents]
-            ),
+            HumanMessage(content=human_message),
         ]
 
         prompt = ChatPromptTemplate(messages)
@@ -141,9 +154,12 @@ class AudioExtractor(BaseExtractor):
         Fetch audio files from the provided URLs, encode them as Base64, and return the encoded content.
         """
         base64_contents = []
+        audio_format = "wav"
+        logger.info(f"Fetch and encode ({audio_format}) {len(audio_urls)} audio files")
         async with httpx.AsyncClient() as client:
             for audio_url in audio_urls:
                 try:
+                    logger.info(f"Fetch audio: {audio_url}")
                     response = await client.get(audio_url)
                     response.raise_for_status()
                     audio_data = response.content
@@ -151,10 +167,17 @@ class AudioExtractor(BaseExtractor):
                     base64_contents.append(
                         {
                             "type": "input_audio",
-                            "input_audio": {"data": audio_base64, "format": "wav"},
+                            "input_audio": {
+                                "data": audio_base64,
+                                "format": audio_format,
+                            },
                         }
                     )
                 except httpx.HTTPError as e:
                     logger.error(f"Failed to fetch audio from {audio_url}: {e}")
+
+        logger.info(
+            f"Complete fetched and encoded audio files: {len(base64_contents)}/{len(audio_urls)}"
+        )
 
         return base64_contents

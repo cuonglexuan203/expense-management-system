@@ -1,5 +1,6 @@
 ﻿using EMS.Application.Common.DTOs;
 using EMS.Application.Common.Interfaces.Services.HttpClients;
+using EMS.Core.Constants;
 using EMS.Infrastructure.Common.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,7 +37,7 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
         public void ConfigureClient(HttpClient httpClient)
         {
             httpClient.BaseAddress = new Uri(_options.BaseUrl);
-            httpClient.DefaultRequestHeaders.Add("X-API-KEY", _options.ApiKey);
+            httpClient.DefaultRequestHeaders.Add(CustomHeaders.ApiKey, _options.ApiKey);
         }
 
         public async Task<MessageExtractionResponse> ExtractTransactionAsync(MessageExtractionRequest request)

@@ -93,7 +93,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 if ((message.MessageTypes & MessageTypes.Image) == MessageTypes.Image)
                 {
                     extractionResult = await aiService.ExtractTransactionFromImagesAsync(
-                        new (
+                        new(
                             queuedMessage.UserId,
                             chatThreadId,
                             message.Content!,
@@ -104,7 +104,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 else if ((message.MessageTypes & MessageTypes.Audio) == MessageTypes.Audio)
                 {
                     extractionResult = await aiService.ExtractTransactionFromAudiosAsync(
-                        new (
+                        new(
                             queuedMessage.UserId,
                             chatThreadId,
                             message.Content!,
@@ -115,7 +115,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 else
                 {
                     extractionResult = await aiService.ExtractTransactionAsync(
-                        new (
+                        new(
                             queuedMessage.UserId,
                             chatThreadId,
                             message.Content!,
@@ -139,6 +139,11 @@ namespace EMS.Infrastructure.BackgroundJobs
                 // Save extracted transactions
                 if (extractionResult.Transactions.Length != 0)
                 {
+                    var categories = await context.Categories
+                        //.AsNoTracking()
+                        .Where(e => e.UserId == queuedMessage.UserId && !e.IsDeleted)
+                        .ToListAsync();
+
                     foreach (var item in extractionResult.Transactions)
                     {
                         try
@@ -151,18 +156,20 @@ namespace EMS.Infrastructure.BackgroundJobs
                                 OccurredAt = item.OccurredAt,
                             };
 
-                            var category = item.Category != null ?
-                                await context.Categories
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(e => e.Name == item.Category && e.UserId == queuedMessage.UserId && !e.IsDeleted) :
-                                await categoryService.GetUnknownCategoryAsync(item.Type);
+                            Category? category = default;
+
+                            if(item.Category != null)
+                            {
+                                category = categories.Where(c => c.Name.Equals(item.Category, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                            }
 
                             if (category == null)
                             {
                                 category = await categoryService.GetUnknownCategoryAsync(item.Type);
                             }
 
-                            extractedTransaction.CategoryId = category.Id;
+                            //extractedTransaction.CategoryId = category.Id;
+                            extractedTransaction.Category = category;
                             extractedTransaction.CurrencyCode = userPreferences.CurrencyCode;
                             extractedTransaction.ConfirmationMode = userPreferences.ConfirmationMode;
                             // NOTE: Pending for all confirmation modes, and will be modified when processing each mode later 

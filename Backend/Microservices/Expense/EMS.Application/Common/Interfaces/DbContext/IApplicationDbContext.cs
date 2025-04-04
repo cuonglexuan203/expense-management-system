@@ -21,6 +21,8 @@ namespace EMS.Application.Common.Interfaces.DbContext
         DbSet<ChatExtraction> ChatExtractions { get; set; }
         DbSet<ExtractedTransaction> ExtractedTransactions { get; set; }
         DbSet<CurrencySlang> CurrencySlangs { get; set; }
+        DbSet<ApiKey> ApiKeys { get; set; }
+        DbSet<ApiKeyScope> ApiKeyScopes { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

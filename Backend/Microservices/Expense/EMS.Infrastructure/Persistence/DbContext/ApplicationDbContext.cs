@@ -33,6 +33,8 @@ namespace EMS.Infrastructure.Persistence.DbContext
         public DbSet<ExtractedTransaction> ExtractedTransactions { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<CurrencySlang> CurrencySlangs { get; set; }
+        public DbSet<ApiKey> ApiKeys { get; set; }
+        public DbSet<ApiKeyScope> ApiKeyScopes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

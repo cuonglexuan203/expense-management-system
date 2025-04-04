@@ -75,6 +75,7 @@ namespace EMS.Infrastructure
             services.TryAddScoped<IChatThreadService, ChatThreadService>();
             services.TryAddScoped<IDatabaseTransactionManager, DatabaseTransactionManager>();
             services.TryAddScoped<IMediaService, MediaService>();
+            services.TryAddScoped<IApiKeyService, ApiKeyService>();
 
             // Storage
             services.TryAddScoped<IStorageProvider, CloudinaryStorageProvider>();

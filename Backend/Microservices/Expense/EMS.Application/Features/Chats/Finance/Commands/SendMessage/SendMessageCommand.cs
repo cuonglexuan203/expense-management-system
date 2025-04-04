@@ -5,7 +5,6 @@ using EMS.Application.Common.Interfaces.Messaging;
 using EMS.Application.Features.Chats.Common.Dtos;
 using EMS.Application.Features.Chats.Finance.Messaging;
 using EMS.Core.Entities;
-using EMS.Core.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,7 +16,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.SendMessage
         public string UserId { get; set; } = default!;
         public int WalletId { get; set; }
         public int ChatThreadId { get; set; }
-        public string Text { get; set; } = default!;
+        public string? Text { get; set; }
         public bool HasFiles { get; set; } = false;
     }
 

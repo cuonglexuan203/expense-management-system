@@ -28,7 +28,7 @@ class CacheManager:
             logger.info("Initializing Redis connection")
             try:
                 self._redis_client = Redis.from_url(
-                    self.redis_url, password=self.password, decode_response=True
+                    self.redis_url, password=self.password
                 )
                 logger.info("Redis connection initialized successfully")
             except Exception as e:
