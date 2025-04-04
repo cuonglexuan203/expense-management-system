@@ -38,7 +38,7 @@ def configure_logging() -> None:
     Sets up log sinks (console, file) and intercepts standard logging.
     """
     # Create logs directory if it doesn't exist
-    logs_dir = Path("logs")
+    logs_dir = Path(settings.LOG_PATH)
     logs_dir.mkdir(exist_ok=True)
 
     # Configure loguru

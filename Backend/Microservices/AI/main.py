@@ -1,6 +1,5 @@
 import uvicorn
-from app.core.events import shutdown_event_handler, startup_event_handler
-from app.core.config import settings
+from app.core import settings, lifespan
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from app.api.v1.router import api_router
@@ -16,6 +15,7 @@ def create_application() -> FastAPI:
         version=settings.VERSION,
         docs_url="/docs",
         redoc_url="/redoc",
+        lifespan=lifespan,
     )
 
     # Configure CORS
@@ -31,13 +31,19 @@ def create_application() -> FastAPI:
     application.include_router(api_router, prefix=settings.API_V1_STR)
 
     # Register event handlers
-    application.add_event_handler("startup", startup_event_handler(application))
-    application.add_event_handler("shutdown", shutdown_event_handler(application))
+    # application.add_event_handler("startup", startup_event_handler(application))
+    # application.add_event_handler("shutdown", shutdown_event_handler(application))
 
     return application
 
 
 app = create_application()
+
+
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the Expense Management AI Service"}
+
 
 if __name__ == "__main__":
     uvicorn.run(
