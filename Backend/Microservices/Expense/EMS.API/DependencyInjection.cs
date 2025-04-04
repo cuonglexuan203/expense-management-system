@@ -12,6 +12,9 @@ using EMS.Infrastructure.Common.Options;
 using EMS.API.Common.Extensions;
 using EMS.Application.Features.Chats.Finance.Services;
 using EMS.API.RealTime;
+using EMS.Infrastructure.Authentication;
+using EMS.Infrastructure.Common.Extensions;
+using System.Security.Claims;
 
 namespace EMS.API
 {
@@ -24,51 +27,10 @@ namespace EMS.API
 
             services.ConfigureJsonSerializer();
 
-            services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Jwt));
-            var jwtSettings = configuration.GetSection(JwtSettings.Jwt).Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt Settings not configured");
+            ConfigureAuthentication(services, configuration);
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(options =>
-                {
-                    options.SaveToken = true;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtSettings.Issuer,
-                        ValidAudience = jwtSettings.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
-                        ClockSkew = TimeSpan.Zero,
-                    };
+            ConfigureAuthorizationPolicies(services);
 
-                    // Configure SignalR authentication
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
-                            var path = context.HttpContext.Request.Path;
-
-                            if (!string.IsNullOrEmpty(accessToken) &&
-                                path.StartsWithSegments("/hubs/finance"))
-                            {
-                                context.Token = accessToken;
-                            }
-                            return Task.CompletedTask;
-                        }
-                    };
-                });
-
-            services.AddAuthorizationBuilder();
-            services.AddAuthorization(options => options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
             services.AddProblemDetails();
             services.AddHttpContextAccessor();
 
@@ -105,20 +67,116 @@ namespace EMS.API
             services.TryAddScoped<IFinancialChatNotifier, FinancialChatNotifier>();
         }
 
+        private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Jwt));
+            var jwtSettings = configuration.GetSection(JwtSettings.Jwt).Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt Settings not configured");
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = AuthenticationSchemes.MultiScheme;
+                options.DefaultAuthenticateScheme = AuthenticationSchemes.MultiScheme;
+                options.DefaultChallengeScheme = AuthenticationSchemes.MultiScheme;
+            })
+                .AddPolicyScheme(AuthenticationSchemes.MultiScheme, "JWT or API Key", options =>
+                {
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        if (context.Request.Headers.ContainsKey(CustomHeaders.ApiKey) ||
+                        context.Request.Query.ContainsKey(QueryStringParameters.ApiKey))
+                        {
+                            return ApiKeyAuthenticationOptions.DefaultScheme;
+                        }
+
+                        return JwtBearerDefaults.AuthenticationScheme;
+                    };
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+                        ClockSkew = TimeSpan.Zero,
+                    };
+
+                    // Configure SignalR authentication
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query[QueryStringParameters.AccessToken];
+                            var path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                path.StartsWithSegments("/hubs/finance"))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
+                })
+                .AddApiKeyAuthentication(options =>
+                {
+                    options.AuthorizationHeaderName = CustomHeaders.ApiKey;
+                    options.QueryStringParameterName = QueryStringParameters.ApiKey;
+                });
+        }
+
+        private static void ConfigureAuthorizationPolicies(IServiceCollection services)
+        {
+            services.AddAuthorizationBuilder()
+
+                .AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator))
+
+                .AddPolicy(Policies.UserAccess, policy =>
+                    policy.RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme))
+
+                .AddPolicy(Policies.AiServiceAccess, policy =>
+                    policy.RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes(ApiKeyAuthenticationOptions.DefaultScheme)
+                        .RequireClaim("scope", "ai:analyze"))
+
+                .AddPolicy(Policies.AdminAccess, policy =>
+                    policy.RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes(AuthenticationSchemes.MultiScheme)
+                        .RequireAssertion(context =>
+                            context.User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == Roles.Administrator) ||
+                            context.User.HasClaim(c => c.Type == "scope" && c.Value == "admin:access")));
+        }
+
         private static void AddSwaggerService(IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "EMS", Version = "1.0" });
+
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
+                    Scheme = "Bearer",
+                    In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
                     BearerFormat = "JWT",
-                    Description = "Type into the textbox: Bearer {your JWT token}."
+                });
+
+                options.AddSecurityDefinition("ApiKey", new()
+                {
+                    Description = "API Key authentication. Example: \"X-API-Key: {key}\"",
+                    Name = CustomHeaders.ApiKey,
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -130,6 +188,17 @@ namespace EMS.API
                             {
                                 Type = ReferenceType.SecurityScheme,
                                 Id = "Bearer",
+                            }
+                        },
+                        Array.Empty<string>()
+                    },
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "ApiKey",
                             }
                         },
                         Array.Empty<string>()

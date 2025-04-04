@@ -1,4 +1,5 @@
-﻿using EMS.Core.Constants;
+﻿using EMS.Application.Common.DTOs;
+using EMS.Core.Constants;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 using EMS.Core.Extensions;
@@ -232,6 +233,27 @@ namespace EMS.Infrastructure.Persistence.Seed
             };
 
             return defaultChatThreads;
+        }
+
+        public static (ApiKeyCreationDto ApiKeyCreationDto, string PlainTextKey)[] GetDefaultApiKeys()
+        {
+            var defaultApiKeys = new (ApiKeyCreationDto ApiKeyCreationDto, string PlainTextKey)[]
+            {
+                (new()
+                {
+                    Name = "AI Service",
+                    Description = "AI service API Key",
+                    Scopes = ["ai:analyze"]
+                }, "E4164EFEA68EA6A9CAC2AB5761518"),
+                (new()
+                {
+                    Name = "Admin",
+                    Description = "Admin API Key",
+                    Scopes = ["admin:access"]
+                }, "56D88B3BFAAD73E1ABD68B2E71971")
+            };
+
+            return defaultApiKeys;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EMS.API.Common.Attributes;
 using EMS.Application.Features.CurrencySlangs.Queries.GetCurrencySlangs;
+using EMS.Core.Constants;
 using EMS.Core.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EMS.API.Controllers.v1
 {
-    //[Authorize]
     [ApiRoute("currency-slangs")]
     public class CurrencySlangController : ApiControllerBase
     {
@@ -18,6 +18,7 @@ namespace EMS.API.Controllers.v1
             _sender = sender;
         }
 
+        [Authorize(Policy = Policies.AiServiceAccess)]
         [HttpGet("{currencyCode}")]
         public async Task<IActionResult> GetCurrencySlangs(CurrencyCode currencyCode)
         {

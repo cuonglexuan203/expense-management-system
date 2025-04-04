@@ -15,19 +15,22 @@ namespace EMS.Infrastructure.Persistence.DbContext
         private readonly IIdentityService _identityService;
         private readonly IUserPreferenceService _userPreferenceService;
         private readonly IChatThreadService _chatThreadService;
+        private readonly IApiKeyService _apiKeyService;
 
         public ApplicationDbContextInitializer(
             ILogger<ApplicationDbContextInitializer> logger,
             ApplicationDbContext context,
             IIdentityService identityService,
             IUserPreferenceService userPreferenceService,
-            IChatThreadService chatThreadService)
+            IChatThreadService chatThreadService,
+            IApiKeyService apiKeyService)
         {
             _logger = logger;
             _context = context;
             _identityService = identityService;
             _userPreferenceService = userPreferenceService;
             _chatThreadService = chatThreadService;
+            _apiKeyService = apiKeyService;
         }
 
         public async Task InitializeAsync()
@@ -52,7 +55,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
                 await TrySeedAsync();
                 _logger.LogStateInfo(AppStates.SeedingData, $"Completed seeding database: {_context.GetType().FullName}");
             }
-            catch (Exception ex )
+            catch (Exception ex)
             {
                 _logger.LogStateError(ex, AppStates.SeedingData, "An error occurred while seeding the database.");
                 throw;
@@ -85,6 +88,16 @@ namespace EMS.Infrastructure.Persistence.DbContext
                 var defaultCurrencies = DefaultSeedData.GetDefaultCurrencies();
                 _context.Currencies.AddRange(defaultCurrencies);
                 _logger.LogStateInfo(AppStates.SeedingData, $"Added {defaultCurrencies.Length} default currencies.");
+            }
+            #endregion
+
+            #region Add default API Keys
+            if (!_context.ApiKeys.Any())
+            {
+                var defaultApiKeys = await _apiKeyService.CreateApiKeysAsync(DefaultSeedData.GetDefaultApiKeys(), null);
+
+                _logger.LogStateInfo(AppStates.SeedingData,
+                    $"Added {defaultApiKeys.Count()} default API Keys: {string.Join(", ", defaultApiKeys.Select(ak => ak.Name))}");
             }
             #endregion
 

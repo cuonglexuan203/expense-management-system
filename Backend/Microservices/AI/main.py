@@ -1,4 +1,3 @@
-import uvicorn
 from app.core import settings, lifespan
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
@@ -46,6 +45,7 @@ async def root():
 
 
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(
         "main:app",
         host=settings.SERVER_HOST,
