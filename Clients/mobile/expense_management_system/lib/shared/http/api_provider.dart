@@ -20,7 +20,7 @@ final networkConfigProvider = Provider<NetworkConfig>((ref) {
   return NetworkConfig(
     baseUrl: baseUrl,
     connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 60),
     sendTimeout: const Duration(seconds: 5),
   );
 });
@@ -55,7 +55,7 @@ class NetworkConfig {
   const NetworkConfig({
     required this.baseUrl,
     this.connectTimeout = const Duration(seconds: 5),
-    this.receiveTimeout = const Duration(seconds: 5),
+    this.receiveTimeout = const Duration(seconds: 60),
     this.sendTimeout = const Duration(seconds: 5),
     this.defaultHeaders = const {},
   });

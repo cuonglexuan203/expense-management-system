@@ -23,7 +23,7 @@ mixin _$Media {
   String get id => throw _privateConstructorUsedError;
   String get url => throw _privateConstructorUsedError;
   String get secureUrl => throw _privateConstructorUsedError;
-  String get thumbnailUrl => throw _privateConstructorUsedError;
+  String? get thumbnailUrl => throw _privateConstructorUsedError;
   int get size => throw _privateConstructorUsedError;
   String get extension => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
@@ -31,8 +31,8 @@ mixin _$Media {
   String get assetId => throw _privateConstructorUsedError;
   String? get altText => throw _privateConstructorUsedError;
   String? get caption => throw _privateConstructorUsedError;
-  int get width => throw _privateConstructorUsedError;
-  int get height => throw _privateConstructorUsedError;
+  int? get width => throw _privateConstructorUsedError;
+  int? get height => throw _privateConstructorUsedError;
   int? get duration => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
   String get metadata => throw _privateConstructorUsedError;
@@ -58,7 +58,7 @@ abstract class $MediaCopyWith<$Res> {
       {String id,
       String url,
       String secureUrl,
-      String thumbnailUrl,
+      String? thumbnailUrl,
       int size,
       String extension,
       String type,
@@ -66,8 +66,8 @@ abstract class $MediaCopyWith<$Res> {
       String assetId,
       String? altText,
       String? caption,
-      int width,
-      int height,
+      int? width,
+      int? height,
       int? duration,
       String status,
       String metadata,
@@ -94,7 +94,7 @@ class _$MediaCopyWithImpl<$Res, $Val extends Media>
     Object? id = null,
     Object? url = null,
     Object? secureUrl = null,
-    Object? thumbnailUrl = null,
+    Object? thumbnailUrl = freezed,
     Object? size = null,
     Object? extension = null,
     Object? type = null,
@@ -102,8 +102,8 @@ class _$MediaCopyWithImpl<$Res, $Val extends Media>
     Object? assetId = null,
     Object? altText = freezed,
     Object? caption = freezed,
-    Object? width = null,
-    Object? height = null,
+    Object? width = freezed,
+    Object? height = freezed,
     Object? duration = freezed,
     Object? status = null,
     Object? metadata = null,
@@ -124,10 +124,10 @@ class _$MediaCopyWithImpl<$Res, $Val extends Media>
           ? _value.secureUrl
           : secureUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnailUrl: null == thumbnailUrl
+      thumbnailUrl: freezed == thumbnailUrl
           ? _value.thumbnailUrl
           : thumbnailUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       size: null == size
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
@@ -156,14 +156,14 @@ class _$MediaCopyWithImpl<$Res, $Val extends Media>
           ? _value.caption
           : caption // ignore: cast_nullable_to_non_nullable
               as String?,
-      width: null == width
+      width: freezed == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      height: null == height
+              as int?,
+      height: freezed == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       duration: freezed == duration
           ? _value.duration
           : duration // ignore: cast_nullable_to_non_nullable
@@ -203,7 +203,7 @@ abstract class _$$MediaImplCopyWith<$Res> implements $MediaCopyWith<$Res> {
       {String id,
       String url,
       String secureUrl,
-      String thumbnailUrl,
+      String? thumbnailUrl,
       int size,
       String extension,
       String type,
@@ -211,8 +211,8 @@ abstract class _$$MediaImplCopyWith<$Res> implements $MediaCopyWith<$Res> {
       String assetId,
       String? altText,
       String? caption,
-      int width,
-      int height,
+      int? width,
+      int? height,
       int? duration,
       String status,
       String metadata,
@@ -237,7 +237,7 @@ class __$$MediaImplCopyWithImpl<$Res>
     Object? id = null,
     Object? url = null,
     Object? secureUrl = null,
-    Object? thumbnailUrl = null,
+    Object? thumbnailUrl = freezed,
     Object? size = null,
     Object? extension = null,
     Object? type = null,
@@ -245,8 +245,8 @@ class __$$MediaImplCopyWithImpl<$Res>
     Object? assetId = null,
     Object? altText = freezed,
     Object? caption = freezed,
-    Object? width = null,
-    Object? height = null,
+    Object? width = freezed,
+    Object? height = freezed,
     Object? duration = freezed,
     Object? status = null,
     Object? metadata = null,
@@ -267,10 +267,10 @@ class __$$MediaImplCopyWithImpl<$Res>
           ? _value.secureUrl
           : secureUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnailUrl: null == thumbnailUrl
+      thumbnailUrl: freezed == thumbnailUrl
           ? _value.thumbnailUrl
           : thumbnailUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       size: null == size
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
@@ -299,14 +299,14 @@ class __$$MediaImplCopyWithImpl<$Res>
           ? _value.caption
           : caption // ignore: cast_nullable_to_non_nullable
               as String?,
-      width: null == width
+      width: freezed == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      height: null == height
+              as int?,
+      height: freezed == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       duration: freezed == duration
           ? _value.duration
           : duration // ignore: cast_nullable_to_non_nullable
@@ -342,7 +342,7 @@ class _$MediaImpl implements _Media {
       {required this.id,
       required this.url,
       required this.secureUrl,
-      required this.thumbnailUrl,
+      this.thumbnailUrl,
       required this.size,
       required this.extension,
       required this.type,
@@ -350,8 +350,8 @@ class _$MediaImpl implements _Media {
       required this.assetId,
       this.altText,
       this.caption,
-      required this.width,
-      required this.height,
+      this.width,
+      this.height,
       this.duration,
       required this.status,
       required this.metadata,
@@ -369,7 +369,7 @@ class _$MediaImpl implements _Media {
   @override
   final String secureUrl;
   @override
-  final String thumbnailUrl;
+  final String? thumbnailUrl;
   @override
   final int size;
   @override
@@ -385,9 +385,9 @@ class _$MediaImpl implements _Media {
   @override
   final String? caption;
   @override
-  final int width;
+  final int? width;
   @override
-  final int height;
+  final int? height;
   @override
   final int? duration;
   @override
@@ -487,7 +487,7 @@ abstract class _Media implements Media {
       {required final String id,
       required final String url,
       required final String secureUrl,
-      required final String thumbnailUrl,
+      final String? thumbnailUrl,
       required final int size,
       required final String extension,
       required final String type,
@@ -495,8 +495,8 @@ abstract class _Media implements Media {
       required final String assetId,
       final String? altText,
       final String? caption,
-      required final int width,
-      required final int height,
+      final int? width,
+      final int? height,
       final int? duration,
       required final String status,
       required final String metadata,
@@ -513,7 +513,7 @@ abstract class _Media implements Media {
   @override
   String get secureUrl;
   @override
-  String get thumbnailUrl;
+  String? get thumbnailUrl;
   @override
   int get size;
   @override
@@ -529,9 +529,9 @@ abstract class _Media implements Media {
   @override
   String? get caption;
   @override
-  int get width;
+  int? get width;
   @override
-  int get height;
+  int? get height;
   @override
   int? get duration;
   @override
