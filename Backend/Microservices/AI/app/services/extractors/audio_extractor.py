@@ -141,9 +141,12 @@ class AudioExtractor(BaseExtractor):
         Fetch audio files from the provided URLs, encode them as Base64, and return the encoded content.
         """
         base64_contents = []
+        audio_format = "wav"
+        logger.info(f"Fetch and encode ({audio_format}) {len(audio_urls)} audio files")
         async with httpx.AsyncClient() as client:
             for audio_url in audio_urls:
                 try:
+                    logger.info(f"Fetch audio: {audio_url}")
                     response = await client.get(audio_url)
                     response.raise_for_status()
                     audio_data = response.content
@@ -151,10 +154,17 @@ class AudioExtractor(BaseExtractor):
                     base64_contents.append(
                         {
                             "type": "input_audio",
-                            "input_audio": {"data": audio_base64, "format": "wav"},
+                            "input_audio": {
+                                "data": audio_base64,
+                                "format": audio_format,
+                            },
                         }
                     )
                 except httpx.HTTPError as e:
                     logger.error(f"Failed to fetch audio from {audio_url}: {e}")
+
+        logger.info(
+            f"Complete fetched and encoded audio files: {len(base64_contents)}/{len(audio_urls)}"
+        )
 
         return base64_contents
