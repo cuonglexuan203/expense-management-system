@@ -50,7 +50,7 @@ namespace EMS.API.Hubs
                 chatThreadId);
         }
 
-        public async Task<ChatMessageDto> SendMessage(int walletId, int chatThreadId, string text)
+        public async Task<ChatMessageDto> SendMessage(int walletId, int chatThreadId, string? text)
         {
             var userId = Context.UserIdentifier!;
             _logger.LogInformation("Message received from {UserId} in chat {ChatThreadId}", userId, chatThreadId);
@@ -76,7 +76,7 @@ namespace EMS.API.Hubs
             }
         }
 
-        public async Task<ChatMessageDto> SendMessageWithFiles(int walletId, int chatThreadId, string text)
+        public async Task<ChatMessageDto> SendMessageWithFiles(int walletId, int chatThreadId, string? text)
         {
             var userId = Context.UserIdentifier!;
             _logger.LogInformation("Message that contain files received from {UserId} in chat {ChatThreadId}.", userId, chatThreadId);
