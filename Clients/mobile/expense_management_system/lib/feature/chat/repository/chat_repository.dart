@@ -25,7 +25,7 @@ class ChatRepository {
   ChatRepository(this._ref, this.dio);
   final Ref _ref;
   final Dio dio;
-  late HubConnection _hubConnection;
+  HubConnection? _hubConnection;
   late final ApiProvider _api = _ref.read(apiProvider);
   late final TokenRepository _tokenRepository =
       _ref.read(tokenRepositoryProvider);
@@ -49,100 +49,181 @@ class ChatRepository {
     _onMessageReceived = callback;
   }
 
+  bool _shouldReconnect = true;
+
+  bool _isHandlerRegistered = false;
+
   Future<void> connect(String accessToken) async {
+    _shouldReconnect = true;
+
+    if (_hubConnection != null) {
+      if (_hubConnection!.state != HubConnectionState.Disconnected) {
+        try {
+          await _hubConnection!.stop();
+          await Future.delayed(const Duration(milliseconds: 500));
+        } catch (e) {
+          debugPrint('Error stopping connection: $e');
+        }
+      }
+    }
+
     _hubConnection = HubConnectionBuilder()
         .withUrl(
           '$baseUrl/hubs/finance',
           options: HttpConnectionOptions(
             accessTokenFactory: () async => accessToken,
+            skipNegotiation: true,
+            transport: HttpTransportType.WebSockets,
           ),
         )
         .build();
 
-    _hubConnection.on('ReceiveMessage', _handleReceivedMessage);
+    _hubConnection!.off('ReceiveMessage');
+    _hubConnection!.on('ReceiveMessage', _handleReceivedMessage);
+
     await _startConnection();
   }
 
   Future<void> _startConnection() async {
     try {
-      await _hubConnection.start();
+      if (_hubConnection?.state == HubConnectionState.Disconnected) {
+        await _hubConnection?.start();
+      } else if (_hubConnection?.state != HubConnectionState.Connected) {
+        await Future.delayed(const Duration(seconds: 1));
+
+        if (_hubConnection?.state != HubConnectionState.Connected) {
+          try {
+            await _hubConnection?.stop();
+            await Future.delayed(const Duration(milliseconds: 500));
+            await _hubConnection?.start();
+          } catch (e) {
+            throw AppException.errorWithMessage("Connection failed: $e");
+          }
+        }
+      }
     } catch (e) {
       if (e.toString().contains("401")) {
         final newAccessToken = await _refreshToken();
-        if (newAccessToken != null) {
+        if (newAccessToken != null && _shouldReconnect) {
           await connect(newAccessToken);
+        } else {
+          throw AppException.errorWithMessage("Refresh access token failed");
         }
       } else {
         throw AppException.errorWithMessage("Connection failed: $e");
       }
     }
 
-    _hubConnection.onclose((error) {
-      Future.delayed(const Duration(seconds: 5), () async {
-        await _startConnection();
-      });
+    _hubConnection?.onclose((error) {
+      if (_shouldReconnect) {
+        Future.delayed(const Duration(seconds: 5), () async {
+          if (_shouldReconnect &&
+              _hubConnection?.state == HubConnectionState.Disconnected) {
+            await _startConnection();
+          }
+        });
+      }
     });
   }
 
   Future<void> disconnect() async {
-    if (_hubConnection.state == HubConnectionState.Connected) {
-      await _hubConnection.stop();
+    _shouldReconnect = false;
+    if (_hubConnection?.state != HubConnectionState.Disconnected) {
+      try {
+        await _hubConnection?.stop();
+      } catch (e) {
+        debugPrint('Error stopping hub connection: $e');
+      }
     }
   }
 
   Future<void> sendMessage(
       int walletId, int chatThreadId, String message) async {
-    if (_hubConnection.state == HubConnectionState.Connected) {
-      await _hubConnection
-          .invoke("SendMessage", args: [walletId, chatThreadId, message]);
-    } else {
-      throw AppException.errorWithMessage("Connection is not established.");
-    }
-  }
-
-  Future<Message?> sendMessageWithFiles(
-      int walletId, int chatThreadId, String message) async {
-    if (_hubConnection.state != HubConnectionState.Connected) {
-      throw AppException.errorWithMessage("Connection is not established.");
-    }
-
+    await _ensureConnected();
     try {
-      final response = await _hubConnection.invoke("SendMessageWithFiles",
-          args: [walletId, chatThreadId, message]);
-
-      if (response != null && response is Map<String, dynamic>) {
-        return Message.fromJson(response);
-      } else {
-        return null;
-      }
+      await _hubConnection
+          ?.invoke("SendMessage", args: [walletId, chatThreadId, message]);
     } catch (e) {
-      throw AppException.errorWithMessage(
-          "Failed to send message: ${e.toString()}");
+      if (_isConnectionError(e)) {
+        await _ensureConnected();
+        await _hubConnection
+            ?.invoke("SendMessage", args: [walletId, chatThreadId, message]);
+      } else {
+        throw AppException.errorWithMessage(
+            "Failed to send message: ${e.toString()}");
+      }
     }
   }
 
   Future<Message?> sendMessageViaWebSocket(
       int walletId, int chatThreadId, String message) async {
-    if (_hubConnection.state != HubConnectionState.Connected) {
-      throw AppException.errorWithMessage("Connection is not established.");
-    }
-
+    await _ensureConnected();
     try {
-      // Send message via WebSocket and get response
-      final response = await _hubConnection.invoke("SendMessageWithFiles",
+      final response = await _hubConnection?.invoke("SendMessageWithFiles",
           args: [walletId, chatThreadId, message]);
 
       if (response != null && response is Map<String, dynamic>) {
-        // Save the message for possible later use
         _latestUserMessage = Message.fromJson(response);
         return _latestUserMessage;
       } else {
         return null;
       }
     } catch (e) {
-      throw AppException.errorWithMessage(
-          "Failed to send message: ${e.toString()}");
+      if (_isConnectionError(e)) {
+        await _ensureConnected();
+        final response = await _hubConnection?.invoke("SendMessageWithFiles",
+            args: [walletId, chatThreadId, message]);
+
+        if (response != null && response is Map<String, dynamic>) {
+          _latestUserMessage = Message.fromJson(response);
+          return _latestUserMessage;
+        }
+        return null;
+      } else {
+        throw AppException.errorWithMessage(
+            "Failed to send message: ${e.toString()}");
+      }
     }
+  }
+
+  Future<void> _ensureConnected() async {
+    if (_hubConnection?.state != HubConnectionState.Connected) {
+      try {
+        final tokenRepository = _ref.read(tokenRepositoryProvider);
+        final accessToken = await tokenRepository.getAccessToken();
+
+        if (accessToken == null) {
+          final newToken = await _refreshToken();
+          if (newToken == null) {
+            throw AppException.errorWithMessage("Can not get access token");
+          }
+          await connect(newToken);
+        } else {
+          await connect(accessToken);
+        }
+      } catch (e) {
+        if (e.toString().contains("401")) {
+          final newToken = await _refreshToken();
+          if (newToken != null) {
+            await connect(newToken);
+          } else {
+            throw AppException.errorWithMessage("Can not refresh access token");
+          }
+        } else {
+          throw AppException.errorWithMessage(
+              "Error connection: ${e.toString()}");
+        }
+      }
+    }
+  }
+
+  bool _isConnectionError(dynamic error) {
+    String errorStr = error.toString().toLowerCase();
+    return errorStr.contains('connection') ||
+        errorStr.contains('network') ||
+        errorStr.contains('socket') ||
+        errorStr.contains('timeout') ||
+        errorStr.contains('401');
   }
 
   void _handleReceivedMessage(List<Object?>? args) {
@@ -421,12 +502,21 @@ class ChatRepository {
   }) async {
     try {
       final formData = FormData();
-
       formData.fields.add(MapEntry('walletId', walletId.toString()));
 
       for (var file in files) {
         final fileName = file.path.split('/').last;
         final extension = fileName.split('.').last.toLowerCase();
+
+        // Determine content type based on extension
+        String contentType;
+        if (['jpg', 'jpeg', 'png', 'gif'].contains(extension)) {
+          contentType = 'image/$extension';
+        } else if (['mp3', 'm4a', 'wav', 'aac'].contains(extension)) {
+          contentType = 'audio/$extension';
+        } else {
+          contentType = 'application/octet-stream';
+        }
 
         formData.files.add(
           MapEntry(
@@ -434,7 +524,8 @@ class ChatRepository {
             await MultipartFile.fromFile(
               file.path,
               filename: fileName,
-              contentType: MediaType('image', extension),
+              contentType: MediaType(
+                  contentType.split('/')[0], contentType.split('/')[1]),
             ),
           ),
         );
@@ -445,8 +536,8 @@ class ChatRepository {
         formData,
         contentType: ContentType.multipartFormData,
       );
-      debugPrint('Response: ${response}');
 
+      // Add proper return value
       return response.when(
         success: (data) {
           final mediaList =
@@ -457,7 +548,7 @@ class ChatRepository {
               .toList();
         },
         error: (error) {
-          debugPrint('Error uploading media: $error');
+          debugPrint('Error processing upload response: $error');
           throw error;
         },
       );

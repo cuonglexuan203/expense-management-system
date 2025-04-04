@@ -28,8 +28,8 @@ class ColorName {
   /// Color: #D80000
   static const Color error = Color(0xFFD80000);
 
-  /// Color: #FF00C853
-  static const Color green = Color(0xFF00C853);
+  /// Color: #40FF40
+  static const Color green = Color(0xFF40FF40);
 
   /// Color: #CC9233
   static const Color inProgressYellow = Color(0xFFCC9233);

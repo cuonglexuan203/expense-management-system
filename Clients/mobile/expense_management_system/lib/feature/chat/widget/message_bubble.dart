@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/chat/model/extracted_transaction.dart';
@@ -9,19 +10,33 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
 
-class MessageBubble extends StatelessWidget {
+class MessageBubble extends StatefulWidget {
+  const MessageBubble({
+    Key? key,
+    required this.message,
+    this.onConfirmTransaction,
+  }) : super(key: key);
+
   final Message message;
   final Function(int, String)? onConfirmTransaction;
 
-  const MessageBubble({
-    super.key,
-    required this.message,
-    this.onConfirmTransaction,
-  });
+  @override
+  State<MessageBubble> createState() => _MessageBubbleState();
+}
+
+class _MessageBubbleState extends State<MessageBubble> {
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  final Map<String, bool> _isPlayingMap = {}; // Track playing state by media ID
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isUserMessage = message.role.toLowerCase() == "user";
+    final isUserMessage = widget.message.role.toLowerCase() == "user";
 
     return Align(
       alignment: isUserMessage ? Alignment.centerRight : Alignment.centerLeft,
@@ -42,18 +57,18 @@ class MessageBubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (message.content.isNotEmpty)
+              if (widget.message.content.isNotEmpty)
                 Text(
-                  message.content,
+                  widget.message.content,
                   style: TextStyle(
                     color: isUserMessage ? Colors.white : Colors.black87,
                     fontFamily: 'Nunito',
                   ),
                 ),
-              if (message.medias.isNotEmpty) _buildMediaContent(context),
+              if (widget.message.medias.isNotEmpty) _buildMediaContent(context),
               const SizedBox(height: 4),
               Text(
-                DateFormat('HH:mm').format(message.createdAt),
+                DateFormat('HH:mm').format(widget.message.createdAt),
                 style: TextStyle(
                   color: isUserMessage
                       ? Colors.white.withOpacity(0.7)
@@ -62,7 +77,7 @@ class MessageBubble extends StatelessWidget {
                 ),
                 textAlign: isUserMessage ? TextAlign.right : TextAlign.left,
               ),
-              if (message.extractedTransactions.isNotEmpty)
+              if (widget.message.extractedTransactions.isNotEmpty)
                 _buildExtractedTransactions(context),
             ],
           ),
@@ -72,50 +87,120 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildMediaContent(BuildContext context) {
-    if (message.medias.isEmpty) return const SizedBox.shrink();
+    if (widget.message.medias.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        ...message.medias.map((media) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: GestureDetector(
-                onTap: () => _showFullScreenImage(context, media),
-                child: Hero(
-                  tag: media.id,
-                  child: CachedNetworkImage(
-                    imageUrl: media.secureUrl,
-                    placeholder: (context, url) => Container(
-                      height: 150,
-                      width: double.infinity,
-                      color: Colors.grey[200],
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: ColorName.blue,
+        ...widget.message.medias.map((media) {
+          // Check if this is an audio file
+          final isAudio = media.type.toLowerCase().contains('audio');
+
+          if (isAudio) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: _buildAudioPlayer(media),
+            );
+          } else {
+            // Image display implementation
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: GestureDetector(
+                  onTap: () => _showFullScreenImage(context, media),
+                  child: Hero(
+                    tag: media.id,
+                    child: CachedNetworkImage(
+                      imageUrl: media.secureUrl,
+                      placeholder: (context, url) => const SizedBox(
+                        height: 150,
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         ),
                       ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.cover,
                     ),
-                    errorWidget: (context, url, error) => Container(
-                      height: 150,
-                      width: double.infinity,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.error),
-                    ),
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 200,
                   ),
                 ),
               ),
-            ),
-          );
+            );
+          }
         }).toList(),
       ],
+    );
+  }
+
+  Widget _buildAudioPlayer(Media audio) {
+    final isUserMessage = widget.message.role.toLowerCase() == "user";
+
+    // Initialize this media's playing status if not already done
+    _isPlayingMap[audio.id] ??= false;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isUserMessage ? Colors.white.withOpacity(0.2) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          StatefulBuilder(builder: (context, setState) {
+            return IconButton(
+              icon: Icon(
+                _isPlayingMap[audio.id]! ? Icons.pause : Icons.play_arrow,
+                color: isUserMessage ? Colors.white : ColorName.blue,
+              ),
+              onPressed: () async {
+                if (_isPlayingMap[audio.id]!) {
+                  await _audioPlayer.pause();
+                  setState(() => _isPlayingMap[audio.id] = false);
+                } else {
+                  // Stop any currently playing audio first
+                  _isPlayingMap.forEach((key, value) {
+                    if (value) _isPlayingMap[key] = false;
+                  });
+
+                  await _audioPlayer.play(UrlSource(audio.secureUrl));
+                  setState(() => _isPlayingMap[audio.id] = true);
+
+                  // Reset when audio completes
+                  _audioPlayer.onPlayerComplete.listen((_) {
+                    if (mounted) {
+                      setState(() => _isPlayingMap[audio.id] = false);
+                    }
+                  });
+                }
+              },
+            );
+          }),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Audio Message',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: isUserMessage ? Colors.white : Colors.black87,
+                ),
+              ),
+              if (audio.duration != null)
+                Text(
+                  '${(audio.duration! / 1000).toStringAsFixed(1)}s',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isUserMessage ? Colors.white70 : Colors.grey[600],
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -148,7 +233,7 @@ class MessageBubble extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Divider(color: Colors.black26),
-        ...message.extractedTransactions
+        ...widget.message.extractedTransactions
             .map((transaction) => _buildTransactionCard(context, transaction))
             .toList(),
       ],
@@ -279,6 +364,23 @@ class MessageBubble extends StatelessWidget {
                       );
                     }
                   }),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      DateFormat('MMM d, yyyy').format(transaction.occurredAt),
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        color: Colors.grey[800],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -295,8 +397,8 @@ class MessageBubble extends StatelessWidget {
     try {
       statusNotifier.value = status;
 
-      if (onConfirmTransaction != null) {
-        await onConfirmTransaction!(transactionId, status);
+      if (widget.onConfirmTransaction != null) {
+        await widget.onConfirmTransaction!(transactionId, status);
 
         AppSnackBar.showSuccess(
           context: context,
@@ -318,7 +420,7 @@ class MessageBubble extends StatelessWidget {
     }
   }
 
-  // Tạo nút hành động với màu được chỉ định
+  // Create action button with specified color
   Widget _buildActionButton(
     String label,
     Color textColor,
@@ -326,12 +428,12 @@ class MessageBubble extends StatelessWidget {
     VoidCallback onPressed,
   ) {
     return SizedBox(
-      height: 34, // Giảm chiều cao
+      height: 34,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
-          padding: const EdgeInsets.symmetric(horizontal: 12), // Giảm padding
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           elevation: 1,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -341,7 +443,7 @@ class MessageBubble extends StatelessWidget {
           label,
           style: TextStyle(
             color: textColor,
-            fontSize: 13, // Giảm cỡ chữ
+            fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -349,7 +451,7 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  // Hiển thị chip trạng thái
+  // Display status chip
   Widget _buildStatusChip(String status) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -373,7 +475,7 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  // Xác định màu cho từng trạng thái
+  // Determine color for each status
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Confirmed':
