@@ -101,6 +101,15 @@ namespace EMS.Infrastructure.Persistence.DbContext
             }
             #endregion
 
+            #region Add default currency slangs
+            if (!_context.CurrencySlangs.Any())
+            {
+                var defaultCurrencySlangs = DefaultSeedData.GetDefaultCurrencySlangs();
+                _context.CurrencySlangs.AddRange(defaultCurrencySlangs);
+                _logger.LogStateInfo(AppStates.SeedingData, $"Added {defaultCurrencySlangs.Length} default currency slangs.");
+            }
+            #endregion
+
             if (!_context.Roles.Any())
             {
                 #region Add default roles
