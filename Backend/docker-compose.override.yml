@@ -23,7 +23,7 @@ services:
     env_file:
       - .env
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=${BE_ENVIRONMENT}
       - ASPNETCORE_HTTP_PORTS=8080
       # - ASPNETCORE_HTTPS_PORTS=443
 
@@ -31,11 +31,11 @@ services:
       - DatabaseSettings__ConnectionString=Host=postgres;Port=5432;Database=${POSTGRES_DBNAME};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
   
       # JWT Authentication
-      - JwtSettings__SecretKey=${JWT_SECRET_KEY}
-      - JwtSettings__Issuer=${JWT_ISSUER}
-      - JwtSettings__Audience=${JWT_AUDIENCE}
-      - JwtSettings__AccessTokenExpirationInMinutes=${JWT_ACCESS_TOKEN_EXPIRATION_MINUTES}
-      - JwtSettings__RefreshTokenExpirationInDays=${JWT_REFRESH_TOKEN_EXPIRATION_DAYS}
+      - JwtSettings__SecretKey=${BE_JWT_SECRET_KEY}
+      - JwtSettings__Issuer=${BE_JWT_ISSUER}
+      - JwtSettings__Audience=${BE_JWT_AUDIENCE}
+      - JwtSettings__AccessTokenExpirationInMinutes=${BE_JWT_ACCESS_TOKEN_EXPIRATION_MINUTES}
+      - JwtSettings__RefreshTokenExpirationInDays=${BE_JWT_REFRESH_TOKEN_EXPIRATION_DAYS}
   
       # Cloudinary Storage
       - Cloudinary__CloudName=${CLOUDINARY_CLOUD_NAME}
@@ -50,14 +50,14 @@ services:
       - Redis__EnableLogging=${REDIS_ENABLE_LOGGING}
   
       # Service URLs
-      - Services__Ai__BaseUrl=http://ai-service:8000/api/v1
+      - Services__Ai__BaseUrl=http://ai-service:8000${AI_API_V1_STR}
       - Services__Ai__ApiKey=${AI_API_KEY}
   
       # Logging Configuration
-      - Serilog__MinimumLevel__Default=${SERILOG_MINIMUM_LEVEL_DEFAULT}
-      - Serilog__WriteTo__0__Args__path=/app/log/log.txt
+      - Serilog__MinimumLevel__Default=${BE_SERILOG_MINIMUM_LEVEL_DEFAULT}
+      - Serilog__WriteTo__0__Args__path=/app/${BE_LOG_PATH}
     volumes:
-      - ./Microservices/Expense/Log:/app/log
+      - ./Microservices/Expense/Log:/app/${BE_LOG_PATH}
     networks:
       - app-network
     ports:
@@ -72,16 +72,16 @@ services:
       - .env
     environment:
       # Application settings
-      - PROJECT_NAME=${PROJECT_NAME}
-      - PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION}
-      - VERSION=${VERSION}
-      - DEBUG_MODE=${DEBUG_MODE}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - LOG_PATH=${LOG_PATH}
+      - PROJECT_NAME=${AI_PROJECT_NAME}
+      - PROJECT_DESCRIPTION=${AI_PROJECT_DESCRIPTION}
+      - VERSION=${AI_VERSION}
+      - DEBUG_MODE=${AI_DEBUG_MODE}
+      - LOG_LEVEL=${AI_LOG_LEVEL}
+      - LOG_PATH=${AI_LOG_PATH}
       - SERVER_HOST=0.0.0.0
       - SERVER_PORT=8000
-      - API_V1_STR=${API_V1_STR}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - API_V1_STR=${AI_API_V1_STR}
+      - ALLOWED_HOSTS=${AI_ALLOWED_HOSTS}
       - API_KEY=${AI_API_KEY}
       - BACKEND_BASE_URL=http://ems-api:8080
       - BACKEND_API_KEY=${BE_API_KEY}
@@ -97,7 +97,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     volumes:
-      - ./Microservices/AI/logs:/app/logs
+      - ./Microservices/AI/logs:/app/${AI_LOG_PATH}
     networks:
       - app-network
     ports:
