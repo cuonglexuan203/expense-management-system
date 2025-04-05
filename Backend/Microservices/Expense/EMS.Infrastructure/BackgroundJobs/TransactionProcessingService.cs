@@ -17,6 +17,7 @@ using EMS.Core.Enums;
 using EMS.Infrastructure.Persistence.DbContext;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -166,6 +167,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                             if (category == null)
                             {
                                 category = await categoryService.GetUnknownCategoryAsync(item.Type);
+                                context.Categories.Attach(category);
                             }
 
                             //extractedTransaction.CategoryId = category.Id;
@@ -224,6 +226,8 @@ namespace EMS.Infrastructure.BackgroundJobs
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing message {MessageId}", queuedMessage.MessageId);
+
+                context.ChangeTracker.Clear();
 
                 var errorMsg = ChatMessage.CreateSystemMessage(
                     queuedMessage.ChatThreadId,
