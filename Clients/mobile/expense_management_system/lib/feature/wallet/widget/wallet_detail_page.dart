@@ -27,16 +27,16 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
     super.initState();
     _scrollController.addListener(_onScroll);
 
+    // Simplify the initialization
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.microtask(() {
-        try {
-          ref
-              .read(paginatedTransactionsProvider(widget.walletId).notifier)
-              .refresh();
-        } catch (e) {
-          print('Error initializing provider: $e');
-        }
-      });
+      try {
+        ref
+            .read(paginatedTransactionsProvider(widget.walletId).notifier)
+            .refresh();
+      } catch (e) {
+        print('Error initializing provider: $e');
+        // Consider updating UI state here
+      }
     });
   }
 
@@ -312,10 +312,15 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
       builder: (context, ref, child) {
         final paginatedState =
             ref.watch(paginatedTransactionsProvider(walletId));
+
+        // Debug prints to identify the issue
+        print('Transaction List State: isLoading=${paginatedState.isLoading}, '
+            'itemCount=${paginatedState.items.length}, '
+            'error=${paginatedState.errorMessage}');
+
         final transactions = paginatedState.items;
         final isLoading = paginatedState.isLoading;
         final hasError = paginatedState.errorMessage != null;
-
         if (hasError) {
           return Center(
             child: Column(
