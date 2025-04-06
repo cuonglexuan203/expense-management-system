@@ -3,10 +3,9 @@ import 'package:expense_management_system/feature/transaction/widget/transaction
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NonScrollableTransactionList extends ConsumerWidget {
+class TransactionList extends ConsumerWidget {
   final int walletId;
-
-  const NonScrollableTransactionList({required this.walletId});
+  const TransactionList({required this.walletId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,16 +13,7 @@ class NonScrollableTransactionList extends ConsumerWidget {
     final transactions = paginatedState.items;
     final isLoading = paginatedState.isLoading;
     final hasError = paginatedState.errorMessage != null;
-
-    if (!isLoading &&
-        !paginatedState.hasReachedEnd &&
-        transactions.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref
-            .read(paginatedTransactionsProvider(walletId).notifier)
-            .fetchNextPage();
-      });
-    }
+    final hasReachedEnd = paginatedState.hasReachedEnd;
 
     if (hasError && transactions.isEmpty) {
       return Center(
@@ -61,7 +51,9 @@ class NonScrollableTransactionList extends ConsumerWidget {
       );
     }
 
-    return Column(
+    return ListView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       children: [
         ...transactions
             .map((transaction) => TransactionItem(transaction: transaction)),
@@ -69,24 +61,27 @@ class NonScrollableTransactionList extends ConsumerWidget {
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Center(child: CircularProgressIndicator()),
-          )
-        else if (!paginatedState.hasReachedEnd)
+          ),
+        if (hasReachedEnd && transactions.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: InkWell(
-              onTap: () {
-                ref
-                    .read(paginatedTransactionsProvider(walletId).notifier)
-                    .fetchNextPage();
-              },
+            padding: const EdgeInsets.fromLTRB(1, 16, 1, 0),
+            child: Center(
               child: Container(
-                padding: const EdgeInsets.all(12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text('Load more',
-                    style: TextStyle(color: Color(0xFF386BF6))),
+                child: Text(
+                  'All transactions loaded',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                    fontFamily: 'Nunito',
+                  ),
+                ),
               ),
             ),
           ),

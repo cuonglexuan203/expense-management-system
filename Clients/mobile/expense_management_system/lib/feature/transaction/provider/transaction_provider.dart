@@ -116,10 +116,7 @@ class PaginatedTransactions extends _$PaginatedTransactions {
   @override
   PaginatedState<Transaction> build(int walletId) {
     state = PaginatedState.initial<Transaction>();
-
-    Future.microtask(() async {
-      await fetchNextPage();
-    });
+    fetchNextPage();
 
     return state;
   }
@@ -173,7 +170,7 @@ class PaginatedTransactions extends _$PaginatedTransactions {
   }
 
   Future<void> refresh() async {
-    state = PaginatedState.initial<Transaction>().copyWith(isLoading: true);
+    state = PaginatedState.initial<Transaction>();
     await fetchNextPage();
   }
 }

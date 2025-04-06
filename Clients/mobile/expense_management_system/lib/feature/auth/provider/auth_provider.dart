@@ -1,6 +1,7 @@
 import 'package:expense_management_system/feature/auth/repository/auth_repository.dart';
 import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
 import 'package:expense_management_system/feature/auth/state/auth_state.dart';
+import 'package:expense_management_system/shared/http/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_provider.g.dart';
@@ -18,7 +19,15 @@ class AuthNotifier extends _$AuthNotifier {
   late final AuthRepository _loginRepository = ref.read(authRepositoryProvider);
 
   Future<void> login(String email, String password) async {
-    state = await _loginRepository.login(email, password);
+    try {
+      final authState = await _loginRepository.login(email, password);
+      state = authState;
+      print("Login completed with state: $state");
+    } catch (e) {
+      print("Exception during login: $e");
+      state = AuthState.error(AppException.errorWithMessage(e.toString()));
+      rethrow;
+    }
   }
 
   Future<void> signUp(String name, String email, String password) async {

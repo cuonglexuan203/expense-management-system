@@ -4,6 +4,7 @@ import 'package:expense_management_system/feature/wallet/provider/wallet_provide
 import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -22,6 +23,7 @@ class WalletBalanceCard extends ConsumerStatefulWidget {
 
 class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
   String _selectedPeriod = 'AllTime';
+  bool _isBalanceVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -212,28 +214,61 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Total Balance',
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Nunito',
-          ),
+        // Title row with eye icon
+        Row(
+          children: [
+            const Text(
+              'Total Balance',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Nunito',
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Eye icon toggle button
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isBalanceVisible = !_isBalanceVisible;
+                  // Optional: Add haptic feedback
+                  HapticFeedback.mediumImpact();
+                });
+              },
+              child: Icon(
+                _isBalanceVisible ? Iconsax.eye_slash : Iconsax.eye,
+                color: Colors.white70,
+                size: 20,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
+        // Balance amount (shown or hidden)
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
-            wallet.balance.toFormattedString() ?? '0',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Nunito',
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
+          child: _isBalanceVisible
+              ? Text(
+                  wallet.balance.toFormattedString() ?? '0',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Nunito',
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                )
+              : Text(
+                  '* * * * * *',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 3,
+                    fontFamily: 'Nunito',
+                  ),
+                ),
         ),
       ],
     );
@@ -255,16 +290,31 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
         const SizedBox(height: 8),
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
-            wallet.balanceByPeriod.toFormattedString() ?? '0',
-            style: TextStyle(
-              color: wallet.balanceByPeriod < 0 ? Colors.red : ColorName.green,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Nunito',
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
+          child: _isBalanceVisible
+              ? Text(
+                  wallet.balanceByPeriod.toFormattedString() ?? '0',
+                  style: TextStyle(
+                    color: wallet.balanceByPeriod < 0
+                        ? Colors.red
+                        : ColorName.green,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Nunito',
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                )
+              : Text(
+                  '* * * * * *',
+                  style: TextStyle(
+                    color: wallet.balanceByPeriod < 0
+                        ? Colors.red
+                        : ColorName.green,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 3,
+                    fontFamily: 'Nunito',
+                  ),
+                ),
         ),
       ],
     );

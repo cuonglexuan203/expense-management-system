@@ -11,6 +11,7 @@ import 'package:expense_management_system/shared/http/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -145,6 +146,34 @@ class _ChatPageState extends ConsumerState<ChatPage>
     _onMessageChanged();
   }
 
+  Future<void> _takePhoto() async {
+    try {
+      final XFile? photo = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+        preferredCameraDevice: CameraDevice.rear,
+      );
+
+      if (photo == null) return;
+
+      setState(() {
+        _selectedImages = _selectedImages ?? [];
+        _selectedImages!.add(photo);
+        _recordedAudioPath = null;
+      });
+
+      _onMessageChanged();
+
+      // Haptic feedback when photo is taken
+      await HapticFeedback.mediumImpact();
+    } catch (e) {
+      AppSnackBar.showError(
+        context: context,
+        message: 'Can not take picture: ${e.toString()}',
+      );
+    }
+  }
+
   Future<void> _sendMessage() async {
     var message = _messageController.text.trim();
     final hasImages = _selectedImages != null && _selectedImages!.isNotEmpty;
@@ -191,10 +220,6 @@ class _ChatPageState extends ConsumerState<ChatPage>
         );
       }
       return;
-    }
-
-    if (message.isEmpty) {
-      message = '';
     }
 
     if (chatThreadId == null || isWaitingForResponse || _isUploadingImage)
@@ -726,71 +751,102 @@ class _ChatPageState extends ConsumerState<ChatPage>
                   animation: _buttonsAnimation,
                   builder: (context, child) {
                     return Visibility(
-                      visible:
-                          !_isInputExpanded || _buttonsAnimation.value < 0.1,
-                      child: Row(
-                        children: [
-                          // Image picker button
-                          Container(
-                            margin:
-                                const EdgeInsets.only(left: 4.0, bottom: 4.0),
-                            decoration: BoxDecoration(
-                              color: (_isUploadingImage || isWaitingForResponse)
-                                  ? Colors.grey.withOpacity(0.2)
-                                  : ColorName.blue.withOpacity(0.1),
-                              shape: BoxShape.circle,
+                        visible:
+                            !_isInputExpanded || _buttonsAnimation.value < 0.1,
+                        child: Row(
+                          children: [
+                            // Image picker button
+                            Container(
+                              margin:
+                                  const EdgeInsets.only(left: 4.0, bottom: 4.0),
+                              decoration: BoxDecoration(
+                                color:
+                                    (_isUploadingImage || isWaitingForResponse)
+                                        ? Colors.grey.withOpacity(0.2)
+                                        : ColorName.blue.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: IconButton(
+                                icon: const Icon(Iconsax.gallery),
+                                iconSize: 22,
+                                color:
+                                    (_isUploadingImage || isWaitingForResponse)
+                                        ? Colors.grey
+                                        : ColorName.blue,
+                                onPressed:
+                                    (_isUploadingImage || isWaitingForResponse)
+                                        ? null
+                                        : _pickImage,
+                                constraints: const BoxConstraints(
+                                    minHeight: 36, minWidth: 36),
+                                padding: const EdgeInsets.all(8),
+                              ),
                             ),
-                            child: IconButton(
-                              icon: const Icon(Iconsax.image),
-                              iconSize: 22,
-                              color: (_isUploadingImage || isWaitingForResponse)
-                                  ? Colors.grey
-                                  : ColorName.blue,
-                              onPressed:
-                                  (_isUploadingImage || isWaitingForResponse)
-                                      ? null
-                                      : _pickImage,
-                              constraints: const BoxConstraints(
-                                  minHeight: 36, minWidth: 36),
-                              padding: const EdgeInsets.all(8),
-                            ),
-                          ),
 
-                          // Audio recording button
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 4.0),
-                            decoration: BoxDecoration(
-                              color: _isRecording
-                                  ? Colors.red.withOpacity(0.1)
-                                  : (_isUploadingImage || isWaitingForResponse)
-                                      ? Colors.grey.withOpacity(0.2)
-                                      : ColorName.blue.withOpacity(0.1),
-                              shape: BoxShape.circle,
+                            // Camera button
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 4.0),
+                              decoration: BoxDecoration(
+                                color:
+                                    (_isUploadingImage || isWaitingForResponse)
+                                        ? Colors.grey.withOpacity(0.2)
+                                        : ColorName.blue.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: IconButton(
+                                icon: const Icon(Iconsax.camera),
+                                iconSize: 22,
+                                color:
+                                    (_isUploadingImage || isWaitingForResponse)
+                                        ? Colors.grey
+                                        : ColorName.blue,
+                                onPressed:
+                                    (_isUploadingImage || isWaitingForResponse)
+                                        ? null
+                                        : _takePhoto,
+                                constraints: const BoxConstraints(
+                                    minHeight: 36, minWidth: 36),
+                                padding: const EdgeInsets.all(8),
+                              ),
                             ),
-                            child: IconButton(
-                              icon: _isRecording
-                                  ? const Icon(Iconsax.stop, color: Colors.red)
-                                  : const Icon(Iconsax.microphone),
-                              iconSize: 22,
-                              color: (_isUploadingImage || isWaitingForResponse)
-                                  ? _isRecording
-                                      ? Colors.red
-                                      : Colors.grey
-                                  : ColorName.blue,
-                              onPressed:
-                                  (_isUploadingImage || isWaitingForResponse)
-                                      ? null
-                                      : _isRecording
-                                          ? _stopRecording
-                                          : _startRecording,
-                              constraints: const BoxConstraints(
-                                  minHeight: 36, minWidth: 36),
-                              padding: const EdgeInsets.all(8),
+
+                            // Audio recording button
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 4.0),
+                              decoration: BoxDecoration(
+                                color: _isRecording
+                                    ? Colors.red.withOpacity(0.1)
+                                    : (_isUploadingImage ||
+                                            isWaitingForResponse)
+                                        ? Colors.grey.withOpacity(0.2)
+                                        : ColorName.blue.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: IconButton(
+                                icon: _isRecording
+                                    ? const Icon(Iconsax.stop,
+                                        color: Colors.red)
+                                    : const Icon(Iconsax.microphone),
+                                iconSize: 22,
+                                color:
+                                    (_isUploadingImage || isWaitingForResponse)
+                                        ? _isRecording
+                                            ? Colors.red
+                                            : Colors.grey
+                                        : ColorName.blue,
+                                onPressed:
+                                    (_isUploadingImage || isWaitingForResponse)
+                                        ? null
+                                        : _isRecording
+                                            ? _stopRecording
+                                            : _startRecording,
+                                constraints: const BoxConstraints(
+                                    minHeight: 36, minWidth: 36),
+                                padding: const EdgeInsets.all(8),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
+                          ],
+                        ));
                   },
                 ),
 
@@ -825,7 +881,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
                                     _recordedAudioPath != null
                                 ? 'Enter message with media...'
                                 : isAddTransaction
-                                    ? 'Enter your message...'
+                                    ? 'Aa'
                                     : 'Ask Mosa...',
                             hintStyle: TextStyle(
                               color: Colors.grey[400],
@@ -887,7 +943,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.go('/'),
         ),
         title: const Text(
           'Expense Assistant',
