@@ -222,10 +222,6 @@ class _ChatPageState extends ConsumerState<ChatPage>
       return;
     }
 
-    if (message.isEmpty) {
-      message = '';
-    }
-
     if (chatThreadId == null || isWaitingForResponse || _isUploadingImage)
       return;
 
