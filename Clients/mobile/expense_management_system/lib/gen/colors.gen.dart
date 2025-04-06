@@ -46,6 +46,12 @@ class ColorName {
   /// Color: #139960
   static const Color primaryColor = Color(0xFF139960);
 
+  /// Color: #FF2E4DA7
+  static const Color primaryGradientEnd = Color(0xFF2E4DA7);
+
+  /// Color: #FF4A6FE1
+  static const Color primaryGradientStart = Color(0xFF4A6FE1);
+
   /// Color: #FFFFFF
   static const Color white = Color(0xFFFFFFFF);
 }

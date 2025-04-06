@@ -134,20 +134,20 @@ class WalletList extends StatelessWidget {
                               wallet.name,
                               style: const TextStyle(
                                 color: Colors.white70,
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontFamily: 'Nunito',
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              wallet.balance.toFormattedString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Nunito',
-                              ),
-                            ),
+                            // Text(
+                            //   wallet.balance.toFormattedString(),
+                            //   style: const TextStyle(
+                            //     color: Colors.white,
+                            //     fontSize: 18,
+                            //     fontWeight: FontWeight.bold,
+                            //     fontFamily: 'Nunito',
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),

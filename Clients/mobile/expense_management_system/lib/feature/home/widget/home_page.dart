@@ -141,31 +141,52 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   Widget _buildContent(HomeState homeState) {
-    return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        children: [
-          // Header Section
-          _buildHeaderSection(),
-
-          // Wallet Section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: _buildWalletSection(homeState),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification is ScrollUpdateNotification) {
+          if (notification.metrics.pixels >=
+              notification.metrics.maxScrollExtent - 200) {
+            _loadMoreIfNeeded();
+          }
+        }
+        return false;
+      },
+      child: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(homeNotifierProvider.notifier).refreshWallets();
+          homeState.maybeWhen(
+            loaded: (wallets, selectedIndex) {
+              if (wallets.isNotEmpty) {
+                ref
+                    .read(
+                        paginatedTransactionsProvider(wallets[selectedIndex].id)
+                            .notifier)
+                    .refresh();
+              }
+            },
+            orElse: () {},
+          );
+        },
+        color: const Color(0xFF386BF6),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              _buildHeaderSection(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: _buildWalletSection(homeState),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: _buildBalanceCardSection(homeState),
+              ),
+              const SizedBox(height: 20),
+              _buildTransactionSectionContainer(homeState),
+            ],
           ),
-
-          const SizedBox(height: 20),
-
-          // Balance Card
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: _buildBalanceCardSection(homeState),
-          ),
-
-          const SizedBox(height: 20),
-
-          _buildTransactionSectionContainer(homeState),
-        ],
+        ),
       ),
     );
   }
@@ -209,9 +230,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _buildTransactions(HomeState homeState) {
     return homeState.when(
-      loading: () => const Center(
-          // child: SizedBox(height: 200, child: CircularProgressIndicator()),
-          ),
+      loading: () => const Center(),
       error: (_) => const Center(
         child: SizedBox(
           height: 200,
@@ -231,7 +250,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         }
 
         final walletId = wallets[selectedIndex].id;
-        return NonScrollableTransactionList(walletId: walletId);
+        return TransactionList(walletId: walletId);
       },
     );
   }
