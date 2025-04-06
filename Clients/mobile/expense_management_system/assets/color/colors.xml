@@ -12,4 +12,6 @@
     <color name="chatGradientEnd">#386BF6</color>
     <color name="white">#FFFFFF</color>
     <color name="green">#40FF40</color>
+    <color name="primaryGradientStart">#FF4A6FE1</color>
+    <color name="primaryGradientEnd">#FF2E4DA7</color>
 </resources>

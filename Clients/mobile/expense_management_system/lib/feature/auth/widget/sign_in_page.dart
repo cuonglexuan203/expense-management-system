@@ -1,6 +1,7 @@
 import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/auth/provider/auth_provider.dart';
 import 'package:expense_management_system/feature/auth/provider/password_visibility_provider.dart';
+import 'package:expense_management_system/feature/auth/state/auth_state.dart';
 import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -197,18 +198,63 @@ class SignInPage extends ConsumerWidget {
                                             .state = true;
 
                                         try {
+                                          // Wrap API call in a try block
                                           await ref
                                               .read(
                                                   authNotifierProvider.notifier)
                                               .login(_emailController.text,
                                                   _passwordController.text);
+
+                                          // No need for debug log here anymore
+
                                           if (context.mounted) {
-                                            AppSnackBar.showSuccess(
+                                            // Read auth state after login has been processed
+                                            final authState =
+                                                ref.read(authNotifierProvider);
+
+                                            // Handle different cases
+                                            if (authState
+                                                is AuthStateLoggedIn) {
+                                              AppSnackBar.showSuccess(
+                                                  context: context,
+                                                  message:
+                                                      'Log in successfully');
+                                              context.go('/');
+                                            } else if (authState.whenOrNull(
+                                                  error: (_) => true,
+                                                  loggedOut: () => true,
+                                                ) ??
+                                                false) {
+                                              // Handle login error
+                                              authState.whenOrNull(
+                                                error: (error) {
+                                                  AppSnackBar.showError(
+                                                      context: context,
+                                                      message:
+                                                          'Login failed. Please check your credentials.');
+                                                },
+                                                loggedOut: () {
+                                                  AppSnackBar.showError(
+                                                      context: context,
+                                                      message:
+                                                          'Logged out. Please try again.');
+                                                },
+                                              );
+                                            }
+                                          }
+                                        } catch (e, stackTrace) {
+                                          print("Login error: $e");
+                                          print("Stack trace: $stackTrace");
+
+                                          // Show error to user
+                                          if (context.mounted) {
+                                            AppSnackBar.showError(
                                                 context: context,
-                                                message: 'Log in successfully');
-                                            context.go('/');
+                                                message:
+                                                    'Login failed. Please check your credentials.');
                                           }
                                         } finally {
+                                          // ALWAYS ensure loading state is turned off
                                           if (context.mounted) {
                                             ref
                                                 .read(
