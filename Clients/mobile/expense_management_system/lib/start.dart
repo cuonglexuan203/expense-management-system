@@ -15,7 +15,7 @@ Future<void> start() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Future.wait([
-    initializeDateFormatting('en', ''),
+    initializeDateFormatting('', ''),
   ]);
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);

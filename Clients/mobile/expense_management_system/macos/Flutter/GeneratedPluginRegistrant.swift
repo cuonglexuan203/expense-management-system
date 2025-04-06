@@ -7,6 +7,7 @@ import Foundation
 
 import audioplayers_darwin
 import connectivity_plus
+import devicelocale
 import file_selector_macos
 import flutter_secure_storage_macos
 import path_provider_foundation
@@ -17,6 +18,7 @@ import sqflite_darwin
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   AudioplayersDarwinPlugin.register(with: registry.registrar(forPlugin: "AudioplayersDarwinPlugin"))
   ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
+  DevicelocalePlugin.register(with: registry.registrar(forPlugin: "DevicelocalePlugin"))
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
   FlutterSecureStoragePlugin.register(with: registry.registrar(forPlugin: "FlutterSecureStoragePlugin"))
   PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))

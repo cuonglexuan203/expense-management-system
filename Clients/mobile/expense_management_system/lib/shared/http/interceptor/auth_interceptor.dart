@@ -34,16 +34,17 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 401 && !_isRefreshing) {
+    bool isLoginRequest =
+        err.requestOptions.path.contains(ApiEndpoints.auth.login);
+
+    if (err.response?.statusCode == 401 && !_isRefreshing && !isLoginRequest) {
       _isRefreshing = true;
       try {
         final refreshed = await _refreshToken();
         if (refreshed) {
           final token = await tokenRepository.fetchToken();
-
           final options = err.requestOptions;
           options.headers['Authorization'] = 'Bearer ${token!.accessToken}';
-
           final response = await dio.fetch(options);
           _isRefreshing = false;
           return handler.resolve(response);

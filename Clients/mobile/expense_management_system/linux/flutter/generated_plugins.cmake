@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
+  devicelocale
   file_selector_linux
   flutter_secure_storage_linux
   record_linux
