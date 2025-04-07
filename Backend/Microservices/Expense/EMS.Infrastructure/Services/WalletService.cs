@@ -39,14 +39,31 @@ namespace EMS.Infrastructure.Services
             _mapper = mapper;
         }
 
-        public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(int walletId, TimePeriod period, CancellationToken cancellationToken = default)
+        public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(
+            int walletId, 
+            TimePeriod period, 
+            DateTime? fromDate = null,
+            DateTime? toDate = null,
+            CancellationToken cancellationToken = default)
         {
-            var summary = await GetWalletBalanceSummaryAsync(_currentUserService.Id!, walletId, period, cancellationToken);
+            var summary = await GetWalletBalanceSummaryAsync(
+                _currentUserService.Id!, 
+                walletId, 
+                period, 
+                fromDate,
+                toDate,
+                cancellationToken);
 
             return summary;
         }
 
-        public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(string userId, int walletId, TimePeriod period, CancellationToken cancellationToken = default)
+        public async Task<WalletBalanceSummary> GetWalletBalanceSummaryAsync(
+            string userId, 
+            int walletId, 
+            TimePeriod period, 
+            DateTime? fromDate = null,
+            DateTime? toDate = null,
+            CancellationToken cancellationToken = default)
         {
             var wallet = await _context.Wallets
                 .AsNoTracking()
@@ -54,9 +71,25 @@ namespace EMS.Infrastructure.Services
                 ?? throw new NotFoundException($"Wallet with id {walletId} not found by user {userId}");
 
             var transactionQuery = _context.Transactions
-            .AsNoTracking()
-            .Where(e => e.WalletId == wallet.Id && !e.IsDeleted)
-            .FilterTransactionsByPeriod(period);
+                .AsNoTracking()
+                .Where(e => e.WalletId == wallet.Id && !e.IsDeleted);
+
+            if (fromDate.HasValue || toDate.HasValue)
+            {
+                if (fromDate.HasValue)
+                {
+                    transactionQuery = transactionQuery.Where(e => e.OccurredAt >= fromDate.Value);
+                }
+        
+                if (toDate.HasValue)
+                {
+                    transactionQuery = transactionQuery.Where(e => e.OccurredAt <= toDate.Value);
+                }
+            }
+            else
+            {
+                transactionQuery = transactionQuery.FilterTransactionsByPeriod(period);
+            }
 
             var totalIncome = await transactionQuery
                 .Where(e => e.Type == TransactionType.Income)
@@ -77,6 +110,8 @@ namespace EMS.Infrastructure.Services
                 Balance = wallet.Balance,
                 Description = wallet.Description,
                 FilterPeriod = period,
+                FromDate = fromDate,
+                ToDate = toDate,
                 Income = totalIncome,
                 Expense = totalExpense,
             };
