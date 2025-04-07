@@ -37,7 +37,19 @@ namespace EMS.Application.Features.Transactions.Queries.GetTransactions
                 .Where(e => !e.IsDeleted && !e.Wallet.IsDeleted)
                 .AsNoTracking();
 
-            if (specParams.Period != null)
+            if (specParams.FromDate != null || specParams.ToDate != null)
+            {
+                if (specParams.FromDate != null)
+                {
+                    query = query.Where(e => e.OccurredAt >= specParams.FromDate);
+                }
+
+                if (specParams.ToDate != null)
+                {
+                    query = query.Where(e => e.OccurredAt <= specParams.ToDate);
+                }
+            }
+            else if (specParams.Period != null)
             {
                 query = query.FilterTransactionsByPeriod((TimePeriod)specParams.Period);
             }
