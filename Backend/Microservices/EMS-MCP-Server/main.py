@@ -1,5 +1,4 @@
 from fastapi.routing import Mount
-# from starlette.routing import Host
 from app.core import settings
 from app.core.lifespan import lifespan
 from fastapi.middleware.cors import CORSMiddleware
