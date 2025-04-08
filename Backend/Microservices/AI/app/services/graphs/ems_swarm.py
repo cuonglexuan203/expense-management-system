@@ -8,7 +8,7 @@ from app.services.llm.enums import LLMModel, LLMProvider
 from langgraph_swarm import create_handoff_tool, create_swarm
 
 
-transaction_agent = TransactionAgent(
+financial_agent = TransactionAgent(
     llm_config=LLMConfig(
         provider=LLMProvider.OPENAI,
         model=LLMModel.GPT_4O_MINI,
@@ -26,18 +26,18 @@ event_agent = EventAgent(
     tools=[
         extract_from_text,
         create_handoff_tool(
-            agent_name="transaction_expert",
-            description="Transfer to transaction_expert, they can help with transaction-related problems",
+            agent_name="financial_expert",
+            description="Transfer to financial_expert, they can help with transaction-related problems",
         ),
     ],
 ).get_agent()
 
-agents = [transaction_agent, event_agent]
+agents = [financial_agent, event_agent]
 
 workflow = create_swarm(
     agents=agents,
     state_schema=TransactionState,
-    default_active_agent="transaction_expert",
+    default_active_agent="financial_expert",
 )
 
 checkpointer = InMemorySaver()

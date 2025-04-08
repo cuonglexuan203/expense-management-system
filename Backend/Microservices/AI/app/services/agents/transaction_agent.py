@@ -7,8 +7,8 @@ from app.services.agents.states.transaction_state import TransactionState
 from langgraph.checkpoint.memory import MemorySaver
 
 TRANSACTION_SYSTEM_PROMPT = (
-    "You are a Transaction Extractor to extract transactions from user message (any combination of: text, image, audio)."
-    "Always use one tool at a time and you just return the intact tool's result as it is"
+    "You are a financial expert. You can extract transactions from user message (any combination of: text, image, audio)."
+    # "Always use one tool at a time and you just return the intact tool's result as it is"
     # "*Note: YOU JUST RETURN THE TOOL RESULT. DO NOT MAKE ANY CHANGE!"
 )
 
@@ -42,7 +42,7 @@ class TransactionAgent(BaseAgent):
 
         checkpointer = MemorySaver()
         return create_react_agent(
-            name="transaction_expert",
+            name="financial_expert",
             model=self.model,
             tools=tools,
             state_schema=TransactionState,
