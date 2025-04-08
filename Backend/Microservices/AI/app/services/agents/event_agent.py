@@ -16,7 +16,7 @@ class EventAgent(BaseAgent):
         """Create the React Agent for Event Scheduling."""
 
         tools = self.tools
-        tool_node = ToolNode(tools)
+        tool_node = ToolNode(tools) # noqa
 
         # checkpointer = MemorySaver()
         return create_react_agent(

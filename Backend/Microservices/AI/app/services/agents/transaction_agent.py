@@ -1,12 +1,33 @@
-from app.api.v1.models.transaction_response import TransactionResponse
+from pydantic import BaseModel
+
+# from app.api.v1.models.transaction_response import TransactionResponse
 from app.services.agents.base import BaseAgent
 from langgraph.prebuilt import create_react_agent, ToolNode
 from app.services.agents.states.transaction_state import TransactionState
 from langgraph.checkpoint.memory import MemorySaver
 
-TRANSACTION_SYSTEM_PROMPT = """
-You are a Transaction Extractor to extract transactions from user message (any combination of: text, image, audio). Always use one tool at a time
-"""
+TRANSACTION_SYSTEM_PROMPT = (
+    "You are a Transaction Extractor to extract transactions from user message (any combination of: text, image, audio)."
+    "Always use one tool at a time and you just return the intact tool's result as it is"
+    # "*Note: YOU JUST RETURN THE TOOL RESULT. DO NOT MAKE ANY CHANGE!"
+)
+
+
+class Transaction(BaseModel):
+    name: str = None
+    category: str = None
+    type: str = None
+    amount: float = None
+    currency: str = None
+    occurred_at: str = None
+
+
+class TransactionResponse(BaseModel):
+    """Response model for transaction extraction endpoints."""
+
+    transactions: list[Transaction]
+    introduction: str
+    message: str
 
 
 class TransactionAgent(BaseAgent):
@@ -17,7 +38,7 @@ class TransactionAgent(BaseAgent):
         """Create the React Agent for transaction extraction."""
 
         tools = self.tools
-        tool_node = ToolNode(tools)
+        tool_node = ToolNode(tools)  # noqa
 
         checkpointer = MemorySaver()
         return create_react_agent(
@@ -27,5 +48,5 @@ class TransactionAgent(BaseAgent):
             state_schema=TransactionState,
             checkpointer=checkpointer,
             prompt=TRANSACTION_SYSTEM_PROMPT,
-            # response_format=TransactionResponse
+            response_format=TransactionResponse,
         )

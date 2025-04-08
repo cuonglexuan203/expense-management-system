@@ -13,6 +13,7 @@ from app.schemas.llm_config import LLMConfig
 from app.services.extractors.audio_extractor import AudioExtractor
 from app.services.extractors.image_extractor import ImageExtractor
 from app.services.extractors.text_extractor import TextExtractor
+from app.services.graphs.ems_swarm import ems_swarm
 from app.services.llm.output_parsers.transaction_analysis_output import (
     TransactionAnalysisOutput,
 )
@@ -20,7 +21,7 @@ from app.services.agents.prompts.transaction import TEST_PROMP
 from langchain_core.prompts import PromptTemplate
 from app.services.llm.enums import LLMModel, LLMProvider
 from app.services.llm.factory import LLMFactory
-from app.services.agents.ems_supervisor import ems_workflow
+from app.services.graphs.ems_supervisor import ems_workflow
 
 router = APIRouter()
 
@@ -175,6 +176,31 @@ async def test(request: TextTransactionRequest):
             "user_preferences": request.user_preferences,
         },
         config={"configurable": {"thread_id": "2"}},
+    )
+
+    if "messages" in result:
+        for message in result["messages"]:
+            message.pretty_print()
+
+    return result
+
+
+@router.post("/swarm/text-extraction")
+async def test2(request: ImageTransactionRequest):
+
+    result = await ems_swarm.ainvoke(
+        {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": request.message + f"\n\n {request.file_urls}",
+                }
+            ],
+            "user_id": request.user_id,
+            "categories": request.categories,
+            "user_preferences": request.user_preferences,
+        },
+        config={"configurable": {"thread_id": "3"}},
     )
 
     if "messages" in result:

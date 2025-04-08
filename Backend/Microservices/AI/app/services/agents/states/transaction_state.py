@@ -9,3 +9,4 @@ class TransactionState(AgentState):
     categories: list[str]
     user_preferences: UserPreferences
     structured_response: TransactionResponse
+    active_agent: str = "transaction_expert"

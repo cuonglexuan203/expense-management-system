@@ -3,6 +3,8 @@ from langgraph.prebuilt import InjectedState
 from langchain_core.tools import tool
 from app.api.v1.models.transaction_response import TransactionResponse
 from app.schemas.llm_config import LLMConfig
+from app.services.extractors.audio_extractor import AudioExtractor
+from app.services.extractors.image_extractor import ImageExtractor
 from app.services.extractors.text_extractor import TextExtractor
 from app.services.llm.enums import LLMModel, LLMProvider
 
@@ -33,4 +35,66 @@ async def extract_from_text(
         transactions=result.transactions,
         introduction=result.introduction,
         message="Successfully extracted transactions from text",
+    )
+
+
+@tool
+async def extract_from_image(
+    query: Annotated[str, "User message (text) to extract transactions"],
+    image_urls: Annotated[list[str], "Image urls to extract transactions"],
+    state: Annotated[dict, InjectedState],
+):
+    """Extract transactions from message containing images and/or text."""
+    extractor = ImageExtractor(
+        LLMConfig(
+            provider=LLMProvider.GOOGLE,
+            model=LLMModel.GEMINI_20_FLASH,
+            temperature=0,
+        )
+    )
+    result = await extractor.extract(
+        state["user_id"],
+        {
+            "message": query,
+            "categories": state["categories"],
+            "user_preferences": state["user_preferences"],
+            "image_urls": image_urls,
+        },
+    )
+
+    return TransactionResponse(
+        transactions=result.transactions,
+        introduction=result.introduction,
+        message="Successfully extracted transactions from image",
+    )
+
+
+@tool
+async def extract_from_audio(
+    query: Annotated[str, "User message (text) to extract transactions"],
+    audio_urls: Annotated[list[str], "Audio urls to extract transactions"],
+    state: Annotated[dict, InjectedState],
+):
+    """Extract transactions from audio message containing audios and/or text."""
+    extractor = AudioExtractor(
+        LLMConfig(
+            provider=LLMProvider.OPENAI,
+            model=LLMModel.GPT_4O_MINI_AUDIO_PREVIEW,
+            temperature=0,
+        )
+    )
+    result = await extractor.extract(
+        state["user_id"],
+        {
+            "message": query,
+            "categories": state["categories"],
+            "user_preferences": state["user_preferences"],
+            "audio_urls": audio_urls,
+        },
+    )
+
+    return TransactionResponse(
+        transactions=result.transactions,
+        introduction=result.introduction,
+        message="Successfully extracted transactions from audio",
     )
