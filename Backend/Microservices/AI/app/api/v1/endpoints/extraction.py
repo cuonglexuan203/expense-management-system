@@ -20,6 +20,7 @@ from app.services.agents.prompts.transaction import TEST_PROMP
 from langchain_core.prompts import PromptTemplate
 from app.services.llm.enums import LLMModel, LLMProvider
 from app.services.llm.factory import LLMFactory
+from app.services.agents.ems_supervisor import ems_workflow
 
 router = APIRouter()
 
@@ -156,3 +157,28 @@ async def extract_from_audio(
             status_code=500,
             detail=f"Error extracting transactions from audio: {str(e)}",
         )
+
+
+@router.post("/supervisor/text-extraction")
+async def test(request: TextTransactionRequest):
+
+    result = await ems_workflow.ainvoke(
+        {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": request.message,
+                }
+            ],
+            "user_id": request.user_id,
+            "categories": request.categories,
+            "user_preferences": request.user_preferences,
+        },
+        config={"configurable": {"thread_id": "2"}},
+    )
+
+    if "messages" in result:
+        for message in result["messages"]:
+            message.pretty_print()
+
+    return result
