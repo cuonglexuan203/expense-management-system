@@ -21,7 +21,7 @@ from app.services.agents.prompts.transaction import TEST_PROMP
 from langchain_core.prompts import PromptTemplate
 from app.services.llm.enums import LLMModel, LLMProvider
 from app.services.llm.factory import LLMFactory
-from app.services.graphs.ems_supervisor import ems_workflow
+from app.services.graphs.ems_supervisor import ems_supervisor
 
 router = APIRouter()
 
@@ -163,7 +163,7 @@ async def extract_from_audio(
 @router.post("/supervisor/text-extraction")
 async def test(request: TextTransactionRequest):
 
-    result = await ems_workflow.ainvoke(
+    result = await ems_supervisor.ainvoke(
         {
             "messages": [
                 {
@@ -200,7 +200,7 @@ async def test2(request: ImageTransactionRequest):
             "categories": request.categories,
             "user_preferences": request.user_preferences,
         },
-        config={"configurable": {"thread_id": "3"}},
+        config={"configurable": {"thread_id": "21"}},
     )
 
     if "messages" in result:

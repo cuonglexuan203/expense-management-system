@@ -30,7 +30,7 @@ class TransactionResponse(BaseModel):
     message: str
 
 
-class TransactionAgent(BaseAgent):
+class FinancialAgent(BaseAgent):
     def __init__(self, llm_config, tools=None):
         super().__init__(llm_config, tools)
 

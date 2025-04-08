@@ -4,7 +4,7 @@ from app.schemas.llm_config import LLMConfig
 from app.services.agents.event_agent import EventAgent
 from app.services.agents.states.transaction_state import TransactionState
 from app.services.agents.tools.transaction import extract_from_text
-from app.services.agents.transaction_agent import TransactionAgent
+from app.services.agents.transaction_agent import FinancialAgent
 from app.services.llm.enums import LLMModel, LLMProvider
 from app.services.llm.factory import LLMFactory
 
@@ -15,7 +15,7 @@ PROMPT = (
     "For event problems, use event_agent"
 )
 
-transaction_agent = TransactionAgent(
+transaction_agent = FinancialAgent(
     llm_config=LLMConfig(
         provider=LLMProvider.GOOGLE,
         model=LLMModel.GEMINI_20_FLASH,
@@ -44,13 +44,13 @@ model = LLMFactory.create(
 )
 
 
-ems_supervisor = create_supervisor(
+workflow = create_supervisor(
     agents=agents, state_schema=TransactionState, model=model, prompt=PROMPT
 )
 
 checkpointer = InMemorySaver()
 
-ems_workflow = ems_supervisor.compile(
+ems_supervisor = workflow.compile(
     name="Expense management system supervisor",
     checkpointer=checkpointer,
     # output_mode="last_message",
