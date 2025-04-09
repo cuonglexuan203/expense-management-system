@@ -106,7 +106,6 @@ class TransactionRepository {
     }
   }
 
-  // Updated method in TransactionRepository
   Future<APIResponse<PaginatedResponse<Transaction>>>
       getTransactionsByWalletPaginated(
     int walletId, {
@@ -116,6 +115,8 @@ class TransactionRepository {
     String? type,
     String sort = 'DESC',
     String? search,
+    DateTime? fromDate,
+    DateTime? toDate,
   }) async {
     try {
       // Build query parameters
@@ -127,12 +128,18 @@ class TransactionRepository {
         'Sort': sort,
       };
 
-      // Add type filter if provided
+      // Add date range parameters if provided
+      if (fromDate != null) {
+        queryParams['FromDate'] = fromDate.toIso8601String();
+      }
+      if (toDate != null) {
+        queryParams['ToDate'] = toDate.toIso8601String();
+      }
+
+      // Add type and search as before
       if (type != null) {
         queryParams['Type'] = type;
       }
-
-      // Add search parameter if provided
       if (search != null && search.isNotEmpty) {
         queryParams['Name'] = search;
       }

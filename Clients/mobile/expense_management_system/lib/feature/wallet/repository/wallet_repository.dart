@@ -75,10 +75,17 @@ class WalletRepository {
 
   Future<APIResponse<Wallet>> getWalletSummary(
     int walletId,
-    String period,
-  ) async {
+    String period, {
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
     try {
-      final params = {'walletId': walletId, 'period': period};
+      final params = {
+        'walletId': walletId,
+        'period': period,
+        if (fromDate != null) 'fromDate': fromDate.toIso8601String(),
+        if (toDate != null) 'toDate': toDate.toIso8601String(),
+      };
 
       final response = await _api.post(
         ApiEndpoints.wallet.walletSummary,

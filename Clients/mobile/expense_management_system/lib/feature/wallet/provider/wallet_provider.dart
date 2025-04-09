@@ -9,8 +9,15 @@ part 'wallet_provider.g.dart';
 class FilterParams {
   final int walletId;
   final String period;
+  final DateTime? fromDate;
+  final DateTime? toDate;
 
-  FilterParams({required this.walletId, required this.period});
+  FilterParams({
+    required this.walletId,
+    required this.period,
+    this.fromDate,
+    this.toDate,
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -18,10 +25,12 @@ class FilterParams {
       other is FilterParams &&
           runtimeType == other.runtimeType &&
           walletId == other.walletId &&
-          period == other.period;
+          period == other.period &&
+          fromDate == other.fromDate &&
+          toDate == other.toDate;
 
   @override
-  int get hashCode => walletId.hashCode ^ period.hashCode;
+  int get hashCode => Object.hash(walletId, period, fromDate, toDate);
 }
 
 @riverpod

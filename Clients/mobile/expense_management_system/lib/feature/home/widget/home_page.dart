@@ -26,6 +26,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
   String _currentPeriod = 'AllTime';
+  DateTime? _fromDate; // Add this
+  DateTime? _toDate; // Add this
 
   @override
   void initState() {
@@ -63,6 +65,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             final filterParams = TransactionFilterParams(
               walletId: walletId,
               period: _currentPeriod,
+              fromDate: _fromDate,
+              toDate: _toDate,
             );
 
             final paginatedState =
@@ -341,22 +345,34 @@ class _HomePageState extends ConsumerState<HomePage> {
         final selectedWallet = wallets[selectedIndex];
         return WalletBalanceCard(
           walletId: selectedWallet.id,
-          onPeriodChanged: (period) {
+          onPeriodChanged: (period, {DateTime? fromDate, DateTime? toDate}) {
             // Update local state
             setState(() {
               _currentPeriod = period;
+              _fromDate = fromDate;
+              _toDate = toDate;
             });
 
-            // Update wallet summary
+            // Update wallet summary with date range
             ref.invalidate(filteredWalletProvider(
-                FilterParams(walletId: selectedWallet.id, period: period)));
+              FilterParams(
+                walletId: selectedWallet.id,
+                period: period,
+                fromDate: fromDate,
+                toDate: toDate,
+              ),
+            ));
 
-            // Refresh transactions with the same period filter
+            // Refresh transactions with date range
             ref
-                .read(filteredTransactionsProvider(TransactionFilterParams(
-                  walletId: selectedWallet.id,
-                  period: period,
-                )).notifier)
+                .read(filteredTransactionsProvider(
+                  TransactionFilterParams(
+                    walletId: selectedWallet.id,
+                    period: period,
+                    fromDate: fromDate,
+                    toDate: toDate,
+                  ),
+                ).notifier)
                 .refresh();
           },
         );
@@ -366,29 +382,33 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _buildTransactions(HomeState homeState) {
     return homeState.when(
-      loading: () => const Center(),
-      error: (_) => const Center(
-        child: SizedBox(
-          height: 200,
-          child: Text('Error loading transactions',
-              style: TextStyle(color: Colors.grey)),
-        ),
-      ),
-      loaded: (wallets, selectedIndex) {
-        if (wallets.isEmpty) {
-          return const Center(
-            child: SizedBox(
-              height: 200,
-              child: Text('No wallet selected',
-                  style: TextStyle(color: Colors.grey)),
+        loading: () => const Center(),
+        error: (_) => const Center(
+              child: SizedBox(
+                height: 200,
+                child: Text('Error loading transactions',
+                    style: TextStyle(color: Colors.grey)),
+              ),
             ),
-          );
-        }
+        loaded: (wallets, selectedIndex) {
+          if (wallets.isEmpty) {
+            return const Center(
+              child: SizedBox(
+                height: 200,
+                child: Text('No wallet selected',
+                    style: TextStyle(color: Colors.grey)),
+              ),
+            );
+          }
 
-        final walletId = wallets[selectedIndex].id;
-        // Use filteredTransactionsProvider with current period
-        return TransactionList(walletId: walletId, period: _currentPeriod);
-      },
-    );
+          final walletId = wallets[selectedIndex].id;
+          // Use filteredTransactionsProvider with current period
+          return TransactionList(
+            walletId: walletId,
+            period: _currentPeriod,
+            fromDate: _fromDate,
+            toDate: _toDate,
+          );
+        });
   }
 }

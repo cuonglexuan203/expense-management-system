@@ -10,6 +10,7 @@ class ApiEndpoints {
   static final extractedTransaction = _ExtractedTransactionEndpoints();
   static final hubConnection = _HubConnectionEndpoints();
   static final media = _MediaEndpoints();
+  static final user = _UserEndpoints();
 }
 
 class _AuthEndpoints {
@@ -27,6 +28,7 @@ class _CategoryEndpoints {
   String getById(String id) => '$base/$id';
   String update(String id) => '$base/$id';
   String delete(String id) => '$base/$id';
+  String get getDefault => '$base/defaults';
 }
 
 class _DeveloperEndpoints {
@@ -72,4 +74,17 @@ class _HubConnectionEndpoints {
 class _MediaEndpoints {
   final String base = '${ApiEndpoints.base}/medias';
   String uploadFile(int id) => '$base/messages/$id';
+}
+
+// class _NotificationEndpoints {
+//   final String base = '${ApiEndpoints.base}/notifications';
+//   String get getAll => base;
+//   String getById(String id) => '$base/$id';
+//   String markAsRead(String id) => '$base/$id/mark-as-read';
+//   String delete(String id) => '$base/$id';
+// }
+
+class _UserEndpoints {
+  final String base = '${ApiEndpoints.base}/users';
+  String get onboarding => '$base/onboarding';
 }

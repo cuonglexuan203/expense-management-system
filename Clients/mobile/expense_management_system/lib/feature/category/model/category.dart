@@ -10,6 +10,8 @@ class Category with _$Category {
     required String name,
     @Default(false) bool isDefault,
     required String financialFlowType,
+    String? iconId,
+    String? iconUrl,
   }) = _Category;
 
   factory Category.fromJson(Map<String, dynamic> json) =>

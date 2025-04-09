@@ -15,7 +15,9 @@ class WalletBalanceCard extends ConsumerStatefulWidget {
     super.key,
   });
   final int walletId;
-  final Function(String) onPeriodChanged;
+  // Update callback signature to include dates
+  final Function(String period, {DateTime? fromDate, DateTime? toDate})
+      onPeriodChanged;
 
   @override
   ConsumerState<WalletBalanceCard> createState() => _WalletBalanceCardState();
@@ -24,6 +26,8 @@ class WalletBalanceCard extends ConsumerStatefulWidget {
 class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
   String _selectedPeriod = 'AllTime';
   bool _isBalanceVisible = false;
+  DateTime? _fromDate;
+  DateTime? _toDate;
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +135,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
           const SizedBox(height: 15),
 
           // Time filter row - Now with scrolling for very small screens
+          // Modify the time filter row to include Custom date range
           SizedBox(
             height: 40,
             child: isSmallScreen
@@ -141,6 +146,7 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                       _buildTimeFilterButton('CurrentWeek', 'Week'),
                       _buildTimeFilterButton('CurrentMonth', 'Month'),
                       _buildTimeFilterButton('CurrentYear', 'Year'),
+                      _buildTimeFilterButton('Custom', 'Range', isCustom: true),
                     ],
                   )
                 : Row(
@@ -154,6 +160,9 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
                               _buildTimeFilterButton('CurrentMonth', 'Month')),
                       Expanded(
                           child: _buildTimeFilterButton('CurrentYear', 'Year')),
+                      Expanded(
+                          child: _buildTimeFilterButton('Custom', 'Range',
+                              isCustom: true)),
                     ],
                   ),
           ),
@@ -320,36 +329,129 @@ class _WalletBalanceCardState extends ConsumerState<WalletBalanceCard> {
     );
   }
 
-  Widget _buildTimeFilterButton(String value, String label) {
-    final isSelected = _selectedPeriod == value;
+  Future<void> _showDateRangePicker() async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      initialDateRange: _fromDate != null && _toDate != null
+          ? DateTimeRange(start: _fromDate!, end: _toDate!)
+          : null,
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: ColorName.blue,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _fromDate = picked.start;
+        _toDate = picked.end;
+        _selectedPeriod = 'Custom';
+      });
+
+      widget.onPeriodChanged(
+        'Custom',
+        fromDate: _fromDate,
+        toDate: _toDate,
+      );
+    }
+  }
+
+  // Widget _buildTimeFilterButton(String value, String label) {
+  //   final isSelected = _selectedPeriod == value;
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 4),
+  //     child: TextButton(
+  //       onPressed: () {
+  //         setState(() {
+  //           _selectedPeriod = value;
+  //         });
+  //         widget.onPeriodChanged(value);
+  //       },
+  //       style: ButtonStyle(
+  //         backgroundColor: MaterialStateProperty.all(
+  //           isSelected ? Colors.white : Colors.transparent,
+  //         ),
+  //         padding: MaterialStateProperty.all(
+  //             EdgeInsets.symmetric(horizontal: 8, vertical: 6)),
+  //         shape: MaterialStateProperty.all(RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(20),
+  //         )),
+  //       ),
+  //       child: Text(
+  //         label,
+  //         style: TextStyle(
+  //           fontSize: 13,
+  //           color: isSelected ? ColorName.blue : Colors.white,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildTimeFilterButton(String value, String label,
+      {bool isCustom = false}) {
+    final isSelected =
+        _selectedPeriod == value || (isCustom && _selectedPeriod == 'Custom');
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 2),
       child: TextButton(
         onPressed: () {
-          setState(() {
-            _selectedPeriod = value;
-          });
-          widget.onPeriodChanged(value);
+          if (isCustom) {
+            _showDateRangePicker();
+          } else {
+            setState(() {
+              _selectedPeriod = value;
+              _fromDate = null;
+              _toDate = null;
+            });
+            widget.onPeriodChanged(value);
+          }
         },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(
             isSelected ? Colors.white : Colors.transparent,
           ),
           padding: MaterialStateProperty.all(
-              EdgeInsets.symmetric(horizontal: 8, vertical: 6)),
+              const EdgeInsets.symmetric(horizontal: 6, vertical: 6)),
           shape: MaterialStateProperty.all(RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           )),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            color: isSelected ? ColorName.blue : Colors.white,
-          ),
-        ),
+        child: isCustom &&
+                _selectedPeriod == 'Custom' &&
+                _fromDate != null &&
+                _toDate != null
+            ? Text(
+                '${_formatDate(_fromDate!)} - ${_formatDate(_toDate!)}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isSelected ? ColorName.blue : Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
+              )
+            : Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isSelected ? ColorName.blue : Colors.white,
+                ),
+              ),
       ),
     );
+  }
+
+  // Helper method to format date
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}';
   }
 
   Widget _buildIncomeExpenseItem({
