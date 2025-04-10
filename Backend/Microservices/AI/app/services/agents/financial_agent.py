@@ -62,15 +62,3 @@ class FinancialAgent(BaseAgent):
             prompt=FINANCIAL_SYSTEM_PROMPT,
             response_format=TransactionResponse,
         )
-
-    def _get_system_prompt(self, state: AppState):
-        a = FINANCIAL_SYSTEM_PROMPT.format(
-            user_preferences=state["user_preferences"],
-            user_categories=state["categories"],
-        )
-
-        print(a)
-        return FINANCIAL_SYSTEM_PROMPT.format(
-            user_preferences=state["user_preferences"],
-            user_categories=", ".join(state["categories"]),
-        )
