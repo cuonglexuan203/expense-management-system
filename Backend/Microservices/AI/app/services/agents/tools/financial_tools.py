@@ -11,10 +11,10 @@ from app.services.llm.enums import LLMModel, LLMProvider
 
 @tool
 async def extract_from_text(
-    query: Annotated[str, "User message to extract transactions"],
+    query: Annotated[str, "Query to extract transactions"],
     state: Annotated[dict, InjectedState],
 ):
-    """Extract transactions from text message."""
+    """Extract transactions from text only message"""
     extractor = TextExtractor(
         LLMConfig(
             provider=LLMProvider.GOOGLE,
@@ -40,11 +40,11 @@ async def extract_from_text(
 
 @tool
 async def extract_from_image(
-    query: Annotated[str, "User message (text) to extract transactions"],
+    # query: Annotated[str, "Query to extract transactions"],
     image_urls: Annotated[list[str], "Image urls to extract transactions"],
     state: Annotated[dict, InjectedState],
 ):
-    """Extract transactions from message containing images and/or text."""
+    """Extract transactions from image messages"""
     extractor = ImageExtractor(
         LLMConfig(
             provider=LLMProvider.GOOGLE,
@@ -55,7 +55,7 @@ async def extract_from_image(
     result = await extractor.extract(
         state["user_id"],
         {
-            "message": query,
+            # "message": query,
             "categories": state["categories"],
             "user_preferences": state["user_preferences"],
             "image_urls": image_urls,
@@ -71,11 +71,11 @@ async def extract_from_image(
 
 @tool
 async def extract_from_audio(
-    query: Annotated[str, "User message (text) to extract transactions"],
+    # query: Annotated[str, "Query to extract transactions"],
     audio_urls: Annotated[list[str], "Audio urls to extract transactions"],
     state: Annotated[dict, InjectedState],
 ):
-    """Extract transactions from audio message containing audios and/or text."""
+    """Extract transactions from audio messages"""
     extractor = AudioExtractor(
         LLMConfig(
             provider=LLMProvider.OPENAI,
@@ -86,7 +86,7 @@ async def extract_from_audio(
     result = await extractor.extract(
         state["user_id"],
         {
-            "message": query,
+            # "message": query,
             "categories": state["categories"],
             "user_preferences": state["user_preferences"],
             "audio_urls": audio_urls,

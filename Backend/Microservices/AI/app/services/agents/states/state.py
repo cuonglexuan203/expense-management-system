@@ -4,7 +4,7 @@ from app.api.v1.models.transaction_response import TransactionResponse
 from app.api.v1.models.user_preferences import UserPreferences
 
 
-class TransactionState(AgentState):
+class AppState(AgentState):
     user_id: str
     categories: list[str]
     user_preferences: UserPreferences

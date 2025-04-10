@@ -13,7 +13,7 @@ from app.schemas.llm_config import LLMConfig
 from app.services.extractors.audio_extractor import AudioExtractor
 from app.services.extractors.image_extractor import ImageExtractor
 from app.services.extractors.text_extractor import TextExtractor
-from app.services.graphs.ems_swarm import ems_swarm
+from app.services.graphs.ems_swarm import EMSSwarm
 from app.services.llm.output_parsers.transaction_analysis_output import (
     TransactionAnalysisOutput,
 )
@@ -21,7 +21,8 @@ from app.services.agents.prompts.transaction import TEST_PROMP
 from langchain_core.prompts import PromptTemplate
 from app.services.llm.enums import LLMModel, LLMProvider
 from app.services.llm.factory import LLMFactory
-from app.services.graphs.ems_supervisor import ems_supervisor
+from app.services.graphs.ems_supervisor import EMSSupervisor
+from app.services.graphs.ems_supervisor import PROMPT2
 
 router = APIRouter()
 
@@ -160,22 +161,34 @@ async def extract_from_audio(
         )
 
 
-@router.post("/supervisor/text-extraction")
-async def test(request: TextTransactionRequest):
+@router.post("/supervisor")
+async def supervisor(request: ImageTransactionRequest):
 
-    result = await ems_supervisor.ainvoke(
+    prompt = PROMPT2.format(
+        categories=", ".join(request.categories),
+        user_preferences=request.user_preferences,
+        currency_code=request.user_preferences.currency_code,
+        language=request.user_preferences.language or "English",
+    )
+
+    graph = EMSSupervisor(prompt).get_graph()
+
+    result = await graph.ainvoke(
         {
             "messages": [
                 {
                     "role": "user",
-                    "content": request.message,
+                    "content": request.message + f"\n\n {request.file_urls}",
                 }
             ],
             "user_id": request.user_id,
-            "categories": request.categories,
+            "categories": ", ".join(request.categories),
             "user_preferences": request.user_preferences,
+            "currency_code": request.user_preferences.currency_code,
+            "language": request.user_preferences.language or "English",
         },
-        config={"configurable": {"thread_id": "2"}},
+        config={"configurable": {"thread_id": "1"}},
+        interrupt_after=["financial_expert"],
     )
 
     if "messages" in result:
@@ -185,22 +198,30 @@ async def test(request: TextTransactionRequest):
     return result
 
 
-@router.post("/swarm/text-extraction")
-async def test2(request: ImageTransactionRequest):
+@router.post("/swarm")
+async def swarm(request: ImageTransactionRequest):
 
-    result = await ems_swarm.ainvoke(
+    graph = EMSSwarm().get_graph()
+
+    user_context = (
+        f"User's preferences: {request.user_preferences}"
+        f"User's categories: {request.categories}"
+    )
+
+    result = await graph.ainvoke(
         {
             "messages": [
                 {
                     "role": "user",
                     "content": request.message + f"\n\n {request.file_urls}",
-                }
+                },
+                {"role": "user", "content": user_context},
             ],
             "user_id": request.user_id,
             "categories": request.categories,
             "user_preferences": request.user_preferences,
         },
-        config={"configurable": {"thread_id": "21"}},
+        config={"configurable": {"thread_id": "1"}},
     )
 
     if "messages" in result:

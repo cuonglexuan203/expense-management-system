@@ -3,6 +3,7 @@ from typing import Any, List, Optional
 from langchain.schema.language_model import BaseLanguageModel
 from app.schemas import LLMConfig
 from app.services.llm.factory import LLMFactory
+from langgraph.graph.graph import CompiledGraph
 
 
 class BaseAgent(ABC):
@@ -33,7 +34,7 @@ class BaseAgent(ABC):
         return LLMFactory.create(self.llm_config)
 
     @abstractmethod
-    def _create_react_agent(self):
+    def _create_react_agent(self) -> CompiledGraph:
         """
         Create the react agent.
 
@@ -42,5 +43,5 @@ class BaseAgent(ABC):
         """
         pass
 
-    def get_agent(self):
+    def get_agent(self) -> CompiledGraph:
         return self.react_agent
