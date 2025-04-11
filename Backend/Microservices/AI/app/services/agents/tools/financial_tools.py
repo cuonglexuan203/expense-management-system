@@ -109,10 +109,18 @@ async def get_transactions(user_id: Annotated[str, "user id"]):
 
 @tool
 async def get_messages(
-    user_id: Annotated[str, "user id"], chat_thread_id: Annotated[int, "chat thread id"]
+    user_id: Annotated[str, "user id"],
+    chat_thread_id: Annotated[int, "chat thread id"],
+    message_role: Annotated[str | None, "message role ('User' or 'System') to filter by"] = None,
+    content: Annotated[str | None, "content to filter by"] = None
 ):
-    """ Get messages of a chat thread of user """
-    return await backend_client.get_messages(user_id, chat_thread_id)
+    """ Get messages of a chat thread of user and/or system
+
+        Args:
+            message_role: optional, please use 'User' or 'System' to filter, if need
+            content: options, please use this to filter, if need
+    """
+    return await backend_client.get_messages(user_id, chat_thread_id, params={"role": message_role, "content": content})
 
 
 @tool

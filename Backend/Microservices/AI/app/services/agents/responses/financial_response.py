@@ -11,10 +11,10 @@ class Transaction(BaseModel):
 
 
 class FinancialResponse(BaseModel):
-    """Response model for transaction extraction endpoints."""
+    """Response model for financial agent."""
 
     transactions: list[Transaction] = Field(
         default=None, description="List of available transactions"
     )
-    introduction: str = Field(description="LLM introduction message")
+    introduction: str = Field(description="LLM introduction message in markdown format")
     # message: str

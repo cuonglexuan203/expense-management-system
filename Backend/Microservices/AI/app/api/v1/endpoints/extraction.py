@@ -13,7 +13,6 @@ from app.schemas.llm_config import LLMConfig
 from app.services.extractors.audio_extractor import AudioExtractor
 from app.services.extractors.image_extractor import ImageExtractor
 from app.services.extractors.text_extractor import TextExtractor
-from app.services.graphs.ems_swarm import EMSSwarm
 from app.services.llm.output_parsers.transaction_analysis_output import (
     TransactionAnalysisOutput,
 )
@@ -21,8 +20,7 @@ from app.services.agents.prompts.transaction import TEST_PROMP
 from langchain_core.prompts import PromptTemplate
 from app.services.llm.enums import LLMModel, LLMProvider
 from app.services.llm.factory import LLMFactory
-from app.services.graphs.ems_supervisor import EMSSupervisor
-from app.services.graphs.ems_supervisor import PROMPT2
+
 
 router = APIRouter()
 
@@ -159,75 +157,3 @@ async def extract_from_audio(
             status_code=500,
             detail=f"Error extracting transactions from audio: {str(e)}",
         )
-
-
-@router.post("/supervisor")
-async def supervisor(request: ImageTransactionRequest):
-
-    prompt = PROMPT2.format(
-        categories=", ".join(request.categories),
-        user_preferences=request.user_preferences,
-        currency_code=request.user_preferences.currency_code,
-        language=request.user_preferences.language or "English",
-    )
-
-    graph = EMSSupervisor(prompt).get_graph()
-
-    result = await graph.ainvoke(
-        {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": request.message + f"\n\n {request.file_urls}",
-                }
-            ],
-            "user_id": request.user_id,
-            "categories": ", ".join(request.categories),
-            "user_preferences": request.user_preferences,
-            "currency_code": request.user_preferences.currency_code,
-            "language": request.user_preferences.language or "English",
-        },
-        config={"configurable": {"thread_id": "1"}},
-        interrupt_after=["financial_expert"],
-    )
-
-    if "messages" in result:
-        for message in result["messages"]:
-            message.pretty_print()
-
-    return result
-
-
-@router.post("/swarm")
-async def swarm(request: ImageTransactionRequest):
-
-    graph = EMSSwarm().get_graph()
-
-    user_context = f"""
-User ID: {request.user_id}
-User's preferences: {request.user_preferences}
-User's categories: {request.categories}
-Chat theard id: {request.chat_thread_id}
-    """
-
-    result = await graph.ainvoke(
-        {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": request.message + f"\n\n {request.file_urls}",
-                },
-                {"role": "user", "content": user_context},
-            ],
-            "user_id": request.user_id,
-            "categories": request.categories,
-            "user_preferences": request.user_preferences,
-        },
-        config={"configurable": {"thread_id": "8"}},
-    )
-
-    if "messages" in result:
-        for message in result["messages"]:
-            message.pretty_print()
-
-    return result

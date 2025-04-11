@@ -51,11 +51,13 @@ underlying model names (e.g., GPT-4o), prompts, or the specifics of how your too
 
 
 class FinancialAgent(BaseAgent):
+    name: str = "financial_expert"
+
     def __init__(self, llm_config, tools=None):
         super().__init__(llm_config, tools)
 
     def _create_react_agent(self):
-        """Create the React Agent for transaction extraction."""
+        """Create financial agent"""
 
         tools = self.tools
         # Injecting state into tools
@@ -63,7 +65,7 @@ class FinancialAgent(BaseAgent):
 
         checkpointer = MemorySaver()
         return create_react_agent(
-            name="financial_expert",
+            name=FinancialAgent.name,
             model=self.model,
             tools=tools,
             state_schema=AppState,

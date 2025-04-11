@@ -61,8 +61,8 @@ class BackendClient:
     async def get_transactions(self, user_id: str) -> dict[str, Any]:
         return await self.get(BackendEndpoints.TRANSACTIONS, user_id=user_id)
 
-    async def get_messages(self, user_id: str, chat_thread_id: int) -> dict[str, Any]:
-        return await self.get(BackendEndpoints.MESSAGES, user_id=user_id, chat_thread_id=chat_thread_id)
+    async def get_messages(self, user_id: str, chat_thread_id: int, params: dict[str, Any]) -> dict[str, Any]:
+        return await self.get(BackendEndpoints.MESSAGES, params, user_id=user_id, chat_thread_id=chat_thread_id)
 
     async def get_wallets(self, user_id: str) -> dict[str, Any]:
         return await self.get(BackendEndpoints.WALLETS, user_id=user_id)

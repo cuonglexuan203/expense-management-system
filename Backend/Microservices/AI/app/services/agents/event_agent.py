@@ -9,6 +9,8 @@ You are a Event Scheduler to assist user about event-related actions. Always use
 
 
 class EventAgent(BaseAgent):
+    name: str = "event_expert"
+
     def __init__(self, llm_config, tools=None):
         super().__init__(llm_config, tools)
 
@@ -20,7 +22,7 @@ class EventAgent(BaseAgent):
 
         # checkpointer = MemorySaver()
         return create_react_agent(
-            name="event_expert",
+            name=EventAgent.name,
             model=self.model,
             tools=tools,
             # state_schema=TransactionState,
