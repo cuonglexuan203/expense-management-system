@@ -3,6 +3,7 @@ from langgraph.prebuilt import InjectedState
 from langchain_core.tools import tool
 from app.api.v1.models.transaction_response import TransactionResponse
 from app.schemas.llm_config import LLMConfig
+from app.services.backend import backend_client
 from app.services.extractors.audio_extractor import AudioExtractor
 from app.services.extractors.image_extractor import ImageExtractor
 from app.services.extractors.text_extractor import TextExtractor
@@ -98,3 +99,9 @@ async def extract_from_audio(
         introduction=result.introduction,
         message="Successfully extracted transactions from audio",
     )
+
+
+@tool
+async def get_transactions():
+    """Get user's transaction history"""
+    return await backend_client.get_transactions()

@@ -206,6 +206,7 @@ async def swarm(request: ImageTransactionRequest):
     user_context = (
         f"User's preferences: {request.user_preferences}"
         f"User's categories: {request.categories}"
+        f"Chat theard id: {request.chat_thread_id}"
     )
 
     result = await graph.ainvoke(
@@ -221,7 +222,7 @@ async def swarm(request: ImageTransactionRequest):
             "categories": request.categories,
             "user_preferences": request.user_preferences,
         },
-        config={"configurable": {"thread_id": "1"}},
+        config={"configurable": {"thread_id": "2"}},
     )
 
     if "messages" in result:

@@ -9,3 +9,5 @@ class BackendEndpoints:
     USER_PREFERENCES = "/api/v1/users/{user_id}/preferences"
 
     CURRENCY_SLANGS = "/api/v1/currency-slangs/{currency_code}"
+
+    TRANSACTIONS = "/api/v1/transactions"

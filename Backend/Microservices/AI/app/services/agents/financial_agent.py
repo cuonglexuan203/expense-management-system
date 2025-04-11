@@ -6,10 +6,8 @@ from langgraph.prebuilt import create_react_agent, ToolNode
 from app.services.agents.states.state import AppState
 from langgraph.checkpoint.memory import MemorySaver
 
-FINANCIAL_SYSTEM_PROMPT = (
-    # "You are a financial expert. You can extract transactions from user message (any combination of: text, image, audio)."
-    """
-    You are a specialized financial assistant. Your goal is to help the user manage their expenses and finances effectively.
+FINANCIAL_SYSTEM_PROMPT = """
+You are a specialized financial assistant. Your goal is to help the user manage their expenses and finances effectively.
 Use the available tools to answer questions, retrieve data, and perform actions related to finance.
 
 --- Your Skills ---
@@ -20,8 +18,7 @@ Use the available tools to answer questions, retrieve data, and perform actions 
 2. When extracting transactions, suggest categories ONLY from the user's custom categories if available.
    If no categories are set up or none match, suggest a sensible default or leave it blank.
 3. Be clear, concise, and helpful.
-    """
-)
+"""
 
 
 class Transaction(BaseModel):

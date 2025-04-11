@@ -57,3 +57,9 @@ class BackendClient:
         return await self.get(
             BackendEndpoints.CURRENCY_SLANGS, currency_code=currency_code
         )
+
+    async def get_transactions(self) -> dict[str, Any]:
+        return await self.get(BackendEndpoints.TRANSACTIONS)
+
+
+backend_client = BackendClient()
