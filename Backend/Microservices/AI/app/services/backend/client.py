@@ -58,8 +58,19 @@ class BackendClient:
             BackendEndpoints.CURRENCY_SLANGS, currency_code=currency_code
         )
 
-    async def get_transactions(self) -> dict[str, Any]:
-        return await self.get(BackendEndpoints.TRANSACTIONS)
+    async def get_transactions(self, user_id: str) -> dict[str, Any]:
+        return await self.get(BackendEndpoints.TRANSACTIONS, user_id=user_id)
+
+    async def get_messages(self, user_id: str, chat_thread_id: int) -> dict[str, Any]:
+        return await self.get(BackendEndpoints.MESSAGES, user_id=user_id, chat_thread_id=chat_thread_id)
+
+    async def get_wallets(self, user_id: str) -> dict[str, Any]:
+        return await self.get(BackendEndpoints.WALLETS, user_id=user_id)
+
+    async def get_wallet_by_id(self, user_id: str, wallet_id: str) -> dict[str, Any]:
+        return await self.get(
+            BackendEndpoints.WALLET_BY_ID, user_id=user_id, wallet_id=wallet_id
+        )
 
 
 backend_client = BackendClient()

@@ -7,6 +7,9 @@ from app.services.agents.tools.financial_tools import (
     extract_from_image,
     extract_from_audio,
     get_transactions,
+    get_messages,
+    get_wallets,
+    get_wallet_by_id,
 )
 from app.services.agents.financial_agent import FinancialAgent
 from app.services.llm.enums import LLMModel, LLMProvider
@@ -29,6 +32,9 @@ class EMSSwarm:
                 extract_from_image,
                 extract_from_audio,
                 get_transactions,
+                get_messages,
+                get_wallets,
+                get_wallet_by_id,
                 create_handoff_tool(agent_name="event_expert"),
             ],
         ).get_agent()

@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
-using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Common.Models;
 using EMS.Application.Features.Transactions.Dtos;
 using EMS.Core.Enums;
 using EMS.Core.Specifications;
@@ -10,36 +8,33 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Transactions.Queries.GetTransactions
+namespace EMS.Application.Features.AiTools.Queries.GetTransactions
 {
-    public record GetTransactionsQuery(TransactionSpecParams SpecParams) : IRequest<PaginatedList<TransactionDto>>;
+    public record GetTransactionsQuery(string UserId, TransactionSpecParams SpecParams) : IRequest<List<TransactionDto>>;
 
-    public class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuery, PaginatedList<TransactionDto>>
+    public class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuery, List<TransactionDto>>
     {
         private readonly ILogger<GetTransactionsQueryHandler> _logger;
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ICurrentUserService _currentUserService;
 
         public GetTransactionsQueryHandler(
             ILogger<GetTransactionsQueryHandler> logger,
             IApplicationDbContext context,
-            IMapper mapper,
-            ICurrentUserService currentUserService)
+            IMapper mapper)
         {
             _logger = logger;
             _context = context;
             _mapper = mapper;
-            _currentUserService = currentUserService;
         }
 
-        public async Task<PaginatedList<TransactionDto>> Handle(GetTransactionsQuery request, CancellationToken cancellationToken)
+        public async Task<List<TransactionDto>> Handle(GetTransactionsQuery request, CancellationToken cancellationToken)
         {
             var specParams = request.SpecParams;
-            var userId = _currentUserService.Id;
+            var userId = request.UserId;
 
             var query = _context.Transactions
-                .Where(e => !e.IsDeleted 
+                .Where(e => !e.IsDeleted
                     && !e.Wallet.IsDeleted
                     && e.UserId == userId)
                 .AsNoTracking();
@@ -80,9 +75,7 @@ namespace EMS.Application.Features.Transactions.Queries.GetTransactions
                 query = query.OrderByDescending(e => e.OccurredAt);
             }
 
-            var dtoQuery = _mapper.ProjectTo<TransactionDto>(query);
-
-            var result = await dtoQuery.ToPaginatedList(specParams.PageNumber, specParams.PageSize);
+            var result = await query.ProjectToListAsync<TransactionDto>(_mapper.ConfigurationProvider);
 
             return result;
         }

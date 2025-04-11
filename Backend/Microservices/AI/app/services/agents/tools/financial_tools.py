@@ -102,6 +102,28 @@ async def extract_from_audio(
 
 
 @tool
-async def get_transactions():
+async def get_transactions(user_id: Annotated[str, "user id"]):
     """Get user's transaction history"""
-    return await backend_client.get_transactions()
+    return await backend_client.get_transactions(user_id)
+
+
+@tool
+async def get_messages(
+    user_id: Annotated[str, "user id"], chat_thread_id: Annotated[int, "chat thread id"]
+):
+    """ Get messages of a chat thread of user """
+    return await backend_client.get_messages(user_id, chat_thread_id)
+
+
+@tool
+async def get_wallets(user_id: Annotated[str, "user id"]):
+    """Get wallets of user"""
+    return await backend_client.get_wallets(user_id)
+
+
+@tool
+async def get_wallet_by_id(
+    user_id: Annotated[str, "user id"], wallet_id: Annotated[str, "wallet id"]
+):
+    """Get a wallet of user"""
+    return await backend_client.get_wallet_by_id(user_id, wallet_id)

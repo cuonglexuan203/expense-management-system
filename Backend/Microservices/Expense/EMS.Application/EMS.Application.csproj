@@ -21,6 +21,8 @@
 
   <ItemGroup>
     <Folder Include="Common\Validators\" />
+    <Folder Include="Features\AiTools\Commands\" />
+    <Folder Include="Features\AiTools\Services\" />
     <Folder Include="Features\Chats\Assistant\" />
     <Folder Include="Features\Chats\Commands\" />
     <Folder Include="Features\Preferences\Services\" />

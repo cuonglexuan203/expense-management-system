@@ -10,4 +10,10 @@ class BackendEndpoints:
 
     CURRENCY_SLANGS = "/api/v1/currency-slangs/{currency_code}"
 
-    TRANSACTIONS = "/api/v1/transactions"
+    TRANSACTIONS = "/api/v1/ai-tools/users/{user_id}/transactions"
+
+    MESSAGES = "/api/v1/ai-tools/users/{user_id}/chat-threads/{chat_thread_id}/messages"
+
+    WALLETS = "/api/v1/ai-tools/users/{user_id}/wallets"
+
+    WALLET_BY_ID = "/api/v1/ai-tools/users/{user_id}/wallets/{wallet_id}"

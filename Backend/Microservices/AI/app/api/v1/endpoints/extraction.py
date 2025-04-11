@@ -203,11 +203,12 @@ async def swarm(request: ImageTransactionRequest):
 
     graph = EMSSwarm().get_graph()
 
-    user_context = (
-        f"User's preferences: {request.user_preferences}"
-        f"User's categories: {request.categories}"
-        f"Chat theard id: {request.chat_thread_id}"
-    )
+    user_context = f"""
+User ID: {request.user_id}
+User's preferences: {request.user_preferences}
+User's categories: {request.categories}
+Chat theard id: {request.chat_thread_id}
+    """
 
     result = await graph.ainvoke(
         {
@@ -222,7 +223,7 @@ async def swarm(request: ImageTransactionRequest):
             "categories": request.categories,
             "user_preferences": request.user_preferences,
         },
-        config={"configurable": {"thread_id": "2"}},
+        config={"configurable": {"thread_id": "8"}},
     )
 
     if "messages" in result:
