@@ -4,7 +4,7 @@ from app.core.logging import get_logger
 from app.core.security import get_api_key
 from app.services.graphs.ems_supervisor import EMSSupervisor
 from app.services.graphs.ems_supervisor import PROMPT2
-from app.services.graphs.ems_swarm import EMSSwarm
+from app.services.graphs.ems_swarm import ems_swarm
 from langchain_core.messages import HumanMessage
 
 logger = get_logger(__name__)
@@ -49,10 +49,10 @@ async def supervisor(request: AssistantRequest, _: str = Depends(get_api_key)):
     return result
 
 
-@router.post("/swarm", response_model=AssitantResponse)
+@router.post("/swarm")
 async def swarm(request: AssistantRequest, _: str = Depends(get_api_key)):
 
-    graph = EMSSwarm().get_graph()
+    graph = ems_swarm.get_graph()
 
     messages = [
         HumanMessage(

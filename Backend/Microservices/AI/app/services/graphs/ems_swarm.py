@@ -71,3 +71,6 @@ class EMSSwarm:
 
     def get_graph(self) -> CompiledStateGraph:
         return self.swarm
+
+
+ems_swarm = EMSSwarm()

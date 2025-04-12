@@ -2,7 +2,8 @@ from typing import Any
 from pydantic import BaseModel, Field
 from app.services.agents import FinancialAgent, EventAgent
 from app.services.agents.responses.event_response import EventResponse
-from app.services.agents.responses.financial_response import FinancialResponse
+
+# from app.services.agents.responses.financial_response import FinancialResponse
 from langchain_core.messages import BaseMessage
 
 
@@ -12,7 +13,7 @@ class AssitantResponse(BaseModel):
     )
     type: str | None = Field(default=None, description="Response type (human/tool/ai)")
     name: str | None = Field(default=None, description="Agent or message source name")
-    financial_response: FinancialResponse | None = Field(
+    financial_response: dict[str, Any] | None = Field(
         default=None, description="Financial agent response"
     )
     event_response: EventResponse | None = Field(
@@ -34,10 +35,12 @@ class AssitantResponse(BaseModel):
         structured_response_data = response.get("structured_response")
         name = init_data.get("name")
 
-        if structured_response_data is not None:
-            if name == FinancialAgent.name:
-                init_data["financial_response"] = structured_response_data
-            elif name == EventAgent.name:
-                init_data["event_response"] = structured_response_data
+        if name == FinancialAgent.name:
+            init_data["financial_response"] = {
+                # "structured_response_data": structured_response_data,
+                "extraction_results": response.get("extraction_results")
+            }
+        elif name == EventAgent.name:
+            init_data["event_response"] = structured_response_data
 
         return cls(**init_data)

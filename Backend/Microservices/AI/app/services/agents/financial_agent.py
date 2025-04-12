@@ -1,6 +1,6 @@
 from app.services.agents.base import BaseAgent
 from langgraph.prebuilt import create_react_agent, ToolNode
-from app.services.agents.responses.financial_response import FinancialResponse
+# from app.services.agents.responses.financial_response import FinancialResponse
 from app.services.agents.states.state import AppState
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -71,5 +71,5 @@ class FinancialAgent(BaseAgent):
             state_schema=AppState,
             checkpointer=checkpointer,
             prompt=FINANCIAL_SYSTEM_PROMPT,
-            response_format=FinancialResponse,
+            # response_format=FinancialResponse,
         )
