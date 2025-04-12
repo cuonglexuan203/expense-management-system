@@ -18,7 +18,11 @@ async def extract_from_text(
     state: Annotated[dict, InjectedState],
     tool_call_id: Annotated[str, InjectedToolCallId],
 ):
-    """Extract transactions from text only message"""
+    """
+    Extract transactions from user messages
+    Args:
+        query: the user message may contain one or multiple transactions which need to extract
+    """
     extractor = TextExtractor(
         LLMConfig(
             provider=LLMProvider.GOOGLE,

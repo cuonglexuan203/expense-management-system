@@ -54,7 +54,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.SendMessage
 
             // Save a new message
             var userId = request.UserId;
-            var message = ChatMessage.CreateUserMessage(userId!, request.ChatThreadId, request.Text);
+            var message = ChatMessage.CreateHumanMessage(userId!, request.ChatThreadId, request.Text);
 
             _context.ChatMessages.Add(message);
             await _context.SaveChangesAsync();

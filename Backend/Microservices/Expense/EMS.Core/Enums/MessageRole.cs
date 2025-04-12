@@ -2,7 +2,9 @@
 {
     public enum MessageRole
     {
-        User,
+        Human, // old: User
         System,
+        Tool,
+        Ai
     }
 }

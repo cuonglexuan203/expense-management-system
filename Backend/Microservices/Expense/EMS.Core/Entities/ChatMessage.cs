@@ -7,7 +7,7 @@ namespace EMS.Core.Entities
     {
         public int ChatThreadId { get; set; }
         public string? UserId { get; set; }
-        public MessageRole Role { get; set; } = MessageRole.User;
+        public MessageRole Role { get; set; } = MessageRole.Human;
         public string? Content { get; set; }
         public MessageTypes MessageTypes { get; set; }
 
@@ -19,13 +19,13 @@ namespace EMS.Core.Entities
         //public ICollection<ExtractedTransaction> ExtractedTransactions { get; set; } = [];
 
         #region Behaviors
-        public static ChatMessage CreateUserMessage(string userId, int chatThreadId, string? content, MessageTypes messageTypes = MessageTypes.Text)
+        public static ChatMessage CreateHumanMessage(string userId, int chatThreadId, string? content, MessageTypes messageTypes = MessageTypes.Text)
         {
             var message = new ChatMessage
             {
                 UserId = userId,
                 ChatThreadId = chatThreadId,
-                Role = MessageRole.User,
+                Role = MessageRole.Human,
                 Content = content,
                 MessageTypes = messageTypes
             };

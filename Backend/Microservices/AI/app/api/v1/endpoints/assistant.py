@@ -1,3 +1,4 @@
+import datetime
 from fastapi import APIRouter, Depends
 from app.api.v1.models.assistant_response import AssitantResponse
 from app.api.v1.models.assistant_request import AssistantRequest
@@ -56,15 +57,15 @@ async def swarm(request: AssistantRequest, _: str = Depends(get_api_key)):
     graph = ems_swarm.get_graph()
 
     messages = [
-        HumanMessage(
-            content=f"User ID: {request.user_id}\n"
-            f"User's preferences: {request.user_preferences}\n"
-            f"User's categories: {request.categories}\n"
-            f"Chat theard id: {request.chat_thread_id}\n"
-        ),
-        HumanMessage(
-            content=f"Query: {request.message}\n" f"File urls: {request.file_urls}"
-        ),
+        HumanMessage(content=(
+                f"User ID: {request.user_id}\n"
+                f"User's preferences: {request.user_preferences}\n"
+                f"User's categories: {request.categories}\n"
+                f"Chat theard id: {request.chat_thread_id}\n"
+                f"Current time: {datetime.datetime.now(datetime.timezone.utc)}\n"
+                f"Query: {request.message}\n"
+                f"File urls: {request.file_urls}"
+            )),
     ]
 
     result = await graph.ainvoke(
@@ -75,7 +76,7 @@ async def swarm(request: AssistantRequest, _: str = Depends(get_api_key)):
             "user_preferences": request.user_preferences,
             "text_extractions": None,
             "image_extractions": None,
-            "audio_extractions": None
+            "audio_extractions": None,
         },
         config={"configurable": {"thread_id": str(request.chat_thread_id)}},
     )

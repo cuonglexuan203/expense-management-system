@@ -8,5 +8,6 @@ namespace EMS.Application.Common.Interfaces.Services.HttpClients
         Task<MessageExtractionResponse> ExtractTransactionAsync(MessageExtractionRequest request); // extract from text
         Task<MessageExtractionResponse> ExtractTransactionFromImagesAsync(MessageWithFilesExtractionRequest request);
         Task<MessageExtractionResponse> ExtractTransactionFromAudiosAsync(MessageWithFilesExtractionRequest request);
+        Task<AssistantResponse> ChatWithAssistant(AssistantRequest request);
     }
 }

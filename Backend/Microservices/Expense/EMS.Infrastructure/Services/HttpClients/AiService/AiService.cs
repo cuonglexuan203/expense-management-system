@@ -1,6 +1,7 @@
 ﻿using EMS.Application.Common.DTOs;
 using EMS.Application.Common.Interfaces.Services.HttpClients;
 using EMS.Core.Constants;
+using EMS.Core.Enums;
 using EMS.Infrastructure.Common.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -105,6 +106,35 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
             return new MessageExtractionResponse
             {
                 Introduction = "Sorry, I couldn't process that request. Could you try rephrasing your request?",
+            };
+        }
+
+        public async Task<AssistantResponse> ChatWithAssistant(AssistantRequest request)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync(AiServiceEndpoints.SwarmAssistant, request, _serializerOptions);
+
+                response.EnsureSuccessStatusCode();
+
+                var result = await response.Content.ReadFromJsonAsync<AssistantResponse>(_serializerOptions);
+
+                return result!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error calling AI service for chatting with EMS assistant");
+
+                return GetFailedAssistantResponse();
+            }
+        }
+
+        private AssistantResponse GetFailedAssistantResponse()
+        {
+            return new AssistantResponse()
+            {
+                LlmContent = "Sorry, I couldn't process that request. Could you try rephrasing your request?",
+                Type = MessageRole.System,
             };
         }
     }
