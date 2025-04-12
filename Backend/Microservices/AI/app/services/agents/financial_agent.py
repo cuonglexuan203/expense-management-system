@@ -1,8 +1,8 @@
 from app.services.agents.base import BaseAgent
 from langgraph.prebuilt import create_react_agent, ToolNode
 # from app.services.agents.responses.financial_response import FinancialResponse
-from app.services.agents.states.state import AppState
-from langgraph.checkpoint.memory import MemorySaver
+from app.services.agents.states.state import FinancialState
+# from langgraph.checkpoint.memory import MemorySaver
 
 FINANCIAL_SYSTEM_PROMPT = """
 # ROLE: Expert AI Financial Companion
@@ -63,13 +63,13 @@ class FinancialAgent(BaseAgent):
         # Injecting state into tools
         tool_node = ToolNode(tools)  # noqa
 
-        checkpointer = MemorySaver()
+        # checkpointer = MemorySaver()
         return create_react_agent(
             name=FinancialAgent.name,
             model=self.model,
             tools=tools,
-            state_schema=AppState,
-            checkpointer=checkpointer,
+            state_schema=FinancialState,
+            # checkpointer=checkpointer,
             prompt=FINANCIAL_SYSTEM_PROMPT,
             # response_format=FinancialResponse,
         )

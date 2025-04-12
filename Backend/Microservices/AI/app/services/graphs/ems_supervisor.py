@@ -3,7 +3,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from pydantic import BaseModel
 from app.schemas.llm_config import LLMConfig
 from app.services.agents.event_agent import EventAgent
-from app.services.agents.states.state import AppState
+from app.services.agents.states.state import FinancialState
 from app.services.agents.tools.financial_tools import (
     extract_from_text,
     extract_from_image,
@@ -178,7 +178,7 @@ class EMSSupervisor:
 
         self.workflow = create_supervisor(
             agents=self.agents,
-            state_schema=AppState,
+            state_schema=FinancialState,
             model=self.model,
             output_mode="last_message",
             prompt=prompt,

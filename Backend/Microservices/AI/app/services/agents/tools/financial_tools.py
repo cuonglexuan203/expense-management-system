@@ -38,10 +38,7 @@ async def extract_from_text(
     return Command(
         update={
             "messages": [ToolMessage(content=result, tool_call_id=tool_call_id)],
-            "extraction_results": [{
-                "type": "text",
-                "data": result.transactions,
-            }],
+            "text_extractions": result.transactions,
         }
     )
 
@@ -74,10 +71,7 @@ async def extract_from_image(
     return Command(
         update={
             "messages": [ToolMessage(result, tool_call_id=tool_call_id)],
-            "extraction_results": [{
-                "type": "image",
-                "data": result.transactions,
-            }],
+            "image_extractions": result.transactions,
         }
     )
 
@@ -110,10 +104,7 @@ async def extract_from_audio(
     return Command(
         update={
             "messages": [ToolMessage(result, tool_call_id=tool_call_id)],
-            "extraction_results": [{
-                "type": "audio",
-                "data": result.transactions,
-            }],
+            "audio_extractions": result.transactions,
         }
     )
 

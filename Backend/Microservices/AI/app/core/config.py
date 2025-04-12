@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     REDIS_TTL: int = 3600  # 1 hour
     REDIS_INSTANCE_NAME: str | None = None
 
+    # Postgres Configurations
+    POSTGRES_URL: str = ""
+    POSTGRES_MAX_POOL_SIZE: int
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=True, extra="allow"
     )

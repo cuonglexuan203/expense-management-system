@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
-from app.api.v1.models import AssistantRequest, AssitantResponse
+from app.api.v1.models.assistant_response import AssitantResponse
+from app.api.v1.models.assistant_request import AssistantRequest
 from app.core.logging import get_logger
 from app.core.security import get_api_key
 from app.services.graphs.ems_supervisor import EMSSupervisor
@@ -72,8 +73,11 @@ async def swarm(request: AssistantRequest, _: str = Depends(get_api_key)):
             "user_id": request.user_id,
             "categories": request.categories,
             "user_preferences": request.user_preferences,
+            "text_extractions": None,
+            "image_extractions": None,
+            "audio_extractions": None
         },
-        config={"configurable": {"thread_id": request.chat_thread_id}},
+        config={"configurable": {"thread_id": str(request.chat_thread_id)}},
     )
 
     if "messages" in result:
