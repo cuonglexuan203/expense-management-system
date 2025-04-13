@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal, Optional
 from langgraph.prebuilt import InjectedState
 from langchain_core.tools import tool
 from app.schemas.llm_config import LLMConfig
@@ -121,21 +121,58 @@ async def get_transactions(user_id: Annotated[str, "user id"]):
 
 @tool
 async def get_messages(
-    user_id: Annotated[str, "user id"],
-    chat_thread_id: Annotated[int, "chat thread id"],
+    user_id: Annotated[str, "User's unique identifier"],
+    chat_thread_id: Annotated[int, "Unique ID of the chat conversation"],
     message_role: Annotated[
-        str | None, "message role ('User' or 'System') to filter by"
+        Optional[Literal["Human", "System"]],
+        "Filter by message sender: 'Human' for user messages, 'System' for AI responses",
     ] = None,
-    content: Annotated[str | None, "content to filter by"] = None,
+    content_contains: Annotated[
+        Optional[str],
+        "Filter messages containing this text (e.g., 'budget' to find budget-related messages)",
+    ] = None,
+    page_size: Annotated[
+        Optional[int], "Number of messages to return (default: 5, max: 100)"
+    ] = 5,
+    page_number: Annotated[
+        Optional[int], "Page number for pagination, starts at 1 (default: 1)"
+    ] = 1,
+    sort: Annotated[
+        Optional[Literal["DESC", "ASC"]],
+        "sort order, default descending by message created time"
+    ] = "DESC"
 ):
-    """Get messages of a chat thread of user and/or system
+    """Retrieves messages from a specific chat conversation thread.
+
+    Common use cases:
+    - Get recent messages: Only provide user_id and chat_thread_id
+    - Find user questions about a topic: Set message_role="Human" and content_contains="topic"
+    - Find system responses about a topic: Set message_role="System" and content_contains="topic"
+    - Get more message history: Increase page_number to see older messages
 
     Args:
-        message_role: optional, please use 'User' or 'System' to filter, if need
-        content: options, please use this to filter, if need
+        user_id: The user's ID (required)
+        chat_thread_id: The conversation thread ID (required)
+        message_role: Filter by who sent the message - either "Human" or "System" (optional), if empty, get both message types
+        content_contains: Filter messages containing this text (optional)
+        page_size: Number of messages per page (optional, default: 5)
+        page_number: Page number, higher numbers return older messages (optional, default: 1)
+        sort: sort order (optional, default: descending from newest to oldest)
+
+    **Note**: A message can have multiple extracted transactions
+
+    Returns:
+        List of messages along with its extracted transactions
     """
     return await backend_client.get_messages(
-        user_id, chat_thread_id, params={"role": message_role, "content": content}
+        user_id,
+        chat_thread_id,
+        params={
+            "role": message_role,
+            "content": content_contains,
+            "pageSize": page_size,
+            "pageNumber": page_number,
+        },
     )
 
 
@@ -151,3 +188,43 @@ async def get_wallet_by_id(
 ):
     """Get a wallet of user"""
     return await backend_client.get_wallet_by_id(user_id, wallet_id)
+
+
+@tool
+async def update_extracted_transactions_status(
+    user_id: Annotated[str, "User's unique identifier"],
+    wallet_id: Annotated[int, "ID of the wallet containing the transactions"],
+    message_id: Annotated[
+        int, "ID of the message where extracted transactions were associated with"
+    ],
+    confirmation_status: Annotated[
+        Literal["Confirmed", "Rejected"],
+        "Either 'Confirmed' (to accept transactions) or 'Rejected' (to decline)",
+    ],
+):
+    """Update the confirmation status of previously extracted financial transactions.
+
+    This tool should be used after transactions have been extracted from user messages (text/images/audio)
+    and the user has reviewed them. It marks all transactions from a specific message as either confirmed
+    (approved by user) or rejected (declined by user).
+
+    Example scenarios:
+    - When user says "Yes, those transactions look correct" → use "Confirmed"
+    - When user says "No, those aren't right" → use "Rejected"
+    - When user approves some specific transactions → use separate tool for partial confirmation
+
+    Args:
+        user_id: The user's unique identifier
+        wallet_id: The wallet where transactions belong
+        message_id: The message ID containing the extracted transactions, you could get it from a tool to get messages
+        confirmation_status: Either "Confirmed" or "Rejected"
+
+    **Note**: message_id must be the system message (role: System) because after Backend extracted transactions, \
+extracted transactions will be stored along with the system message which will response to user
+
+    Returns:
+        List of processed transactions
+    """
+    return await backend_client.update_extracted_transactions_status(
+        user_id, wallet_id, message_id, confirmation_status
+    )

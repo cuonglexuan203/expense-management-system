@@ -4,7 +4,7 @@ from app.core.logging import get_logger
 from app.core.config import settings
 from app.core.security import API_KEY_NAME
 from urllib.parse import urljoin
-
+from app.enums import ConfirmationStatus
 from app.services.backend.endpoints import BackendEndpoints
 
 logger = get_logger(__name__)
@@ -61,8 +61,15 @@ class BackendClient:
     async def get_transactions(self, user_id: str) -> dict[str, Any]:
         return await self.get(BackendEndpoints.TRANSACTIONS, user_id=user_id)
 
-    async def get_messages(self, user_id: str, chat_thread_id: int, params: dict[str, Any]) -> dict[str, Any]:
-        return await self.get(BackendEndpoints.MESSAGES, params, user_id=user_id, chat_thread_id=chat_thread_id)
+    async def get_messages(
+        self, user_id: str, chat_thread_id: int, params: dict[str, Any]
+    ) -> dict[str, Any]:
+        return await self.get(
+            BackendEndpoints.MESSAGES,
+            params,
+            user_id=user_id,
+            chat_thread_id=chat_thread_id,
+        )
 
     async def get_wallets(self, user_id: str) -> dict[str, Any]:
         return await self.get(BackendEndpoints.WALLETS, user_id=user_id)
@@ -70,6 +77,23 @@ class BackendClient:
     async def get_wallet_by_id(self, user_id: str, wallet_id: str) -> dict[str, Any]:
         return await self.get(
             BackendEndpoints.WALLET_BY_ID, user_id=user_id, wallet_id=wallet_id
+        )
+
+    async def update_extracted_transactions_status(
+        self,
+        user_id: str,
+        wallet_id: int,
+        message_id: int,
+        confirmation_status: ConfirmationStatus,
+    ):
+        return await self.post(
+            BackendEndpoints.EXTRACTED_TRANSACTIONS_STATUS,
+            user_id=user_id,
+            data={
+                "walletId": wallet_id,
+                "messageId": message_id,
+                "confirmationStatus": confirmation_status,
+            },
         )
 
 

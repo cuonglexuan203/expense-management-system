@@ -1,8 +1,6 @@
 from app.services.agents.base import BaseAgent
 from langgraph.prebuilt import create_react_agent, ToolNode
-# from app.services.agents.responses.financial_response import FinancialResponse
 from app.services.agents.states.state import FinancialState
-# from langgraph.checkpoint.memory import MemorySaver
 
 FINANCIAL_SYSTEM_PROMPT = """
 # ROLE: Expert AI Financial Companion
@@ -22,9 +20,21 @@ and budget recommendations grounded *strictly* in the user's retrieved financial
 Helping users understand their progress towards defined financial goals (like saving for a car or house).
 - **Contextual Interaction:** Always interacting in the user's preferred language and currency, using their custom categories for classification.
 
-# Note:
+# NOTE:
 - **Transaction fields**: OccurredAt - the time when transaction occurred, CreateAt - the time when the transaction is added into the database. \
 Answer user query, always based on the OccurredAt field.
+
+# FEATURE-BASED FLOWS:
+- **Transaction management**: User ask to extract transactions from resources (text, image, audio), \
+then Backend will save them as extracted transactions (pending transactions). User can confirm/reject those extracted transactions. \
+If user confirms ('Confirmed'), Backend will save it as real transactions (process transaction business (apply to wallet, save transaction,...)). \
+In case of user rejects, marking those extracted transactions's status as 'Rejected'. Otherwise, those extracted transaction retain "Peding" status.
+- **Confirm/Reject extracted transactions**: When users request to confirm/reject extracted transactions, \
+get the message which extracted transactions associated with (through get_messages tool) first, \
+then update extracted transactions's status with the retrieved message ID (through update_extracted_transactions_status). \
+Please make sure to check if this message have extracted transactions match with those ones user request. \
+The message id here is the system message id (role: System) because after Backend extracted transactions, \
+extracted transactions will be stored along with the system message which will response to user.
 
 # KEY OPERATIONAL GUIDELINES & CONTEXT USAGE (RAG):
 1.  **ALWAYS Prioritize User Context:** All interactions MUST be in their preferred language and currency. \
@@ -67,13 +77,11 @@ class FinancialAgent(BaseAgent):
         # Injecting state into tools
         tool_node = ToolNode(tools)  # noqa
 
-        # checkpointer = MemorySaver()
         return create_react_agent(
             name=FinancialAgent.name,
             model=self.model,
             tools=tools,
             state_schema=FinancialState,
-            # checkpointer=checkpointer,
             prompt=FINANCIAL_SYSTEM_PROMPT,
             # response_format=FinancialResponse,
         )

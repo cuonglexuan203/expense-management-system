@@ -131,6 +131,7 @@ namespace EMS.Infrastructure.BackgroundJobs
 
                 var assistantResponse = await aiService.ChatWithAssistant(new(
                     queuedMessage.UserId,
+                    queuedMessage.WalletId,
                     chatThreadId,
                     message.Content,
                     message.Medias?.Where(e => !string.IsNullOrEmpty(e.Url)).Select(e => e.Url!).ToArray(),

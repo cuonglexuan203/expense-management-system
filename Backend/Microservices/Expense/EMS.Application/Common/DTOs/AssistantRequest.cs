@@ -4,6 +4,7 @@ namespace EMS.Application.Common.DTOs
 {
     public record AssistantRequest(
         string UserId,
+        int WalletId,
         int ChatThreadId,
         string? Message,
         string[]? FileUrls,

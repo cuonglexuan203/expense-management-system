@@ -17,3 +17,7 @@ class BackendEndpoints:
     WALLETS = "/api/v1/ai-tools/users/{user_id}/wallets"
 
     WALLET_BY_ID = "/api/v1/ai-tools/users/{user_id}/wallets/{wallet_id}"
+
+    EXTRACTED_TRANSACTIONS_STATUS = (
+        "/api/v1/ai-tools/users/{user_id}/extracted-transactions/status"
+    )

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using EMS.Application.Common.Exceptions;
+using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
+using EMS.Application.Common.Models;
 using EMS.Application.Features.Chats.Common.Dtos;
 using EMS.Core.Enums;
 using EMS.Core.Specifications;
@@ -10,9 +12,9 @@ using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.AiTools.Queries.GetMessages
 {
-    public record GetMessagesQuery(string UserId, int ChatThreadId, ChatMessageSpecParams SpecParams) : IRequest<List<ChatMessageDto>>;
+    public record GetMessagesQuery(string UserId, int ChatThreadId, ChatMessageSpecParams SpecParams) : IRequest<PaginatedList<ChatMessageDto>>;
 
-    public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, List<ChatMessageDto>>
+    public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, PaginatedList<ChatMessageDto>>
     {
         private readonly ILogger<GetMessagesQueryHandler> _logger;
         private readonly IApplicationDbContext _context;
@@ -28,7 +30,7 @@ namespace EMS.Application.Features.AiTools.Queries.GetMessages
             _mapper = mapper;
         }
 
-        public async Task<List<ChatMessageDto>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<ChatMessageDto>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
         {
             var userId = request.UserId;
             var chatThreadId = request.ChatThreadId;
@@ -72,11 +74,11 @@ namespace EMS.Application.Features.AiTools.Queries.GetMessages
                 query = query.OrderByDescending(e => e.CreatedAt);
             }
 
-            var chatMessages = await query.ToListAsync();
+            var chatMessagePage = await query.ToPaginatedList(specParams.PageNumber, specParams.PageSize);
 
             var chatMessageDtoList = new List<ChatMessageDto>();
 
-            foreach (var chatMsg in chatMessages)
+            foreach (var chatMsg in chatMessagePage.Items)
             {
                 var chatMsgDto = _mapper.Map<ChatMessageDto>(chatMsg);
                 chatMsgDto.ExtractedTransactions = chatMsg.ChatExtraction != null && chatMsg.ChatExtraction.ExtractedTransactions != null
@@ -86,7 +88,7 @@ namespace EMS.Application.Features.AiTools.Queries.GetMessages
                 chatMessageDtoList.Add(chatMsgDto);
             }
 
-            return chatMessageDtoList;
+            return new PaginatedList<ChatMessageDto>(chatMessageDtoList, chatMessagePage.TotalCount, chatMessagePage.PageNumber, chatMessagePage.PageSize);
         }
     }
 }
