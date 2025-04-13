@@ -49,6 +49,9 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Property<string>("AffectedColumns")
                         .HasColumnType("jsonb");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -81,13 +84,12 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("ActivityLogs");
                 });
@@ -572,7 +574,7 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ChatExtractionId")
@@ -1491,9 +1493,7 @@ namespace EMS.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("EMS.Infrastructure.Identity.Models.ApplicationUser", null)
                         .WithMany("ActivityLogs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("EMS.Core.Entities.CalendarEvent", b =>

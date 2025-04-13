@@ -2,6 +2,7 @@
 
 namespace EMS.Application.Common.DTOs
 {
+    // NOTE: Only use for the extraction route (extract from text, image, audio)
     public record MessageWithFilesExtractionRequest(
     string UserId,
     int ChatThreadId,

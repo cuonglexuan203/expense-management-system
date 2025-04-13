@@ -5,6 +5,7 @@ using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Utils;
 using EMS.Application.Features.Categories.Dtos;
 using EMS.Application.Features.Categories.Services;
+using EMS.Core.Constants;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 using EMS.Core.Exceptions;
@@ -19,9 +20,6 @@ namespace EMS.Infrastructure.Services
         private readonly IApplicationDbContext _context;
         private readonly IDistributedCacheService _cacheService;
         private readonly IMapper _mapper;
-
-        //
-        private const string _unknownCategoryName = "Unknown";
 
         public CategoryService(
             ILogger<CategoryService> logger,
@@ -44,7 +42,7 @@ namespace EMS.Infrastructure.Services
                 .Where(e => !e.IsDeleted &&
                             e.Type == CategoryType.Default &&
                             e.FinancialFlowType == type &&
-                            e.Name == _unknownCategoryName)
+                            e.Name == Categories.Unknown)
                 .FirstOrDefaultAsync() ?? throw new ServerException("The system unknown category not found."),
                 TimeSpan.FromDays(1));
         }

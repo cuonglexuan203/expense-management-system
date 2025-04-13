@@ -7,7 +7,7 @@ namespace EMS.Application.Features.Developer.Queries
 {
     public class SystemSettingDto : IMapFrom<SystemSetting>
     {
-        public string Key { get; set; }
+        public string Key { get; set; } = default!;
         public string? Value { get; set; }
         public string? Description { get; set; }
         public SettingType Type { get; set; }

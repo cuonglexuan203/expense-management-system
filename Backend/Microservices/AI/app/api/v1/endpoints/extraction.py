@@ -21,6 +21,7 @@ from langchain_core.prompts import PromptTemplate
 from app.services.llm.enums import LLMModel, LLMProvider
 from app.services.llm.factory import LLMFactory
 
+
 router = APIRouter()
 
 logger = get_logger(__name__)

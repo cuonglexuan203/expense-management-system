@@ -25,14 +25,14 @@ namespace EMS.Application.Features.Chats.Finance.Commands.UploadMessageFiles
         private readonly IApplicationDbContext _context;
         private readonly IMediaService _mediaService;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IMessageQueue<TransactionProcessingMessage> _messageQueue;
+        private readonly IMessageQueue<QueryMessage> _messageQueue;
 
         public UploadMessageFilesCommandHandler(
             ILogger<UploadMessageFilesCommandHandler> logger,
             IApplicationDbContext context,
             IMediaService mediaService,
             ICurrentUserService currentUserService,
-            IMessageQueue<TransactionProcessingMessage> messageQueue)
+            IMessageQueue<QueryMessage> messageQueue)
         {
             _logger = logger;
             _context = context;

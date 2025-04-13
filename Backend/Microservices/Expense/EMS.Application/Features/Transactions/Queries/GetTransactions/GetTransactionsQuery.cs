@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
+using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Models;
 using EMS.Application.Features.Transactions.Dtos;
 using EMS.Core.Enums;
@@ -18,23 +19,29 @@ namespace EMS.Application.Features.Transactions.Queries.GetTransactions
         private readonly ILogger<GetTransactionsQueryHandler> _logger;
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
         public GetTransactionsQueryHandler(
             ILogger<GetTransactionsQueryHandler> logger,
             IApplicationDbContext context,
-            IMapper mapper)
+            IMapper mapper,
+            ICurrentUserService currentUserService)
         {
             _logger = logger;
             _context = context;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
 
         public async Task<PaginatedList<TransactionDto>> Handle(GetTransactionsQuery request, CancellationToken cancellationToken)
         {
             var specParams = request.SpecParams;
+            var userId = _currentUserService.Id;
 
             var query = _context.Transactions
-                .Where(e => !e.IsDeleted && !e.Wallet.IsDeleted)
+                .Where(e => !e.IsDeleted 
+                    && !e.Wallet.IsDeleted
+                    && e.UserId == userId)
                 .AsNoTracking();
 
             if (specParams.Period != null)
@@ -58,13 +65,13 @@ namespace EMS.Application.Features.Transactions.Queries.GetTransactions
                 query = query.Where(e => e.Category != null && !e.Category.IsDeleted && e.Category.Id == specParams.CategoryId);
             }
 
-            if(specParams.Type != null)
+            if (specParams.Type != null)
             {
                 query = query.Where(e => e.Type == specParams.Type);
             }
 
             // TODO: Sort by CreatedAt/OccurredAt or both
-            if(specParams.Sort == SortDirection.ASC)
+            if (specParams.Sort == SortDirection.ASC)
             {
                 query = query.OrderBy(e => e.OccurredAt);
             }

@@ -84,8 +84,8 @@ namespace EMS.Infrastructure
         private static void AddSingletonServices(IServiceCollection services)
         {
             services.AddSingleton(TimeProvider.System);
-            services.AddSingleton<IMessageQueue<TransactionProcessingMessage>,
-                ChannelMessageQueue<TransactionProcessingMessage>>();
+            services.AddSingleton<IMessageQueue<QueryMessage>,
+                ChannelMessageQueue<QueryMessage>>();
 
             // SignalR
             services.TryAddSingleton<SignalRConnectionManager>();

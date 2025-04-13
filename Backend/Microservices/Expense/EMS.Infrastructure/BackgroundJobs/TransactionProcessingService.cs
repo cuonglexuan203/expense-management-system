@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EMS.Application.Common.DTOs;
 using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.Messaging;
@@ -14,6 +13,7 @@ using EMS.Application.Features.Wallets.Services;
 using EMS.Core.Constants;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
+using EMS.Core.Exceptions;
 using EMS.Infrastructure.Persistence.DbContext;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -27,12 +27,12 @@ namespace EMS.Infrastructure.BackgroundJobs
     public class TransactionProcessingService : BackgroundService
     {
         private readonly ILogger<TransactionProcessingService> _logger;
-        private readonly IMessageQueue<TransactionProcessingMessage> _messageQueue;
+        private readonly IMessageQueue<QueryMessage> _messageQueue;
         private readonly IServiceProvider _serviceProvider;
 
         public TransactionProcessingService(
             ILogger<TransactionProcessingService> logger,
-            IMessageQueue<TransactionProcessingMessage> messageQueue,
+            IMessageQueue<QueryMessage> messageQueue,
             IServiceProvider serviceProvider)
         {
             _logger = logger;
@@ -57,7 +57,7 @@ namespace EMS.Infrastructure.BackgroundJobs
             }
         }
 
-        private async Task ProcessMessageAsync(TransactionProcessingMessage queuedMessage, CancellationToken stoppingToken)
+        private async Task ProcessMessageAsync(QueryMessage queuedMessage, CancellationToken stoppingToken)
         {
             _logger.LogInformation("Processing transaction message: {MessageId}", queuedMessage.MessageId);
 
@@ -85,8 +85,12 @@ namespace EMS.Infrastructure.BackgroundJobs
                 var chatThreadId = message.ChatThreadId;
 
                 var userPreferences = await userPreferenceService.GetUserPreferenceByIdAsync(queuedMessage.UserId);
-                var defaultCategories = await categoryService.GetCategoriesAsync(queuedMessage.UserId);
+                var categories = await context.Categories
+                    .Where(e => !e.IsDeleted && e.UserId == queuedMessage.UserId)
+                    .ToListAsync();
 
+                #region Old implementation: Only extract transactions
+                /*
                 // Get transaction extractions
                 MessageExtractionResponse extractionResult = default!;
 
@@ -122,70 +126,94 @@ namespace EMS.Infrastructure.BackgroundJobs
                             defaultCategories.Select(e => e.Name).ToArray(),
                             userPreferences));
                 }
+                */
+                #endregion
+
+                var assistantResponse = await aiService.ChatWithAssistant(new(
+                    queuedMessage.UserId,
+                    queuedMessage.WalletId,
+                    chatThreadId,
+                    message.Content,
+                    message.Medias?.Where(e => !string.IsNullOrEmpty(e.Url)).Select(e => e.Url!).ToArray(),
+                    categories.Select(e => e.Name).ToArray(),
+                    userPreferences));
 
                 // Save system msg
-                var systemMsg = ChatMessage.CreateSystemMessage(chatThreadId, extractionResult.Introduction);
+                var systemMsg = ChatMessage.CreateSystemMessage(chatThreadId, assistantResponse.LlmContent);
                 context.ChatMessages.Add(systemMsg);
 
                 // Save raw extraction
                 var chatExtraction = new ChatExtraction
                 {
                     ChatMessageId = systemMsg.Id,
-                    ExtractionType = ExtractionType.Transaction,
-                    ExtractedData = JsonSerializer.Serialize(extractionResult),
+                    ExtractionType = ExtractionType.Transaction, // REVIEW: could be Financial/Event for clear
+                    ExtractedData = JsonSerializer.Serialize(assistantResponse),
                 };
                 systemMsg.ChatExtraction = chatExtraction; // redundant but for clearer flow
 
                 // Save extracted transactions
-                if (extractionResult.Transactions.Length != 0)
+                if (assistantResponse.Type == MessageRole.Ai
+                    && assistantResponse.Name == Agents.FinancialExpert
+                    && assistantResponse.FinancialResponse != null)
                 {
-                    var categories = await context.Categories
-                        //.AsNoTracking()
-                        .Where(e => e.UserId == queuedMessage.UserId && !e.IsDeleted)
-                        .ToListAsync();
 
-                    foreach (var item in extractionResult.Transactions)
+                    ExtractedTransactionDto[] extractedTransactions = [
+                        .. (assistantResponse.FinancialResponse.TextExtractions ?? []),
+                        .. (assistantResponse.FinancialResponse.ImageExtractions ?? []),
+                        .. (assistantResponse.FinancialResponse.AudioExtractions ?? [])
+                    ];
+
+                    if (extractedTransactions.Length != 0)
                     {
-                        try
+                        foreach (var item in extractedTransactions)
                         {
-                            var extractedTransaction = new ExtractedTransaction
+                            try
                             {
-                                Name = item.Name,
-                                Type = item.Type,
-                                Amount = item.Amount,
-                                OccurredAt = item.OccurredAt,
-                            };
+                                var extractedTransaction = new ExtractedTransaction
+                                {
+                                    Name = item.Name,
+                                    Type = item.Type,
+                                    Amount = item.Amount,
+                                    OccurredAt = item.OccurredAt,
+                                };
 
-                            Category? category = default;
+                                Category? category = default;
 
-                            if(item.Category != null)
-                            {
-                                category = categories.Where(c => c.Name.Equals(item.Category, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                                if (item.Category != null)
+                                {
+                                    category = categories.Where(c => c.Name.Equals(item.Category, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                                }
+
+                                if (category == null)
+                                {
+                                    category = await context.Categories
+                                        .Where(e => !e.IsDeleted &&
+                                                    e.Type == CategoryType.Default &&
+                                                    e.FinancialFlowType == item.Type &&
+                                                    e.Name == Categories.Unknown)
+                                        .FirstOrDefaultAsync() ?? throw new ServerException("The system unknown category not found.");
+                                }
+
+                                //extractedTransaction.CategoryId = category.Id;
+                                extractedTransaction.Category = category;
+                                extractedTransaction.CurrencyCode = userPreferences.CurrencyCode;
+                                extractedTransaction.ConfirmationMode = userPreferences.ConfirmationMode;
+                                // NOTE: Pending for all confirmation modes, and will be modified when processing each mode later 
+                                extractedTransaction.ConfirmationStatus = ConfirmationStatus.Pending;
+
+                                chatExtraction.ExtractedTransactions.Add(extractedTransaction);
                             }
-
-                            if (category == null)
+                            catch (Exception ex)
                             {
-                                category = await categoryService.GetUnknownCategoryAsync(item.Type);
-                                context.Categories.Attach(category);
+                                _logger.LogError("An error occurred while extracting a transaction from {@ExtractedTransaction} - Error message: {Msg}",
+                                    item,
+                                    ex.Message);
                             }
-
-                            //extractedTransaction.CategoryId = category.Id;
-                            extractedTransaction.Category = category;
-                            extractedTransaction.CurrencyCode = userPreferences.CurrencyCode;
-                            extractedTransaction.ConfirmationMode = userPreferences.ConfirmationMode;
-                            // NOTE: Pending for all confirmation modes, and will be modified when processing each mode later 
-                            extractedTransaction.ConfirmationStatus = ConfirmationStatus.Pending;
-
-                            chatExtraction.ExtractedTransactions.Add(extractedTransaction);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError("An error occurred while extracting a transaction from {@ExtractedTransaction} - Error message: {Msg}",
-                                item,
-                                ex.Message);
                         }
                     }
                 }
+
+
 
                 // Save extracted data before processing transaction entities within the same db transaction to ensure atomicity.
                 await context.SaveChangesAsync(stoppingToken);
@@ -213,7 +241,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                     await walletService.CacheWalletBalanceSummariesAsync(queuedMessage.UserId, queuedMessage.WalletId);
                 }
 
-                await mediator.Publish(new MessageProcessedNotification()
+                await mediator.Publish(new MessageProcessedNotification
                 {
                     UserId = queuedMessage.UserId,
                     WalletId = queuedMessage.WalletId,
