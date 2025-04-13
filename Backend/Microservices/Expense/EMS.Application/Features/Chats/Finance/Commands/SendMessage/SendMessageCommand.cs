@@ -25,13 +25,13 @@ namespace EMS.Application.Features.Chats.Finance.Commands.SendMessage
         private readonly ILogger<SendMessageCommandHandler> _logger;
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IMessageQueue<TransactionProcessingMessage> _messageQueue;
+        private readonly IMessageQueue<QueryMessage> _messageQueue;
 
         public SendMessageCommandHandler(
             ILogger<SendMessageCommandHandler> logger,
             IApplicationDbContext context,
             IMapper mapper,
-            IMessageQueue<TransactionProcessingMessage> messageQueue)
+            IMessageQueue<QueryMessage> messageQueue)
         {
             _logger = logger;
             _context = context;

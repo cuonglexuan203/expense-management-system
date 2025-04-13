@@ -15,7 +15,6 @@ using EMS.Core.Entities;
 using EMS.Core.Enums;
 using EMS.Core.Exceptions;
 using EMS.Infrastructure.Persistence.DbContext;
-using EMS.Infrastructure.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,12 +27,12 @@ namespace EMS.Infrastructure.BackgroundJobs
     public class TransactionProcessingService : BackgroundService
     {
         private readonly ILogger<TransactionProcessingService> _logger;
-        private readonly IMessageQueue<TransactionProcessingMessage> _messageQueue;
+        private readonly IMessageQueue<QueryMessage> _messageQueue;
         private readonly IServiceProvider _serviceProvider;
 
         public TransactionProcessingService(
             ILogger<TransactionProcessingService> logger,
-            IMessageQueue<TransactionProcessingMessage> messageQueue,
+            IMessageQueue<QueryMessage> messageQueue,
             IServiceProvider serviceProvider)
         {
             _logger = logger;
@@ -58,7 +57,7 @@ namespace EMS.Infrastructure.BackgroundJobs
             }
         }
 
-        private async Task ProcessMessageAsync(TransactionProcessingMessage queuedMessage, CancellationToken stoppingToken)
+        private async Task ProcessMessageAsync(QueryMessage queuedMessage, CancellationToken stoppingToken)
         {
             _logger.LogInformation("Processing transaction message: {MessageId}", queuedMessage.MessageId);
 
@@ -86,7 +85,9 @@ namespace EMS.Infrastructure.BackgroundJobs
                 var chatThreadId = message.ChatThreadId;
 
                 var userPreferences = await userPreferenceService.GetUserPreferenceByIdAsync(queuedMessage.UserId);
-                var userCategories = await categoryService.GetCategoriesAsync(queuedMessage.UserId);
+                var categories = await context.Categories
+                    .Where(e => !e.IsDeleted && e.UserId == queuedMessage.UserId)
+                    .ToListAsync();
 
                 #region Old implementation: Only extract transactions
                 /*
@@ -133,7 +134,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                     chatThreadId,
                     message.Content,
                     message.Medias?.Where(e => !string.IsNullOrEmpty(e.Url)).Select(e => e.Url!).ToArray(),
-                    userCategories.Select(e => e.Name).ToArray(),
+                    categories.Select(e => e.Name).ToArray(),
                     userPreferences));
 
                 // Save system msg
@@ -163,12 +164,6 @@ namespace EMS.Infrastructure.BackgroundJobs
 
                     if (extractedTransactions.Length != 0)
                     {
-                        // OPTIMIZE: currently, query categories twice -> query just once
-                        var categories = await context.Categories
-                            //.AsNoTracking()
-                            .Where(e => e.UserId == queuedMessage.UserId && !e.IsDeleted)
-                            .ToListAsync();
-
                         foreach (var item in extractedTransactions)
                         {
                             try

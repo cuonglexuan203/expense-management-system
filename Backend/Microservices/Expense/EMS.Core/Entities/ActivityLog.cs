@@ -5,7 +5,7 @@ namespace EMS.Core.Entities
 {
     public class ActivityLog : BaseEntity<int>
     {
-        public string UserId { get; set; } = default!;
+        public string? UserId { get; set; } // NOTE: can be user id or api key id (AI service)
         public AuditType Type { get; set; }
         public string EntityType { get; set; } = default!;
         public string? OldValues { get; set; }

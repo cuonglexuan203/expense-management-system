@@ -38,10 +38,10 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .HasForeignKey(e => e.UserId)
                 .IsRequired();
 
-            builder.HasMany(e => e.ActivityLogs)
-                .WithOne()
-                .HasForeignKey(e => e.UserId)
-                .IsRequired();
+            //builder.HasMany(e => e.ActivityLogs)
+            //    .WithOne()
+            //    .HasForeignKey(e => e.UserId)
+            //    .IsRequired();
 
             builder.HasMany(e => e.CalendarEvents)
                 .WithOne()

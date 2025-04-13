@@ -1,9 +1,13 @@
 ﻿using EMS.API.Common.Attributes;
+using EMS.API.Common.Models.AiToolController;
+using EMS.Application.Features.AiTools.Commands.ConfirmExtractedTransactions;
+using EMS.Application.Features.AiTools.Commands.RejectExtractedTransactions;
 using EMS.Application.Features.AiTools.Queries.GetMessages;
 using EMS.Application.Features.AiTools.Queries.GetTransactions;
 using EMS.Application.Features.AiTools.Queries.GetWalletById;
 using EMS.Application.Features.AiTools.Queries.GetWalletsByUserId;
 using EMS.Core.Constants;
+using EMS.Core.Enums;
 using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -53,6 +57,29 @@ namespace EMS.API.Controllers.v1
             var result = await _sender.Send(new GetWalletByIdQuery(walletId));
 
             return Ok(result);
+        }
+
+        [HttpPost("users/{userId}/extracted-transactions/status")]
+        public async Task<IActionResult> UpdateExtractedTransactionsStatus([FromRoute] string userId, UpdateExtractedTransactionsStatusRequest request)
+        {
+            // NOTE: Logic to update - Success ALL or Fail ALL
+
+            // Confirm
+            if (request.ConfirmationStatus == ConfirmationStatus.Confirmed)
+            {
+                var confirmationResult = await _sender.Send(new ConfirmExtractedTransactionsCommand(userId, request.WalletId, request.MessageId));
+                return Ok(confirmationResult);
+            }
+
+            // Reject
+            if (request.ConfirmationStatus == ConfirmationStatus.Rejected)
+            {
+                var rejectedExtractedTransactions = await _sender.Send(new RejectExtractedTransactionsCommand(userId, request.MessageId));
+
+                return Ok(rejectedExtractedTransactions);
+            }
+
+            return BadRequest();
         }
     }
 }
