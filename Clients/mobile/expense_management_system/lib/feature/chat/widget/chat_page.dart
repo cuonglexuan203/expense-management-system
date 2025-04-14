@@ -195,7 +195,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
           id: tempId,
           chatThreadId: chatThreadId!,
           userId: 'current_user',
-          role: 'User',
+          role: 'Human',
           content: message,
           createdAt: DateTime.now(),
           medias: [],
