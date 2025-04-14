@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_start_provider.dart';
+part of 'onboarding_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appStartNotifierHash() => r'15388e72ba5a55793a6680e64b5efdaff4f04210';
+String _$onboardingNotifierHash() =>
+    r'15353b0c4eeb15466f7a35c5d5fe65caf10040dd';
 
-/// See also [AppStartNotifier].
-@ProviderFor(AppStartNotifier)
-final appStartNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<AppStartNotifier, AppStartState>.internal(
-  AppStartNotifier.new,
-  name: r'appStartNotifierProvider',
+/// See also [OnboardingNotifier].
+@ProviderFor(OnboardingNotifier)
+final onboardingNotifierProvider =
+    AutoDisposeNotifierProvider<OnboardingNotifier, OnboardingState>.internal(
+  OnboardingNotifier.new,
+  name: r'onboardingNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$appStartNotifierHash,
+      : _$onboardingNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AppStartNotifier = AutoDisposeAsyncNotifier<AppStartState>;
+typedef _$OnboardingNotifier = AutoDisposeNotifier<OnboardingState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

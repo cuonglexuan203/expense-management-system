@@ -3,9 +3,11 @@
 // @CustomAutoRouter
 
 import 'package:expense_management_system/app/widget/app_start_page.dart';
+import 'package:expense_management_system/feature/auth/widget/passcode_verification_page.dart';
 import 'package:expense_management_system/feature/auth/widget/sign_in_page.dart';
 import 'package:expense_management_system/feature/auth/widget/sign_up_page.dart';
 import 'package:expense_management_system/feature/chat/widget/chat_page.dart';
+import 'package:expense_management_system/feature/onboarding/widget/onboarding_page.dart';
 import 'package:expense_management_system/feature/profile/widget/profile_page.dart';
 import 'package:expense_management_system/feature/transaction/widget/transaction_page.dart';
 import 'package:expense_management_system/feature/wallet/widget/create_wallet_page.dart';
@@ -148,6 +150,30 @@ class ProfileRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const ProfilePage();
+  }
+}
+
+@TypedGoRoute<PasscodeVerificationRoute>(path: PasscodeVerificationRoute.path)
+class PasscodeVerificationRoute extends GoRouteData {
+  const PasscodeVerificationRoute();
+
+  static const path = '/passcode-verification';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const PasscodeVerificationPage();
+  }
+}
+
+@TypedGoRoute<OnboardingRoute>(path: OnboardingRoute.path)
+class OnboardingRoute extends GoRouteData {
+  const OnboardingRoute();
+
+  static const path = '/onboarding';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const OnboardingPage();
   }
 }
 

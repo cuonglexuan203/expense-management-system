@@ -1,26 +1,29 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_start_provider.dart';
+part of 'passcode_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appStartNotifierHash() => r'15388e72ba5a55793a6680e64b5efdaff4f04210';
+String _$passcodeRepositoryHash() =>
+    r'2b1949dcbf60cc7e61088319d1555d495d4f7892';
 
-/// See also [AppStartNotifier].
-@ProviderFor(AppStartNotifier)
-final appStartNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<AppStartNotifier, AppStartState>.internal(
-  AppStartNotifier.new,
-  name: r'appStartNotifierProvider',
+/// See also [passcodeRepository].
+@ProviderFor(passcodeRepository)
+final passcodeRepositoryProvider =
+    AutoDisposeProvider<PasscodeRepository>.internal(
+  passcodeRepository,
+  name: r'passcodeRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$appStartNotifierHash,
+      : _$passcodeRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AppStartNotifier = AutoDisposeAsyncNotifier<AppStartState>;
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PasscodeRepositoryRef = AutoDisposeProviderRef<PasscodeRepository>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
