@@ -52,3 +52,16 @@ enum ContentType {
     }
   }
 }
+
+enum OnboardingStep {
+  languageCurrency,
+  categories,
+  wallet,
+  passcode,
+  completed
+}
+
+enum ConnectionState {
+  online,
+  offline,
+}
