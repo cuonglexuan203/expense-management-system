@@ -190,41 +190,41 @@ async def get_wallet_by_id(
     return await backend_client.get_wallet_by_id(user_id, wallet_id)
 
 
-@tool
-async def update_extracted_transactions_status(
-    user_id: Annotated[str, "User's unique identifier"],
-    wallet_id: Annotated[int, "ID of the wallet containing the transactions"],
-    message_id: Annotated[
-        int, "ID of the message where extracted transactions were associated with"
-    ],
-    confirmation_status: Annotated[
-        Literal["Confirmed", "Rejected"],
-        "Either 'Confirmed' (to accept transactions) or 'Rejected' (to decline)",
-    ],
-):
-    """Update the confirmation status of previously extracted financial transactions.
+# @tool
+# async def update_extracted_transactions_status(
+#     user_id: Annotated[str, "User's unique identifier"],
+#     wallet_id: Annotated[int, "ID of the wallet containing the transactions"],
+#     message_id: Annotated[
+#         int, "ID of the message where extracted transactions were associated with"
+#     ],
+#     confirmation_status: Annotated[
+#         Literal["Confirmed", "Rejected"],
+#         "Either 'Confirmed' (to accept transactions) or 'Rejected' (to decline)",
+#     ],
+# ):
+#     """Update the confirmation status of previously extracted financial transactions.
 
-    This tool should be used after transactions have been extracted from user messages (text/images/audio)
-    and the user has reviewed them. It marks all transactions from a specific message as either confirmed
-    (approved by user) or rejected (declined by user).
+#     This tool should be used after transactions have been extracted from user messages (text/images/audio)
+#     and the user has reviewed them. It marks all transactions from a specific message as either confirmed
+#     (approved by user) or rejected (declined by user).
 
-    Example scenarios:
-    - When user says "Yes, those transactions look correct" → use "Confirmed"
-    - When user says "No, those aren't right" → use "Rejected"
-    - When user approves some specific transactions → use separate tool for partial confirmation
+#     Example scenarios:
+#     - When user says "Yes, those transactions look correct" → use "Confirmed"
+#     - When user says "No, those aren't right" → use "Rejected"
+#     - When user approves some specific transactions → use separate tool for partial confirmation
 
-    Args:
-        user_id: The user's unique identifier
-        wallet_id: The wallet where transactions belong
-        message_id: The message ID containing the extracted transactions, you could get it from a tool to get messages
-        confirmation_status: Either "Confirmed" or "Rejected"
+#     Args:
+#         user_id: The user's unique identifier
+#         wallet_id: The wallet where transactions belong
+#         message_id: The message ID containing the extracted transactions, you could get it from a tool to get messages
+#         confirmation_status: Either "Confirmed" or "Rejected"
 
-    **Note**: message_id must be the system message (role: System) because after Backend extracted transactions, \
-extracted transactions will be stored along with the system message which will response to user
+#     **Note**: message_id must be the system message (role: System) because after Backend extracted transactions, \
+# extracted transactions will be stored along with the system message which will response to user
 
-    Returns:
-        List of processed transactions
-    """
-    return await backend_client.update_extracted_transactions_status(
-        user_id, wallet_id, message_id, confirmation_status
-    )
+#     Returns:
+#         List of processed transactions
+#     """
+#     return await backend_client.update_extracted_transactions_status(
+#         user_id, wallet_id, message_id, confirmation_status
+#     )
