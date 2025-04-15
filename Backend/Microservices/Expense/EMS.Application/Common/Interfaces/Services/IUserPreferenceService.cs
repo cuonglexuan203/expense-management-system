@@ -6,6 +6,6 @@ namespace EMS.Application.Common.Interfaces.Services
     {
         Task<UserPreferenceDto> GetUserPreferenceAsync(CancellationToken cancellationToken = default);
         Task<UserPreferenceDto> GetUserPreferenceByIdAsync(string userId);
-        Task CreateUserPreferencesAsync(string userId, CancellationToken cancellationToken = default);
+        Task CreateDefaultUserPreferencesAsync(string userId, CancellationToken cancellationToken = default);
     }
 }

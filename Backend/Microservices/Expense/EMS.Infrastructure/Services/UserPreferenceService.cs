@@ -52,7 +52,7 @@ namespace EMS.Infrastructure.Services
                 .FirstOrDefaultAsync() ?? throw new ServerException($"User preference of user id {userId} not found."));
         }
 
-        public async Task CreateUserPreferencesAsync(string userId, CancellationToken cancellationToken = default)
+        public async Task CreateDefaultUserPreferencesAsync(string userId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace EMS.Infrastructure.Services
                 var userPreference = new UserPreference
                 {
                     UserId = userId,
-                    Language = MapSystemSettingValue(systemSettings, nameof(UserPreference.Language), Language.EN),
+                    Language = MapSystemSettingValue(systemSettings, nameof(UserPreference.Language), LanguageCode.EN),
                     CurrencyCode = MapSystemSettingValue(systemSettings, nameof(UserPreference.CurrencyCode), CurrencyCode.USD),
                     ConfirmationMode = MapSystemSettingValue(systemSettings, nameof(UserPreference.ConfirmationMode), ConfirmationMode.Manual)
                 };
