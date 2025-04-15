@@ -1,7 +1,7 @@
 ﻿using EMS.API.Common.Attributes;
 using EMS.Application.Features.Onboarding.Commands;
 using EMS.Application.Features.Onboarding.Queries.GetCurrencies;
-using EMS.Application.Features.Onboarding.Queries.GetLanguageCodes;
+using EMS.Application.Features.Onboarding.Queries.GetLanguages;
 using EMS.Application.Features.Onboarding.Queries.GetOnboardingStatus;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
