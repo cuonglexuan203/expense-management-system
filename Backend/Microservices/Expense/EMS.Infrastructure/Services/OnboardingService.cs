@@ -54,7 +54,7 @@ namespace EMS.Infrastructure.Services
 
                 if (Enum.TryParse<LanguageCode>(languageCodeStr, out var languageCode))
                 {
-                    userPreference.Language = languageCode;
+                    userPreference.LanguageCode = languageCode;
                 }
 
                 if (Enum.TryParse<CurrencyCode>(currencyCodeStr, out var currencyCode))

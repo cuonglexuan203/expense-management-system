@@ -7,7 +7,7 @@ namespace EMS.Core.Entities
     public class UserPreference: BaseAuditableEntity<int>
     {
         public string UserId { get; set; } = default!;
-        public LanguageCode Language { get; set; } = LanguageCode.EN;
+        public LanguageCode LanguageCode { get; set; } = LanguageCode.EN;
         public CurrencyCode CurrencyCode { get; set; } = CurrencyCode.USD;
         public bool IsOnboardingCompleted { get; set; }
         //public string? Metadata { get; set; }

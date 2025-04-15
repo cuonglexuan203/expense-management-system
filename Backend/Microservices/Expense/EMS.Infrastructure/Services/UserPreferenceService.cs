@@ -62,7 +62,7 @@ namespace EMS.Infrastructure.Services
                 var userPreference = new UserPreference
                 {
                     UserId = userId,
-                    Language = MapSystemSettingValue(systemSettings, nameof(UserPreference.Language), LanguageCode.EN),
+                    LanguageCode = MapSystemSettingValue(systemSettings, nameof(UserPreference.LanguageCode), LanguageCode.EN),
                     CurrencyCode = MapSystemSettingValue(systemSettings, nameof(UserPreference.CurrencyCode), CurrencyCode.USD),
                     ConfirmationMode = MapSystemSettingValue(systemSettings, nameof(UserPreference.ConfirmationMode), ConfirmationMode.Manual)
                 };
