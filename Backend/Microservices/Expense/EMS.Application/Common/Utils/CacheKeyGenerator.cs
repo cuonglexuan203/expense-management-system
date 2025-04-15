@@ -22,6 +22,8 @@
             public const string UnknownCategory = "unknown_category";
             public const string DefaultCategory = "default_category";
             public const string UserPreference = "user_preference";
+            public const string Languages = "languages";
+            public const string Currencies = "currencies";
         }
     }
 }

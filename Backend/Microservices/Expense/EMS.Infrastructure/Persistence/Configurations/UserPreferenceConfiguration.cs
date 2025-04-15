@@ -11,7 +11,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
             builder.Property(e => e.UserId)
                 .HasMaxLength(36);
 
-            builder.Property(e => e.Language)
+            builder.Property(e => e.LanguageCode)
                 .HasConversion<string>()
                 .HasMaxLength(50);
 

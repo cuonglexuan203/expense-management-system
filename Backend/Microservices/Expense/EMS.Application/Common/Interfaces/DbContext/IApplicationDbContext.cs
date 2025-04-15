@@ -1,4 +1,5 @@
 ﻿using EMS.Core.Entities;
+using EMS.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace EMS.Application.Common.Interfaces.DbContext
@@ -20,6 +21,7 @@ namespace EMS.Application.Common.Interfaces.DbContext
         DbSet<RefreshToken> RefreshTokens { get; set; }
         DbSet<ChatExtraction> ChatExtractions { get; set; }
         DbSet<ExtractedTransaction> ExtractedTransactions { get; set; }
+        DbSet<Currency> Currencies { get; set; }
         DbSet<CurrencySlang> CurrencySlangs { get; set; }
         DbSet<ApiKey> ApiKeys { get; set; }
         DbSet<ApiKeyScope> ApiKeyScopes { get; set; }

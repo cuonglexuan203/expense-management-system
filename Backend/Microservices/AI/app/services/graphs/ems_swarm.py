@@ -10,7 +10,7 @@ from app.services.agents.tools.financial_tools import (
     get_messages,
     get_wallets,
     get_wallet_by_id,
-    update_extracted_transactions_status,
+    # update_extracted_transactions_status,
 )
 from app.services.agents.financial_agent import FinancialAgent
 from app.services.llm.enums import LLMModel, LLMProvider
@@ -39,7 +39,7 @@ class EMSSwarm:
                 get_messages,
                 get_wallets,
                 get_wallet_by_id,
-                update_extracted_transactions_status,
+                # update_extracted_transactions_status,
                 create_handoff_tool(agent_name=EventAgent.name),
             ],
         ).get_agent()

@@ -141,7 +141,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
 
                     _logger.LogStateInfo(AppStates.SeedingData, $"Added a default user: userName {user.UserName}, role {user.Role}");
 
-                    await _userPreferenceService.CreateUserPreferencesAsync(userId);
+                    await _userPreferenceService.CreateDefaultUserPreferencesAsync(userId);
                     await _chatThreadService.CreateDefaultChatThreadsAsync(userId);
                 }
                 #endregion

@@ -2,7 +2,7 @@
 
 namespace EMS.Core.Enums
 {
-    public enum Language
+    public enum LanguageCode
     {
         [Description("English")]
         EN,

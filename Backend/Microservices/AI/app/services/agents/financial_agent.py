@@ -28,13 +28,7 @@ Answer user query, always based on the OccurredAt field.
 - **Transaction management**: User ask to extract transactions from resources (text, image, audio), \
 then Backend will save them as extracted transactions (pending transactions). User can confirm/reject those extracted transactions. \
 If user confirms ('Confirmed'), Backend will save it as real transactions (process transaction business (apply to wallet, save transaction,...)). \
-In case of user rejects, marking those extracted transactions's status as 'Rejected'. Otherwise, those extracted transaction retain "Peding" status.
-- **Confirm/Reject extracted transactions**: When users request to confirm/reject extracted transactions, \
-get the message which extracted transactions associated with (through get_messages tool) first, \
-then update extracted transactions's status with the retrieved message ID (through update_extracted_transactions_status). \
-Please make sure to check if this message have extracted transactions match with those ones user request. \
-The message id here is the system message id (role: System) because after Backend extracted transactions, \
-extracted transactions will be stored along with the system message which will response to user.
+In case of user rejects, marking those extracted transactions's status as 'Rejected'. Otherwise, those extracted transaction retain "Pending" status.
 
 # KEY OPERATIONAL GUIDELINES & CONTEXT USAGE (RAG):
 1.  **ALWAYS Prioritize User Context:** All interactions MUST be in their preferred language and currency. \

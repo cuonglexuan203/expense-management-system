@@ -53,7 +53,7 @@ namespace EMS.Infrastructure.Persistence.Seed
                 new SystemSetting
                 {
                     SettingKey = "Language",
-                    SettingValue = Language.EN.ToString(),
+                    SettingValue = LanguageCode.EN.ToString(),
                     DataType = DataType.String,
                     Description = "Default application language",
                     Type = SettingType.General,
