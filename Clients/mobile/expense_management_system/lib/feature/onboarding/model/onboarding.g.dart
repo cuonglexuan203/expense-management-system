@@ -9,22 +9,19 @@ part of 'onboarding.dart';
 _$OnboardingRequestImpl _$$OnboardingRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$OnboardingRequestImpl(
-      language: json['language'] as String,
-      currency: json['currency'] as String,
+      languageCode: json['languageCode'] as String,
+      currencyCode: json['currencyCode'] as String,
       selectedCategoryIds: (json['selectedCategoryIds'] as List<dynamic>)
           .map((e) => (e as num).toInt())
           .toList(),
-      initialWallet:
-          WalletRequest.fromJson(json['initialWallet'] as Map<String, dynamic>),
-      passcode: json['passcode'] as String,
+      wallet: WalletRequest.fromJson(json['wallet'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$OnboardingRequestImplToJson(
         _$OnboardingRequestImpl instance) =>
     <String, dynamic>{
-      'language': instance.language,
-      'currency': instance.currency,
+      'languageCode': instance.languageCode,
+      'currencyCode': instance.currencyCode,
       'selectedCategoryIds': instance.selectedCategoryIds,
-      'initialWallet': instance.initialWallet,
-      'passcode': instance.passcode,
+      'wallet': instance.wallet,
     };

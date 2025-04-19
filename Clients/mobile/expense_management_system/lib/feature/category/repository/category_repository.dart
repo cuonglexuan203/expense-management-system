@@ -92,4 +92,83 @@ class CategoryRepository {
       return APIResponse.error(AppException.errorWithMessage(e.toString()));
     }
   }
+
+  Future<APIResponse<List<Category>>> getCategoriesWithoutPagination() async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.category.getAll,
+      );
+
+      return response.when(
+        success: (data) {
+          if (data is Map<String, dynamic> && data.containsKey("items")) {
+            final items = data["items"] as List<dynamic>;
+
+            final categories = items
+                .whereType<Map<String, dynamic>>()
+                .map(Category.fromJson)
+                .toList();
+
+            return APIResponse.success(categories);
+          } else {
+            return const APIResponse.error(
+                AppException.errorWithMessage("Invalid response format"));
+          }
+        },
+        error: APIResponse.error,
+      );
+    } catch (e) {
+      return APIResponse.error(AppException.errorWithMessage(e.toString()));
+    }
+  }
+
+  Future<APIResponse<Category>> updateCategory(int id, String name) async {
+    try {
+      final body = {
+        'id': id,
+        'name': name,
+      };
+
+      final response = await _api.put(
+        ApiEndpoints.category.update(id.toString()),
+        jsonEncode(body),
+      );
+
+      return response.when(
+        success: (data) {
+          final category = Category.fromJson(data as Map<String, dynamic>);
+          return APIResponse.success(category);
+        },
+        error: APIResponse.error,
+      );
+    } catch (e) {
+      return APIResponse.error(AppException.errorWithMessage(e.toString()));
+    }
+  }
+
+  Future<APIResponse<bool>> deleteCategory(int id) async {
+    try {
+      final response = await _api.delete(
+        ApiEndpoints.category.delete(id.toString()),
+      );
+
+      return response.when(
+        success: (_) {
+          return const APIResponse.success(true);
+        },
+        error: (error) {
+          // Check if error is related to transactions
+          if (error.toString().contains('transaction') ||
+              error.toString().contains('409') ||
+              error.toString().contains('400')) {
+            return APIResponse.error(AppException.errorWithMessage(
+                "Cannot delete category with existing transactions"));
+          }
+          return APIResponse.error(error);
+        },
+      );
+    } catch (e) {
+      return APIResponse.error(AppException.errorWithMessage(e.toString()));
+    }
+  }
 }

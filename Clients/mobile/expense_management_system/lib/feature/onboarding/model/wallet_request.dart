@@ -7,7 +7,7 @@ part 'wallet_request.g.dart';
 class WalletRequest with _$WalletRequest {
   const factory WalletRequest({
     required String name,
-    required double initialBalance,
+    required double balance,
   }) = _WalletRequest;
 
   factory WalletRequest.fromJson(Map<String, dynamic> json) =>

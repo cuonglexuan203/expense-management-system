@@ -172,57 +172,17 @@ class OnboardingNotifier extends _$OnboardingNotifier {
     );
   }
 
-  // Future<bool> completeOnboarding() async {
-  //   state = state.copyWith(isLoading: true);
-
-  //   try {
-  //     final request = OnboardingRequest(
-  //       language: state.language,
-  //       currency: state.currency,
-  //       selectedCategoryIds: state.selectedCategoryIds,
-  //       initialWallet: WalletRequest(
-  //           name: state.walletName, initialBalance: state.initialBalance),
-  //       passcode: state.passcode,
-  //     );
-
-  //     final repository = ref.read(onboardingRepositoryProvider);
-  //     // final success =
-  //     //     await repository.submitOnboarding(onboardingRequest: request);
-
-  //     // Mark onboarding as completed in secure storage
-  //     // if (success) {
-  //     //   final passcodeRepository = ref.read(passcodeRepositoryProvider);
-  //     //   await passcodeRepository.setOnboardingCompleted();
-  //     // }
-  //     final passcodeRepository = ref.read(passcodeRepositoryProvider);
-  //     await passcodeRepository.setOnboardingCompleted();
-
-  //     state = state.copyWith(
-  //       isLoading: false,
-  //       currentStep: OnboardingStep.completed,
-  //     );
-
-  //     return true;
-  //   } catch (e) {
-  //     state = state.copyWith(
-  //       isLoading: false,
-  //       errorMessage: 'Failed to complete onboarding: ${e.toString()}',
-  //     );
-  //     return false;
-  //   }
-  // }
-  // In onboarding_provider.dart
   Future<bool> completeOnboarding() async {
     state = state.copyWith(isLoading: true);
 
     try {
       final request = OnboardingRequest(
-        language: state.language,
-        currency: state.currency,
+        languageCode: state.language,
+        currencyCode: state.currency,
         selectedCategoryIds: state.selectedCategoryIds,
-        initialWallet: WalletRequest(
-            name: state.walletName, initialBalance: state.initialBalance),
-        passcode: state.passcode,
+        wallet: WalletRequest(
+            name: state.walletName, balance: state.initialBalance),
+        // passcode: state.passcode,
       );
 
       // Get passcode repository
@@ -250,8 +210,9 @@ class OnboardingNotifier extends _$OnboardingNotifier {
       // Mark onboarding as completed
       await passcodeRepository.setOnboardingCompleted();
       // Submit onboarding data to backend
-      // final repository = ref.read(onboardingRepositoryProvider);
-      // final success = await repository.submitOnboarding(onboardingRequest: request);
+      final repository = ref.read(onboardingRepositoryProvider);
+      final success =
+          await repository.submitOnboarding(onboardingRequest: request);
       // Commented out for now, as we're focusing on fixing passcode flow
 
       state = state.copyWith(

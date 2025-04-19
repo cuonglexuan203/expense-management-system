@@ -1,33 +1,10 @@
 import 'package:expense_management_system/feature/category/model/category.dart';
 import 'package:expense_management_system/feature/category/repository/category_repository.dart';
+import 'package:expense_management_system/feature/category/state/category_state.dart';
 import 'package:expense_management_system/shared/pagination/pagination_info.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'category_provider.g.dart';
-
-class CategoryState {
-  final List<Category> categories;
-  final PaginationInfo pagination;
-  final bool isLoading;
-
-  CategoryState({
-    required this.categories,
-    required this.pagination,
-    this.isLoading = false,
-  });
-
-  CategoryState copyWith({
-    List<Category>? categories,
-    PaginationInfo? pagination,
-    bool? isLoading,
-  }) {
-    return CategoryState(
-      categories: categories ?? this.categories,
-      pagination: pagination ?? this.pagination,
-      isLoading: isLoading ?? this.isLoading,
-    );
-  }
-}
 
 @riverpod
 class CategoryNotifier extends _$CategoryNotifier {
@@ -155,5 +132,66 @@ class CategoryNotifier extends _$CategoryNotifier {
         return null;
       },
     );
+  }
+
+  Future<bool> updateCategory(int id, String name) async {
+    try {
+      // Send update request to API
+      final response = await _repository.updateCategory(id, name);
+      // Get current state
+      final currentState = state.valueOrNull;
+      if (currentState == null) return false;
+
+      // Create a new list with the updated category name
+      final updatedCategories = currentState.categories.map((category) {
+        if (category.id == id) {
+          return category.copyWith(name: name);
+        }
+        return category;
+      }).toList();
+
+      // Update state
+      state = AsyncData(currentState.copyWith(
+        categories: updatedCategories,
+      ));
+
+      return true;
+    } catch (e) {
+      // Log error
+      print("Error updating category: $e");
+      return false;
+    }
+  }
+
+  Future<bool> deleteCategory(int id) async {
+    try {
+      final response = await _repository.deleteCategory(id);
+
+      return response.when(
+        success: (_) {
+          final currentState = state.valueOrNull;
+          if (currentState != null) {
+            // Update state by removing the deleted category
+            final updatedCategories = currentState.categories
+                .where((category) => category.id != id)
+                .toList();
+
+            state = AsyncData(currentState.copyWith(
+              categories: updatedCategories,
+              pagination: currentState.pagination.copyWith(
+                totalCount: currentState.pagination.totalCount - 1,
+              ),
+            ));
+          }
+          return true;
+        },
+        error: (error) {
+          // Return the specific error message
+          return false;
+        },
+      );
+    } catch (e) {
+      return false;
+    }
   }
 }

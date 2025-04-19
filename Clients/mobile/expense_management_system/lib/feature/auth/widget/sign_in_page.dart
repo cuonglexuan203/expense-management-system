@@ -228,7 +228,7 @@ class SignInPage extends ConsumerWidget {
 
                                               // Optional: the navigation may not be needed when using appStartNotifierProvider
                                               // as it will automatically show HomePage when state is authenticated
-                                              // context.go('/');
+                                              context.go('/');
                                             }
                                           }
                                         } catch (e, stackTrace) {

@@ -9,11 +9,11 @@ part of 'wallet_request.dart';
 _$WalletRequestImpl _$$WalletRequestImplFromJson(Map<String, dynamic> json) =>
     _$WalletRequestImpl(
       name: json['name'] as String,
-      initialBalance: (json['initialBalance'] as num).toDouble(),
+      balance: (json['balance'] as num).toDouble(),
     );
 
 Map<String, dynamic> _$$WalletRequestImplToJson(_$WalletRequestImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'initialBalance': instance.initialBalance,
+      'balance': instance.balance,
     };

@@ -21,7 +21,7 @@ WalletRequest _$WalletRequestFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$WalletRequest {
   String get name => throw _privateConstructorUsedError;
-  double get initialBalance => throw _privateConstructorUsedError;
+  double get balance => throw _privateConstructorUsedError;
 
   /// Serializes this WalletRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -39,7 +39,7 @@ abstract class $WalletRequestCopyWith<$Res> {
           WalletRequest value, $Res Function(WalletRequest) then) =
       _$WalletRequestCopyWithImpl<$Res, WalletRequest>;
   @useResult
-  $Res call({String name, double initialBalance});
+  $Res call({String name, double balance});
 }
 
 /// @nodoc
@@ -58,16 +58,16 @@ class _$WalletRequestCopyWithImpl<$Res, $Val extends WalletRequest>
   @override
   $Res call({
     Object? name = null,
-    Object? initialBalance = null,
+    Object? balance = null,
   }) {
     return _then(_value.copyWith(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      initialBalance: null == initialBalance
-          ? _value.initialBalance
-          : initialBalance // ignore: cast_nullable_to_non_nullable
+      balance: null == balance
+          ? _value.balance
+          : balance // ignore: cast_nullable_to_non_nullable
               as double,
     ) as $Val);
   }
@@ -81,7 +81,7 @@ abstract class _$$WalletRequestImplCopyWith<$Res>
       __$$WalletRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, double initialBalance});
+  $Res call({String name, double balance});
 }
 
 /// @nodoc
@@ -98,16 +98,16 @@ class __$$WalletRequestImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? name = null,
-    Object? initialBalance = null,
+    Object? balance = null,
   }) {
     return _then(_$WalletRequestImpl(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      initialBalance: null == initialBalance
-          ? _value.initialBalance
-          : initialBalance // ignore: cast_nullable_to_non_nullable
+      balance: null == balance
+          ? _value.balance
+          : balance // ignore: cast_nullable_to_non_nullable
               as double,
     ));
   }
@@ -116,7 +116,7 @@ class __$$WalletRequestImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$WalletRequestImpl implements _WalletRequest {
-  const _$WalletRequestImpl({required this.name, required this.initialBalance});
+  const _$WalletRequestImpl({required this.name, required this.balance});
 
   factory _$WalletRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$WalletRequestImplFromJson(json);
@@ -124,11 +124,11 @@ class _$WalletRequestImpl implements _WalletRequest {
   @override
   final String name;
   @override
-  final double initialBalance;
+  final double balance;
 
   @override
   String toString() {
-    return 'WalletRequest(name: $name, initialBalance: $initialBalance)';
+    return 'WalletRequest(name: $name, balance: $balance)';
   }
 
   @override
@@ -137,13 +137,12 @@ class _$WalletRequestImpl implements _WalletRequest {
         (other.runtimeType == runtimeType &&
             other is _$WalletRequestImpl &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.initialBalance, initialBalance) ||
-                other.initialBalance == initialBalance));
+            (identical(other.balance, balance) || other.balance == balance));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, name, initialBalance);
+  int get hashCode => Object.hash(runtimeType, name, balance);
 
   /// Create a copy of WalletRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -164,7 +163,7 @@ class _$WalletRequestImpl implements _WalletRequest {
 abstract class _WalletRequest implements WalletRequest {
   const factory _WalletRequest(
       {required final String name,
-      required final double initialBalance}) = _$WalletRequestImpl;
+      required final double balance}) = _$WalletRequestImpl;
 
   factory _WalletRequest.fromJson(Map<String, dynamic> json) =
       _$WalletRequestImpl.fromJson;
@@ -172,7 +171,7 @@ abstract class _WalletRequest implements WalletRequest {
   @override
   String get name;
   @override
-  double get initialBalance;
+  double get balance;
 
   /// Create a copy of WalletRequest
   /// with the given fields replaced by the non-null parameter values.

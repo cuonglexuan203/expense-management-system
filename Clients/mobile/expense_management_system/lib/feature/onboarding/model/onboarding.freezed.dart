@@ -20,11 +20,10 @@ OnboardingRequest _$OnboardingRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$OnboardingRequest {
-  String get language => throw _privateConstructorUsedError;
-  String get currency => throw _privateConstructorUsedError;
+  String get languageCode => throw _privateConstructorUsedError;
+  String get currencyCode => throw _privateConstructorUsedError;
   List<int> get selectedCategoryIds => throw _privateConstructorUsedError;
-  WalletRequest get initialWallet => throw _privateConstructorUsedError;
-  String get passcode => throw _privateConstructorUsedError;
+  WalletRequest get wallet => throw _privateConstructorUsedError;
 
   /// Serializes this OnboardingRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -43,13 +42,12 @@ abstract class $OnboardingRequestCopyWith<$Res> {
       _$OnboardingRequestCopyWithImpl<$Res, OnboardingRequest>;
   @useResult
   $Res call(
-      {String language,
-      String currency,
+      {String languageCode,
+      String currencyCode,
       List<int> selectedCategoryIds,
-      WalletRequest initialWallet,
-      String passcode});
+      WalletRequest wallet});
 
-  $WalletRequestCopyWith<$Res> get initialWallet;
+  $WalletRequestCopyWith<$Res> get wallet;
 }
 
 /// @nodoc
@@ -67,33 +65,28 @@ class _$OnboardingRequestCopyWithImpl<$Res, $Val extends OnboardingRequest>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? language = null,
-    Object? currency = null,
+    Object? languageCode = null,
+    Object? currencyCode = null,
     Object? selectedCategoryIds = null,
-    Object? initialWallet = null,
-    Object? passcode = null,
+    Object? wallet = null,
   }) {
     return _then(_value.copyWith(
-      language: null == language
-          ? _value.language
-          : language // ignore: cast_nullable_to_non_nullable
+      languageCode: null == languageCode
+          ? _value.languageCode
+          : languageCode // ignore: cast_nullable_to_non_nullable
               as String,
-      currency: null == currency
-          ? _value.currency
-          : currency // ignore: cast_nullable_to_non_nullable
+      currencyCode: null == currencyCode
+          ? _value.currencyCode
+          : currencyCode // ignore: cast_nullable_to_non_nullable
               as String,
       selectedCategoryIds: null == selectedCategoryIds
           ? _value.selectedCategoryIds
           : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
               as List<int>,
-      initialWallet: null == initialWallet
-          ? _value.initialWallet
-          : initialWallet // ignore: cast_nullable_to_non_nullable
+      wallet: null == wallet
+          ? _value.wallet
+          : wallet // ignore: cast_nullable_to_non_nullable
               as WalletRequest,
-      passcode: null == passcode
-          ? _value.passcode
-          : passcode // ignore: cast_nullable_to_non_nullable
-              as String,
     ) as $Val);
   }
 
@@ -101,9 +94,9 @@ class _$OnboardingRequestCopyWithImpl<$Res, $Val extends OnboardingRequest>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $WalletRequestCopyWith<$Res> get initialWallet {
-    return $WalletRequestCopyWith<$Res>(_value.initialWallet, (value) {
-      return _then(_value.copyWith(initialWallet: value) as $Val);
+  $WalletRequestCopyWith<$Res> get wallet {
+    return $WalletRequestCopyWith<$Res>(_value.wallet, (value) {
+      return _then(_value.copyWith(wallet: value) as $Val);
     });
   }
 }
@@ -117,14 +110,13 @@ abstract class _$$OnboardingRequestImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String language,
-      String currency,
+      {String languageCode,
+      String currencyCode,
       List<int> selectedCategoryIds,
-      WalletRequest initialWallet,
-      String passcode});
+      WalletRequest wallet});
 
   @override
-  $WalletRequestCopyWith<$Res> get initialWallet;
+  $WalletRequestCopyWith<$Res> get wallet;
 }
 
 /// @nodoc
@@ -140,33 +132,28 @@ class __$$OnboardingRequestImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? language = null,
-    Object? currency = null,
+    Object? languageCode = null,
+    Object? currencyCode = null,
     Object? selectedCategoryIds = null,
-    Object? initialWallet = null,
-    Object? passcode = null,
+    Object? wallet = null,
   }) {
     return _then(_$OnboardingRequestImpl(
-      language: null == language
-          ? _value.language
-          : language // ignore: cast_nullable_to_non_nullable
+      languageCode: null == languageCode
+          ? _value.languageCode
+          : languageCode // ignore: cast_nullable_to_non_nullable
               as String,
-      currency: null == currency
-          ? _value.currency
-          : currency // ignore: cast_nullable_to_non_nullable
+      currencyCode: null == currencyCode
+          ? _value.currencyCode
+          : currencyCode // ignore: cast_nullable_to_non_nullable
               as String,
       selectedCategoryIds: null == selectedCategoryIds
           ? _value._selectedCategoryIds
           : selectedCategoryIds // ignore: cast_nullable_to_non_nullable
               as List<int>,
-      initialWallet: null == initialWallet
-          ? _value.initialWallet
-          : initialWallet // ignore: cast_nullable_to_non_nullable
+      wallet: null == wallet
+          ? _value.wallet
+          : wallet // ignore: cast_nullable_to_non_nullable
               as WalletRequest,
-      passcode: null == passcode
-          ? _value.passcode
-          : passcode // ignore: cast_nullable_to_non_nullable
-              as String,
     ));
   }
 }
@@ -175,20 +162,19 @@ class __$$OnboardingRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$OnboardingRequestImpl implements _OnboardingRequest {
   const _$OnboardingRequestImpl(
-      {required this.language,
-      required this.currency,
+      {required this.languageCode,
+      required this.currencyCode,
       required final List<int> selectedCategoryIds,
-      required this.initialWallet,
-      required this.passcode})
+      required this.wallet})
       : _selectedCategoryIds = selectedCategoryIds;
 
   factory _$OnboardingRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$OnboardingRequestImplFromJson(json);
 
   @override
-  final String language;
+  final String languageCode;
   @override
-  final String currency;
+  final String currencyCode;
   final List<int> _selectedCategoryIds;
   @override
   List<int> get selectedCategoryIds {
@@ -199,13 +185,11 @@ class _$OnboardingRequestImpl implements _OnboardingRequest {
   }
 
   @override
-  final WalletRequest initialWallet;
-  @override
-  final String passcode;
+  final WalletRequest wallet;
 
   @override
   String toString() {
-    return 'OnboardingRequest(language: $language, currency: $currency, selectedCategoryIds: $selectedCategoryIds, initialWallet: $initialWallet, passcode: $passcode)';
+    return 'OnboardingRequest(languageCode: $languageCode, currencyCode: $currencyCode, selectedCategoryIds: $selectedCategoryIds, wallet: $wallet)';
   }
 
   @override
@@ -213,27 +197,19 @@ class _$OnboardingRequestImpl implements _OnboardingRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OnboardingRequestImpl &&
-            (identical(other.language, language) ||
-                other.language == language) &&
-            (identical(other.currency, currency) ||
-                other.currency == currency) &&
+            (identical(other.languageCode, languageCode) ||
+                other.languageCode == languageCode) &&
+            (identical(other.currencyCode, currencyCode) ||
+                other.currencyCode == currencyCode) &&
             const DeepCollectionEquality()
                 .equals(other._selectedCategoryIds, _selectedCategoryIds) &&
-            (identical(other.initialWallet, initialWallet) ||
-                other.initialWallet == initialWallet) &&
-            (identical(other.passcode, passcode) ||
-                other.passcode == passcode));
+            (identical(other.wallet, wallet) || other.wallet == wallet));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      language,
-      currency,
-      const DeepCollectionEquality().hash(_selectedCategoryIds),
-      initialWallet,
-      passcode);
+  int get hashCode => Object.hash(runtimeType, languageCode, currencyCode,
+      const DeepCollectionEquality().hash(_selectedCategoryIds), wallet);
 
   /// Create a copy of OnboardingRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -254,25 +230,22 @@ class _$OnboardingRequestImpl implements _OnboardingRequest {
 
 abstract class _OnboardingRequest implements OnboardingRequest {
   const factory _OnboardingRequest(
-      {required final String language,
-      required final String currency,
+      {required final String languageCode,
+      required final String currencyCode,
       required final List<int> selectedCategoryIds,
-      required final WalletRequest initialWallet,
-      required final String passcode}) = _$OnboardingRequestImpl;
+      required final WalletRequest wallet}) = _$OnboardingRequestImpl;
 
   factory _OnboardingRequest.fromJson(Map<String, dynamic> json) =
       _$OnboardingRequestImpl.fromJson;
 
   @override
-  String get language;
+  String get languageCode;
   @override
-  String get currency;
+  String get currencyCode;
   @override
   List<int> get selectedCategoryIds;
   @override
-  WalletRequest get initialWallet;
-  @override
-  String get passcode;
+  WalletRequest get wallet;
 
   /// Create a copy of OnboardingRequest
   /// with the given fields replaced by the non-null parameter values.

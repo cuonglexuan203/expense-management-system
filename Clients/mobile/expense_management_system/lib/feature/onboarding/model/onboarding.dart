@@ -7,11 +7,11 @@ part 'onboarding.g.dart';
 @freezed
 class OnboardingRequest with _$OnboardingRequest {
   const factory OnboardingRequest({
-    required String language,
-    required String currency,
+    required String languageCode,
+    required String currencyCode,
     required List<int> selectedCategoryIds,
-    required WalletRequest initialWallet,
-    required String passcode,
+    required WalletRequest wallet,
+    // required String passcode,
   }) = _OnboardingRequest;
 
   factory OnboardingRequest.fromJson(Map<String, dynamic> json) =>

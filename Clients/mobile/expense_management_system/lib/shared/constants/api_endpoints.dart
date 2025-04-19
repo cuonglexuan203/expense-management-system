@@ -85,6 +85,9 @@ class _MediaEndpoints {
 // }
 
 class _UserEndpoints {
-  final String base = '${ApiEndpoints.base}/users';
-  String get onboarding => '$base/onboarding';
+  final String base = '${ApiEndpoints.base}/onboarding';
+  String get onboarding => base;
+  String get getOnboardingStatus => '$base/status';
+  String get getLanguages => '$base/languages';
+  String get getCurrencies => '$base/currencies';
 }
