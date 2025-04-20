@@ -247,6 +247,12 @@ namespace EMS.Infrastructure.Persistence.Seed
                 }, "E4164EFEA68EA6A9CAC2AB5761518"),
                 (new()
                 {
+                    Name = "Dispatcher Service",
+                    Description = "Dispatcher service API Key",
+                    Scopes = ["dispatcher:full"] // full privilege
+                }, "486A8FF68D88ED3ABFF717F84BFAD"),
+                (new()
+                {
                     Name = "Admin",
                     Description = "Admin API Key",
                     Scopes = ["admin:access"]
