@@ -34,12 +34,17 @@ namespace EMS.Application.Features.DeviceTokens.Commands.AddDeviceToken
                 var token = request.Token;
                 var platform = request.Platform;
 
-                if (await _context.DeviceTokens
-                    .AnyAsync(e => !e.IsDeleted
+                var deviceToken = await _context.DeviceTokens
+                    .FirstOrDefaultAsync(e => !e.IsDeleted
                         && e.IsActive
                         && e.UserId == userId
-                        && e.Token == token))
+                        && e.Token == token);
+
+                if (deviceToken != null)
                 {
+                    deviceToken.LastUsedAt = DateTimeOffset.UtcNow;
+                    await _context.SaveChangesAsync();
+
                     return Unit.Value;
                 }
 
@@ -48,9 +53,9 @@ namespace EMS.Application.Features.DeviceTokens.Commands.AddDeviceToken
                     platform,
                     DateTimeOffset.UtcNow);
 
-                var deviceToken = DeviceToken.Create(userId, token, platform);
+                var newDeviceToken = DeviceToken.Create(userId, token, platform);
 
-                _context.DeviceTokens.Add(deviceToken);
+                _context.DeviceTokens.Add(newDeviceToken);
 
                 await _context.SaveChangesAsync();
 
