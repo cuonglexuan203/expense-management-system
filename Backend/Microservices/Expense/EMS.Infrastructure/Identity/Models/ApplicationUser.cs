@@ -27,5 +27,6 @@ namespace EMS.Infrastructure.Identity.Models
         public ICollection<Transaction> Transactions { get; set; } = [];
         public ICollection<Wallet> Wallets { get; set; } = [];
         public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
+        public ICollection<DeviceToken> DeviceTokens { get; set; } = [];
     }
 }

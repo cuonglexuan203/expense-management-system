@@ -35,6 +35,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
         public DbSet<CurrencySlang> CurrencySlangs { get; set; }
         public DbSet<ApiKey> ApiKeys { get; set; }
         public DbSet<ApiKeyScope> ApiKeyScopes { get; set; }
+        public DbSet<DeviceToken> DeviceTokens { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
