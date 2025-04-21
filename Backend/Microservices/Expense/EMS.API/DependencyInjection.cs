@@ -146,6 +146,11 @@ namespace EMS.API
                         .AddAuthenticationSchemes(ApiKeyAuthenticationOptions.DefaultScheme)
                         .RequireClaim("scope", "ai:analyze"))
 
+                .AddPolicy(Policies.DispatcherServiceAccess, policy =>
+                    policy.RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes(ApiKeyAuthenticationOptions.DefaultScheme)
+                        .RequireClaim("scope", "dispatcher:full"))
+
                 .AddPolicy(Policies.AdminAccess, policy =>
                     policy.RequireAuthenticatedUser()
                         .AddAuthenticationSchemes(AuthenticationSchemes.MultiScheme)

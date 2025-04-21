@@ -1,6 +1,7 @@
 ﻿using EMS.API.Common.Attributes;
 using EMS.Application.Features.DeviceTokens.Commands.AddDeviceToken;
 using EMS.Application.Features.DeviceTokens.Queries;
+using EMS.Core.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,7 @@ namespace EMS.API.Controllers.v1
             return Ok(result);
         }
 
+        [Authorize(Policy = Policies.DispatcherServiceAccess)]
         [HttpGet("users/{userId}")]
         public async Task<IActionResult> GetDeviceTokens(string userId)
         {
