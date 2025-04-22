@@ -14,19 +14,19 @@ namespace EMS.Infrastructure.Cache
         private readonly IConnectionMultiplexer _redis;
         private readonly JsonSerializerOptions _options;
         private readonly IDatabase _db;
-        private readonly CacheOptions _cacheOptions;
+        private readonly RedisOptions _redisOptions;
 
         public RedisCacheService(
             ILogger<RedisCacheService> logger,
             IConnectionMultiplexer redis,
-            IOptions<CacheOptions> cacheOptions,
+            IOptions<RedisOptions> redisOptions,
             IOptions<JsonOptions> options
             )
         {
             _logger = logger;
             _redis = redis;
             _db = redis.GetDatabase();
-            _cacheOptions = cacheOptions.Value;
+            _redisOptions = redisOptions.Value;
             _options = options.Value.JsonSerializerOptions;
         }
 
@@ -71,7 +71,7 @@ namespace EMS.Infrastructure.Cache
             {
                 string fullKey = GetFullKey(key);
                 string serializedValue = JsonSerializer.Serialize(value, _options);
-                var expiry = expiryTime ?? TimeSpan.FromMinutes(_cacheOptions.DefaultExpiryTimeInMinutes);
+                var expiry = expiryTime ?? TimeSpan.FromMinutes(_redisOptions.DefaultExpiryTimeInMinutes);
 
                 await _db.StringSetAsync(fullKey, serializedValue, expiry);
 
@@ -137,7 +137,7 @@ namespace EMS.Infrastructure.Cache
                     return false;
                 }
 
-                await _db.KeyExpireAsync(fullKey, TimeSpan.FromMinutes(_cacheOptions.DefaultExpiryTimeInMinutes));
+                await _db.KeyExpireAsync(fullKey, TimeSpan.FromMinutes(_redisOptions.DefaultExpiryTimeInMinutes));
                 LogCacheInfo($"Cache entry refreshed: {key}");
                 return true;
             }
@@ -149,11 +149,11 @@ namespace EMS.Infrastructure.Cache
         }
 
         public string GetFullKey(string key)
-            => string.IsNullOrEmpty(_cacheOptions.InstanceName) ? key : $"{_cacheOptions.InstanceName}:{key}";
+            => string.IsNullOrEmpty(_redisOptions.InstanceName) ? key : $"{_redisOptions.InstanceName}:{key}";
 
         private void LogCacheHit(string key)
         {
-            if (_cacheOptions.EnableLogging)
+            if (_redisOptions.EnableLogging)
             {
                 _logger.LogDebug("Cache hit for key: {Key}", key);
             }
@@ -161,7 +161,7 @@ namespace EMS.Infrastructure.Cache
 
         private void LogCacheMiss(string key)
         {
-            if (_cacheOptions.EnableLogging)
+            if (_redisOptions.EnableLogging)
             {
                 _logger.LogDebug("Cache miss for key: {Key}", key);
             }
@@ -169,7 +169,7 @@ namespace EMS.Infrastructure.Cache
 
         private void LogCacheInfo(string message)
         {
-            if (_cacheOptions.EnableLogging)
+            if (_redisOptions.EnableLogging)
             {
                 _logger.LogInformation(message);
             }
@@ -177,7 +177,7 @@ namespace EMS.Infrastructure.Cache
 
         private void LogCacheWarning(string message)
         {
-            if (_cacheOptions.EnableLogging)
+            if (_redisOptions.EnableLogging)
             {
                 _logger.LogWarning(message);
             }
@@ -185,7 +185,7 @@ namespace EMS.Infrastructure.Cache
 
         private void LogCacheError(Exception ex, string key)
         {
-            if (_cacheOptions.EnableLogging)
+            if (_redisOptions.EnableLogging)
             {
                 _logger.LogError(ex, "Redis cache error for key {Key}: {msg}", key, ex.Message);
             }

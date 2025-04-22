@@ -138,7 +138,7 @@ class ImageExtractor(BaseExtractor):
         result = await chain.ainvoke(
             {
                 "today": today,
-                "language": preferences.language or "English",
+                "language": preferences.language_code or "English",
                 "categories": ", ".join(categories),
                 "preferences": preferences,
                 "default_currency": "USD",

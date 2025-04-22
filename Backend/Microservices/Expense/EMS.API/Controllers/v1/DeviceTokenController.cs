@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EMS.API.Controllers.v1
 {
-    [Authorize]
     [ApiRoute("device-tokens")]
     public class DeviceTokenController : ApiControllerBase
     {
@@ -19,6 +18,7 @@ namespace EMS.API.Controllers.v1
             _sender = sender;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddDeviceToken(AddDeviceTokenCommand command)
         {

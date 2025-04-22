@@ -21,7 +21,7 @@ async def supervisor(request: AssistantRequest, _: str = Depends(get_api_key)):
         categories=", ".join(request.categories),
         user_preferences=request.user_preferences,
         currency_code=request.user_preferences.currency_code,
-        language=request.user_preferences.language or "English",
+        language=request.user_preferences.language_code or "English",
     )
 
     graph = EMSSupervisor(prompt).get_graph()
@@ -38,7 +38,7 @@ async def supervisor(request: AssistantRequest, _: str = Depends(get_api_key)):
             "categories": ", ".join(request.categories),
             "user_preferences": request.user_preferences,
             "currency_code": request.user_preferences.currency_code,
-            "language": request.user_preferences.language or "English",
+            "language": request.user_preferences.language_code or "English",
         },
         config={"configurable": {"thread_id": "1"}},
         interrupt_after=["financial_expert"],

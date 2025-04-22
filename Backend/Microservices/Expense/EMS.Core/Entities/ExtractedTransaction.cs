@@ -6,7 +6,7 @@ namespace EMS.Core.Entities
 {
     public class ExtractedTransaction : BaseAuditableEntity<int>
     {
-        public int ChatExtractionId { get; set; }
+        public int? ChatExtractionId { get; set; }
         //public int ChatMessageId { get; set; }
         public int? CategoryId { get; set; }
         public int? TransactionId { get; set; }

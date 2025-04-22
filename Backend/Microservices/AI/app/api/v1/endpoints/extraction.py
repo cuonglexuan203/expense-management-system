@@ -6,7 +6,6 @@ from app.api.v1.models.transaction_request import (
     ImageTransactionRequest,
     TextTransactionRequest,
 )
-from app.api.v1.models.transaction_response import TransactionResponse
 from app.core.logging import get_logger
 from app.core.security import get_api_key
 from app.schemas.llm_config import LLMConfig
@@ -50,7 +49,7 @@ async def extract_transaction(transaction: Transaction):
     return res
 
 
-@router.post("/text", response_model=TransactionResponse)
+@router.post("/text")
 async def extract_from_text(
     request: TextTransactionRequest, _: Annotated[str, Depends(get_api_key)]
 ):
@@ -72,11 +71,7 @@ async def extract_from_text(
             },
         )
 
-        return TransactionResponse(
-            transactions=result.transactions,
-            introduction=result.introduction,
-            message="Successfully extracted transactions from text",
-        )
+        return result
 
     except Exception as e:
         logger.error(f"Error extracting transactions from text: {e}")
@@ -85,7 +80,7 @@ async def extract_from_text(
         )
 
 
-@router.post("/image", response_model=TransactionResponse)
+@router.post("/image")
 async def extract_from_image(
     request: ImageTransactionRequest, _: Annotated[str, Depends(get_api_key)]
 ):
@@ -108,11 +103,7 @@ async def extract_from_image(
             },
         )
 
-        return TransactionResponse(
-            transactions=result.transactions,
-            introduction=result.introduction,
-            message="Successfully extracted transactions from image",
-        )
+        return result
 
     except Exception as e:
         logger.error(f"Error extracting transactions from image: {e}")
@@ -122,7 +113,7 @@ async def extract_from_image(
         )
 
 
-@router.post("/audio", response_model=TransactionResponse)
+@router.post("/audio")
 async def extract_from_audio(
     request: ImageTransactionRequest, _: Annotated[str, Depends(get_api_key)]
 ):
@@ -145,11 +136,7 @@ async def extract_from_audio(
             },
         )
 
-        return TransactionResponse(
-            transactions=result.transactions,
-            introduction=result.introduction,
-            message="Successfully extracted transactions from audio",
-        )
+        return result
 
     except Exception as e:
         logger.error(f"Error extracting transactions from audio: {e}")

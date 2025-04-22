@@ -3,7 +3,7 @@
 namespace EMS.Application.Common.DTOs
 {
     // NOTE: Only use for the extraction route (extract from text)
-    public record MessageExtractionRequest(
+    public record MessageAnalysisRequest(
         string UserId,
         int ChatThreadId,
         string Message,

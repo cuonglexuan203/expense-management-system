@@ -24,14 +24,14 @@ using System.Text.Json;
 
 namespace EMS.Infrastructure.BackgroundJobs
 {
-    public class TransactionProcessingService : BackgroundService
+    public class AssistantMessageProcessorWorker : BackgroundService
     {
-        private readonly ILogger<TransactionProcessingService> _logger;
+        private readonly ILogger<AssistantMessageProcessorWorker> _logger;
         private readonly IMessageQueue<QueryMessage> _messageQueue;
         private readonly IServiceProvider _serviceProvider;
 
-        public TransactionProcessingService(
-            ILogger<TransactionProcessingService> logger,
+        public AssistantMessageProcessorWorker(
+            ILogger<AssistantMessageProcessorWorker> logger,
             IMessageQueue<QueryMessage> messageQueue,
             IServiceProvider serviceProvider)
         {

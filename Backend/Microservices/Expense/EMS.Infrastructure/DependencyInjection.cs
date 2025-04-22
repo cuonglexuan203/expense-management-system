@@ -19,6 +19,7 @@ using EMS.Infrastructure.Persistence.DbContext;
 using EMS.Infrastructure.Persistence.Interceptors;
 using EMS.Infrastructure.Services;
 using EMS.Infrastructure.Services.HttpClients.AiService;
+using EMS.Infrastructure.Services.HttpClients.DispatcherService;
 using EMS.Infrastructure.SignalR;
 using EMS.Infrastructure.Storage;
 using Microsoft.AspNetCore.Identity;
@@ -48,7 +49,7 @@ namespace EMS.Infrastructure
 
             AddDbContexts(services, configuration);
 
-            services.AddRedisCaching(configuration);
+            services.AddRedisService(configuration);
 
             return services;
         }
@@ -57,11 +58,13 @@ namespace EMS.Infrastructure
         {
             services.Configure<AiServiceOptions>(configuration.GetSection(AiServiceOptions.AiService));
             services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.Cloudinary));
+            services.Configure<DispatcherServiceOptions>(configuration.GetSection(DispatcherServiceOptions.DispatcherService));
         }
 
         private static void AddHttpClients(IServiceCollection services)
         {
             services.AddHttpClient<IAiService, AiService>();
+            services.AddHttpClient<IDispatcherService, DispatcherService>();
         }
 
         private static void AddScopedServices(IServiceCollection services)
@@ -97,7 +100,8 @@ namespace EMS.Infrastructure
 
         private static void AddBackgroundJobs(IServiceCollection services)
         {
-            services.AddHostedService<TransactionProcessingService>();
+            services.AddHostedService<AssistantMessageProcessorWorker>();
+            services.AddHostedService<NotificationAnalyzerWorker>();
         }
 
         private static void AddDbContexts(IServiceCollection services, IConfiguration configuration)

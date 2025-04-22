@@ -13,5 +13,5 @@ class CurrencyCode(str, Enum):
 
 class UserPreferences(BaseModel):
     # user_id: str
-    language: str = Field(description="User language")
+    language_code: str = Field(description="User language")
     currency_code: str = Field(description="Currency code of user ex. USD, VND, CNY, KRW, JPY,...")

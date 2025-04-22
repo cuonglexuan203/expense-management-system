@@ -1,6 +1,8 @@
-﻿using EMS.Application.Common.Interfaces.Services;
+﻿using EMS.Application.Common.Interfaces.Messaging;
+using EMS.Application.Common.Interfaces.Services;
 using EMS.Infrastructure.Cache;
 using EMS.Infrastructure.Common.Options;
+using EMS.Infrastructure.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,10 +12,10 @@ namespace EMS.Infrastructure.Common.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddRedisCaching(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddRedisService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.Cache));
-            var redisConfig = configuration.GetSection(CacheOptions.Cache).Get<CacheOptions>();
+            services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.Redis));
+            var redisConfig = configuration.GetSection(RedisOptions.Redis).Get<RedisOptions>();
 
             services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
@@ -23,6 +25,7 @@ namespace EMS.Infrastructure.Common.Extensions
             });
 
             services.TryAddSingleton<IDistributedCacheService, RedisCacheService>();
+            services.TryAddSingleton<IMessageQueueService, RedisMessageQueueService>();
 
             services.AddHealthChecks()
                 .AddCheck<RedisCacheHealthCheck>("redis_cache", tags: ["cache", "redis"]);
