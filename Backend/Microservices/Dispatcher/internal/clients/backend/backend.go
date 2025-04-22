@@ -20,7 +20,7 @@ const (
 
 // Endpoints
 const (
-	deviceTokens = "/device-tokens/users/%s"
+	deviceTokens = "/api/v1/device-tokens/users/%s"
 )
 
 type BackendClient struct {

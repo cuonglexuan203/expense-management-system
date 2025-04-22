@@ -16,6 +16,15 @@ services:
       context: ./Microservices/AI
       dockerfile: Dockerfile
 
+  # Dispatcher
+  go-dispatcher:
+    image: ${DOCKER_REGISTRY-}go-dispatcher
+    build:
+      context: ./Microservices/Dispatcher
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+
   # Databases
   postgres:
     image: ${DOCKER_REGISTRY-}postgres:17.4-alpine3.21

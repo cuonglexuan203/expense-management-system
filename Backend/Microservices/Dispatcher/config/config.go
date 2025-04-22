@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/viper"
+	v "github.com/spf13/viper"
 )
 
 type Config struct {
@@ -36,6 +36,8 @@ type Config struct {
 }
 
 func LoadConfig(path string) (config Config, err error) {
+	viper := v.NewWithOptions(v.ExperimentalBindStruct())
+
 	viper.AddConfigPath(path)
 	viper.SetConfigFile(".env")
 	// viper.SetConfigName("config")
@@ -61,8 +63,9 @@ func LoadConfig(path string) (config Config, err error) {
 	viper.SetDefault("BACKEND_API_URL", "http://localhost:5000")
 
 	if err = viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return Config{}, fmt.Errorf("failed to read config file: %w", err)
+		if _, ok := err.(v.ConfigFileNotFoundError); !ok {
+			print("Config file not found, using environment variables")
+			// return Config{}, fmt.Errorf("failed to read config file: %w", err)
 		}
 	}
 

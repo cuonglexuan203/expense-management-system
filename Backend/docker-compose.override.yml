@@ -107,6 +107,62 @@ services:
     ports:
       - "${AI_PORT}:8000"
 
+  go-dispatcher:
+    container_name: go-dispatcher-service
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ems-api:
+        condition: service_started
+    env_file:
+      - .env
+    environment:
+      # Application Configuration
+      - APP_ENV=${GO_DISPATCHER_APP_ENV:-development}
+      - APP_PORT=8081
+      - APP_API_KEY=${GO_DISPATCHER_API_KEY}
+
+      # Logging
+      - LOG_LEVEL=${GO_DISPATCHER_LOG_LEVEL:-info}
+      - LOG_FILENAME=/app/logs/app.log
+      - LOG_MAX_SIZE_MB=${GO_DISPATCHER_LOG_MAX_SIZE_MB:-100}
+      - LOG_MAX_BACKUPS=${GO_DISPATCHER_LOG_MAX_BACKUPS:-5}
+      - LOG_MAX_AGE_DAYS=${GO_DISPATCHER_LOG_MAX_AGE_DAYS:-7}
+
+      # Database (PostgreSQL)
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DBNAME}
+      - DB_SSLMODE=${GO_DISPATCHER_DB_SSLMODE:-disable}
+
+      # Redis (for Asynq)
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=${GO_DISPATCHER_REDIS_DB:-0}
+
+      # Firebase
+      - FIREBASE_SERVICE_ACCOUNT_KEY_PATH=/app/firebase-account-key.json
+
+      # Backend API
+      - BACKEND_API_URL=http://ems-api:8080
+      - BACKEND_API_KEY=${GO_DISPATCHER_BE_API_KEY}
+      # CORS (Optional - Set defaults or configure via .env)
+      # - CORS_ALLOWED_ORIGINS=["*"] # Example
+      # - CORS_ALLOWED_METHODS=["GET","POST","PUT","PATCH","DELETE","OPTIONS"]
+      # - CORS_ALLOWED_HEADERS=["Accept","Authorization","Content-Type","X-CSRF-Token","X-API-KEY"]
+      # - CORS_MAX_AGE=43200 # 12 hours in seconds
+    volumes:
+      - ./Microservices/Dispatcher/logs:/app/logs
+    networks:
+      - app-network
+    ports:
+      - "${GO_DISPATCHER_PORT}:8081"
+
   # Databases
   postgres:
     container_name: postgres-db
