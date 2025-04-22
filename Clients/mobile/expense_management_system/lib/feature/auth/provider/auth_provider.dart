@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:expense_management_system/feature/auth/repository/auth_repository.dart';
-import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
 import 'package:expense_management_system/feature/auth/state/auth_state.dart';
+import 'package:expense_management_system/feature/notification/service/fcm_service.dart';
 import 'package:expense_management_system/shared/http/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,23 +20,91 @@ class AuthNotifier extends _$AuthNotifier {
 
   late final AuthRepository _loginRepository = ref.read(authRepositoryProvider);
 
+  // Future<void> login(String email, String password) async {
+  //   state = const AuthState.loading(); // Indicate loading
+  //   try {
+  //     final authStateResult = await _loginRepository.login(email, password);
+  //     state = authStateResult;
+  //     print("Login completed with state: $state");
+
+  //     // If login was successful, register FCM token
+  //     if (authStateResult == const AuthState.loggedIn()) {
+  //       // Use ref.read to access other providers within the Notifier
+  //       await ref.read(fcmServiceProvider).registerDeviceToken();
+  //     }
+  //   } catch (e) {
+  //     print("Exception during login: $e");
+  //     state = AuthState.error(AppException.errorWithMessage(e.toString()));
+  //     rethrow; // Re-throw to allow UI to handle error
+  //   }
+  // }
+
+  // Future<void> signUp(String name, String email, String password) async {
+  //   state = await _loginRepository.signUp(name, email, password);
+  // }
+
+  // Future<void> logout() async {
+  //   state = await _loginRepository.logout();
+  // }
   Future<void> login(String email, String password) async {
+    final loginRepository = ref.read(authRepositoryProvider);
+    state = const AuthState.loading();
     try {
-      final authState = await _loginRepository.login(email, password);
-      state = authState;
-      print("Login completed with state: $state");
+      final authStateResult = await loginRepository.login(email, password);
+      state = authStateResult;
+      log("Login completed with state: $state");
+
+      if (authStateResult == const AuthState.loggedIn()) {
+        log("Login successful, attempting to register FCM token...");
+        try {
+          await ref.read(fcmServiceProvider).registerDeviceToken();
+          log("FCM token registration initiated.");
+        } catch (e) {
+          log("Error initiating FCM token registration: $e");
+        }
+      }
     } catch (e) {
-      print("Exception during login: $e");
+      log("Exception during login: $e");
       state = AuthState.error(AppException.errorWithMessage(e.toString()));
-      rethrow;
     }
   }
 
   Future<void> signUp(String name, String email, String password) async {
-    state = await _loginRepository.signUp(name, email, password);
+    final loginRepository = ref.read(authRepositoryProvider);
+    state = const AuthState.loading();
+    try {
+      final authStateResult =
+          await loginRepository.signUp(name, email, password);
+      state = authStateResult;
+      log("Signup completed with state: $state");
+
+      // if (authStateResult == const AuthState.loggedIn()) {
+      //   log("Signup successful, attempting to register FCM token...");
+      //   try {
+      //     await ref.read(fcmServiceProvider).registerDeviceToken();
+      //     log("FCM token registration initiated.");
+      //   } catch (e) {
+      //     log("Error initiating FCM token registration: $e");
+      //   }
+      // }
+    } catch (e) {
+      log("Exception during signup: $e");
+      state = AuthState.error(AppException.errorWithMessage(e.toString()));
+    }
   }
 
   Future<void> logout() async {
-    state = await _loginRepository.logout();
+    final loginRepository = ref.read(authRepositoryProvider);
+    state = const AuthState.loading();
+    try {
+      // TODO: Call unregisterDeviceToken here if needed
+      // await ref.read(fcmServiceProvider).unregisterDeviceToken();
+
+      state = await loginRepository.logout();
+      log("Logout completed with state: $state");
+    } catch (e) {
+      log("Exception during logout: $e");
+      state = AuthState.error(AppException.errorWithMessage(e.toString()));
+    }
   }
 }

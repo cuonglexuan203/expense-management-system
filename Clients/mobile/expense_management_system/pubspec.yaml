@@ -46,6 +46,10 @@ dependencies:
   local_auth_android: ^1.0.48
   flutter_markdown: ^0.7.7
   url_launcher: ^6.3.1
+  # workmanager: ^0.5.4
+  firebase_messaging: ^15.2.5
+  flutter_local_notifications: ^19.1.0
+  firebase_core: ^3.13.0
 
 dev_dependencies:
   flutter_test:

@@ -11,6 +11,7 @@ class ApiEndpoints {
   static final hubConnection = _HubConnectionEndpoints();
   static final media = _MediaEndpoints();
   static final user = _UserEndpoints();
+  static final devicesToken = _DevicesToken();
 }
 
 class _AuthEndpoints {
@@ -90,4 +91,10 @@ class _UserEndpoints {
   String get getOnboardingStatus => '$base/status';
   String get getLanguages => '$base/languages';
   String get getCurrencies => '$base/currencies';
+}
+
+class _DevicesToken {
+  final String base = '${ApiEndpoints.base}/device-tokens';
+  String get registerToken => base;
+  String getTokenByUserId(String userId) => '$base/users/$userId';
 }

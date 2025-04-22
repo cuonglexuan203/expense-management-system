@@ -8,6 +8,7 @@ import 'package:expense_management_system/feature/auth/repository/passcode_repos
 import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class App extends ConsumerStatefulWidget {
   const App({super.key});
@@ -60,13 +61,34 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
     });
     final router = ref.watch(routerProvider);
 
+    // return MaterialApp.router(
+    //   theme: ThemeData(
+    //     fontFamily: GoogleFonts.nunito().fontFamily,
+    //     visualDensity: VisualDensity.adaptivePlatformDensity,
+    //     appBarTheme: const AppBarTheme(color: Color(0xFF13B9FF)),
+    //     colorScheme: ColorScheme.fromSwatch(
+    //       accentColor: const Color(0xFF13B9FF),
+    //     ),
+    //   ),
+    //   routerConfig: router,
+    // );
     return MaterialApp.router(
       theme: ThemeData(
+        fontFamily: GoogleFonts.nunito().fontFamily, // Set default font
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        appBarTheme: const AppBarTheme(color: Color(0xFF13B9FF)),
+        appBarTheme: const AppBarTheme(
+          color: Color(0xFF13B9FF),
+          // Optionally set text theme for AppBar as well
+          // textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).appBarTheme.textTheme),
+        ),
         colorScheme: ColorScheme.fromSwatch(
           accentColor: const Color(0xFF13B9FF),
         ),
+        // Apply font to text themes if needed for more control
+        textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
+        primaryTextTheme:
+            GoogleFonts.nunitoTextTheme(Theme.of(context).primaryTextTheme),
+        // accentTextTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).accentTextTheme),
       ),
       routerConfig: router,
     );
