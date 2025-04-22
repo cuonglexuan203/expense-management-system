@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -10,10 +11,10 @@ android {
     compileSdk = flutter.compileSdkVersion
     // ndkVersion = flutter.ndkVersion
     ndkVersion = "27.0.12077973"
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -44,3 +45,23 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+
+    // Import the Firebase BoM
+    // implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
+
+
+    // // TODO: Add the dependencies for Firebase products you want to use
+    // // When using the BoM, don't specify versions in Firebase dependencies
+    // implementation("com.google.firebase:firebase-analytics")
+
+    // Nếu dùng Ktor hoặc Retrofit cho HTTP call trong Worker, thêm dependency tương ứng
+    // implementation("io.ktor:ktor-client-android:...")
+    // implementation("com.squareup.retrofit2:retrofit:...")
+    // implementation("com.squareup.retrofit2:converter-gson:...")
+}
+

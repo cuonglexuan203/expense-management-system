@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "275153466143",
+    "project_id": "ems-app-22471",
+    "storage_bucket": "ems-app-22471.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275153466143:android:d7b7c3a649acd78d17762a",
+        "android_client_info": {
+          "package_name": "com.example.expense_management_system"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-fHYoxX2VyVdxauDA8jAw9lHRqLs9wHU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
