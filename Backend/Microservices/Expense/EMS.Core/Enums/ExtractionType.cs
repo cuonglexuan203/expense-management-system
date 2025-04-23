@@ -2,7 +2,7 @@
 {
     public enum ExtractionType
     {
-        Transaction = 0,
+        Finance = 0,
         Event = 1,
     }
 }

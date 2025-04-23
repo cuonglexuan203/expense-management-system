@@ -146,7 +146,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 var chatExtraction = new ChatExtraction
                 {
                     ChatMessageId = systemMsg.Id,
-                    ExtractionType = ExtractionType.Transaction, // REVIEW: could be Financial/Event for clear
+                    ExtractionType = ExtractionType.Finance, // REVIEW: could be Financial/Event for clear
                     ExtractedData = JsonSerializer.Serialize(assistantResponse),
                 };
                 systemMsg.ChatExtraction = chatExtraction; // redundant but for clearer flow

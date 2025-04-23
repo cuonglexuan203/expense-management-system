@@ -43,6 +43,7 @@ namespace EMS.Core.Entities
                 return false;
             }
 
+            transaction.UserId = UserId;
             transaction.Name = Name;
             transaction.CategoryId = CategoryId;
             transaction.CurrencyCode = CurrencyCode;
