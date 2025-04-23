@@ -1,6 +1,6 @@
-﻿using EMS.Application.Features.Chats.Common.Dtos;
+﻿using EMS.Application.Features.Chats.Dtos;
 
-namespace EMS.Application.Features.Chats.Common.Services
+namespace EMS.Application.Features.Chats.Services
 {
     public interface IChatThreadService
     {

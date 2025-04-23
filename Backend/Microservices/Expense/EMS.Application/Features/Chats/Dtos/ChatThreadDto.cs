@@ -2,7 +2,7 @@
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 
-namespace EMS.Application.Features.Chats.Common.Dtos
+namespace EMS.Application.Features.Chats.Dtos
 {
     public class ChatThreadDto : IMapFrom<ChatThread>
     {

@@ -1,7 +1,7 @@
 ﻿using EMS.API.Common.Attributes;
-using EMS.Application.Features.Chats.Finance.Queries.GetMessages;
 using EMS.Application.Features.Chats.Queries.GetAllChatThreads;
 using EMS.Application.Features.Chats.Queries.GetChatThreadById;
+using EMS.Application.Features.Chats.Queries.GetMessages;
 using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

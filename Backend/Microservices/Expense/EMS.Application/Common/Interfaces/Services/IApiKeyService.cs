@@ -15,6 +15,6 @@ namespace EMS.Application.Common.Interfaces.Services
         // Only for application initialization
         Task<IEnumerable<ApiKeyCreationResultDto>> CreateApiKeysAsync(
             IEnumerable<(ApiKeyCreationDto ApiKeyCreationDto, string PlainTextKey)> requests,
-            string ownerId);
+            string? ownerId);
     }
 }

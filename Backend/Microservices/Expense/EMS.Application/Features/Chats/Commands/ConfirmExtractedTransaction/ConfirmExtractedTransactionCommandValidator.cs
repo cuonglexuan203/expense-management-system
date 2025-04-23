@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace EMS.Application.Features.Chats.Finance.Commands.ConfirmExtractedTransaction
+namespace EMS.Application.Features.Chats.Commands.ConfirmExtractedTransaction
 {
     public class ConfirmExtractedTransactionCommandValidator : AbstractValidator<ConfirmExtractedTransactionCommand>
     {

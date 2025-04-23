@@ -5,8 +5,6 @@ using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Interfaces.Services.HttpClients;
 using EMS.Application.Features.Categories.Services;
-using EMS.Application.Features.Chats.Common.Dtos;
-using EMS.Application.Features.Chats.Finance.Notifications.MessageProcessed;
 using EMS.Application.Features.Transactions.Services;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
@@ -15,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
+namespace EMS.Application.Features.Chats.Commands.ProcessMessage
 {
     // Unused - Retained as a fallback method
     public record ProcessMessageCommand(string UserId, int WalletId, int MessageId) : IRequest<Unit>;
@@ -82,7 +80,7 @@ namespace EMS.Application.Features.Chats.Finance.Commands.ProcessMessage
     //        // Save extracted transactions
     //        if (extractionResult.Transactions.Length != 0)
     //        {
-                
+
 
     //            foreach (var item in extractionResult.Transactions)
     //            {

@@ -3,7 +3,7 @@ using AutoMapper.QueryableExtensions;
 using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Chats.Common.Dtos;
+using EMS.Application.Features.Chats.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

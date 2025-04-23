@@ -3,14 +3,14 @@ using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Messaging;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Utils;
-using EMS.Application.Features.Chats.Finance.Messaging;
+using EMS.Application.Features.Chats.Messaging;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Finance.Commands.UploadMessageFiles
+namespace EMS.Application.Features.Chats.Commands.UploadMessageFiles
 {
     public class UploadMessageFilesCommand : IRequest<UploadMessageFilesVm>
     {

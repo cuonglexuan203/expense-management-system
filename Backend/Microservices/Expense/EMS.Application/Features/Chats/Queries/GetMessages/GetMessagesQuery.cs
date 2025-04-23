@@ -4,14 +4,14 @@ using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Models;
-using EMS.Application.Features.Chats.Common.Dtos;
+using EMS.Application.Features.Chats.Dtos;
 using EMS.Core.Enums;
 using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
+namespace EMS.Application.Features.Chats.Queries.GetMessages
 {
     public record GetMessagesQuery(int ChatThreadId, ChatMessageSpecParams SpecParams) : IRequest<PaginatedList<ChatMessageDto>>;
 
@@ -64,7 +64,7 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
 
             if (!string.IsNullOrEmpty(specParams.Content))
             {
-                query = query.Where(e => e.Content != null 
+                query = query.Where(e => e.Content != null
                 && DatabaseFunctions.Unaccent(e.Content.ToLower())
                 .Contains(DatabaseFunctions.Unaccent(specParams.Content.ToLower())));
             }
@@ -82,7 +82,7 @@ namespace EMS.Application.Features.Chats.Finance.Queries.GetMessages
 
             var chatMessageDtoList = new List<ChatMessageDto>();
 
-            foreach(var chatMsg in chatMessagePage.Items)
+            foreach (var chatMsg in chatMessagePage.Items)
             {
                 var chatMsgDto = _mapper.Map<ChatMessageDto>(chatMsg);
                 chatMsgDto.ExtractedTransactions = chatMsg.ChatExtraction != null && chatMsg.ChatExtraction.ExtractedTransactions != null

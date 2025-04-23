@@ -2,14 +2,14 @@
 using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Messaging;
-using EMS.Application.Features.Chats.Common.Dtos;
-using EMS.Application.Features.Chats.Finance.Messaging;
+using EMS.Application.Features.Chats.Dtos;
+using EMS.Application.Features.Chats.Messaging;
 using EMS.Core.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Finance.Commands.SendMessage
+namespace EMS.Application.Features.Chats.Commands.SendMessage
 {
     public class SendMessageCommand : IRequest<ChatMessageDto>
     {

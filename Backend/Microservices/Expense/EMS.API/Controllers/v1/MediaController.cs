@@ -1,5 +1,5 @@
 ﻿using EMS.API.Common.Attributes;
-using EMS.Application.Features.Chats.Finance.Commands.UploadMessageFiles;
+using EMS.Application.Features.Chats.Commands.UploadMessageFiles;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

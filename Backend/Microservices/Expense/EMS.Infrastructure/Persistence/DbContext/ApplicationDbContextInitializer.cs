@@ -1,6 +1,6 @@
 ﻿using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Chats.Common.Services;
+using EMS.Application.Features.Chats.Services;
 using EMS.Core.Constants;
 using EMS.Infrastructure.Persistence.Seed;
 using Microsoft.EntityFrameworkCore;

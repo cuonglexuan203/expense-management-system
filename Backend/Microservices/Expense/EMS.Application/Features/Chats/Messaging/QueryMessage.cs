@@ -1,4 +1,4 @@
-﻿namespace EMS.Application.Features.Chats.Finance.Messaging
+﻿namespace EMS.Application.Features.Chats.Messaging
 {
     /// <summary>
     /// Pending human message in queue

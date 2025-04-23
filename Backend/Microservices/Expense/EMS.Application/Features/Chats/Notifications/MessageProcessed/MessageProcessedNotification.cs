@@ -1,9 +1,9 @@
-﻿using EMS.Application.Features.Chats.Common.Dtos;
-using EMS.Application.Features.Chats.Finance.Services;
+﻿using EMS.Application.Features.Chats.Dtos;
+using EMS.Application.Features.Chats.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Finance.Notifications.MessageProcessed
+namespace EMS.Application.Features.Chats.Notifications.MessageProcessed
 {
     public class MessageProcessedNotification : INotification
     {
@@ -16,7 +16,7 @@ namespace EMS.Application.Features.Chats.Finance.Notifications.MessageProcessed
 
         public MessageProcessedNotification()
         {
-            
+
         }
 
         public MessageProcessedNotification(
