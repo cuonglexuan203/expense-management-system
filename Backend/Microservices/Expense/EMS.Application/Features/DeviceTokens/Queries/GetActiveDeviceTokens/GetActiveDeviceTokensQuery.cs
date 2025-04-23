@@ -3,25 +3,26 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.DeviceTokens.Queries.GetDeviceTokens
+namespace EMS.Application.Features.DeviceTokens.Queries.GetActiveDeviceTokens
 {
-    public record GetDeviceTokensQuery(string UserId) : IRequest<List<string>>;
+    public record GetActiveDeviceTokensQuery(string UserId) : IRequest<List<string>>;
 
-    public class GetDeviceTokensQueryHandler : IRequestHandler<GetDeviceTokensQuery, List<string>>
+    public class GetActiveDeviceTokensQueryHandler : IRequestHandler<GetActiveDeviceTokensQuery, List<string>>
     {
-        private readonly ILogger<GetDeviceTokensQueryHandler> _logger;
+        private readonly ILogger<GetActiveDeviceTokensQueryHandler> _logger;
         private readonly IApplicationDbContext _context;
 
-        public GetDeviceTokensQueryHandler(
-            ILogger<GetDeviceTokensQueryHandler> logger,
+        public GetActiveDeviceTokensQueryHandler(
+            ILogger<GetActiveDeviceTokensQueryHandler> logger,
             IApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
         }
-        public async Task<List<string>> Handle(GetDeviceTokensQuery request, CancellationToken cancellationToken)
+        public async Task<List<string>> Handle(GetActiveDeviceTokensQuery request, CancellationToken cancellationToken)
         {
             var deviceTokens = await _context.DeviceTokens
+                .AsNoTracking()
                 .Where(e => !e.IsDeleted
                     && e.IsActive
                     && e.UserId == request.UserId)

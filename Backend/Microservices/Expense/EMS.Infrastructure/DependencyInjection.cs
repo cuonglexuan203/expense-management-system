@@ -6,6 +6,7 @@ using EMS.Application.Common.Interfaces.Storage;
 using EMS.Application.Features.Categories.Services;
 using EMS.Application.Features.Chats.Common.Services;
 using EMS.Application.Features.Chats.Finance.Messaging;
+using EMS.Application.Features.DeviceTokens.Services;
 using EMS.Application.Features.Onboarding.Services;
 using EMS.Application.Features.Transactions.Services;
 using EMS.Application.Features.Wallets.Services;
@@ -81,6 +82,7 @@ namespace EMS.Infrastructure
             services.TryAddScoped<IMediaService, MediaService>();
             services.TryAddScoped<IApiKeyService, ApiKeyService>();
             services.TryAddScoped<IOnboardingService, OnboardingService>();
+            services.TryAddScoped<IDeviceTokenService, DeviceTokenService>();
 
             // Storage
             services.TryAddScoped<IStorageProvider, CloudinaryStorageProvider>();
