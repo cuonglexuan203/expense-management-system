@@ -11,7 +11,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Commands.ConfirmExtractedTransaction
+namespace EMS.Application.Features.ExtractedTransactions.Commands.ConfirmExtractedTransaction
 {
     // REVIEW: Saving ExtractedTransaction along with wallet id -> this command only needs pending transaction id
     public record ConfirmExtractedTransactionCommand(int ExtractedTransactionId, int WalletId) : IRequest<TransactionDto>;

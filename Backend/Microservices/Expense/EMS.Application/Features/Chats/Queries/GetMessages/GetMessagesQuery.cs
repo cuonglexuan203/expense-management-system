@@ -4,14 +4,14 @@ using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Models;
-using EMS.Application.Features.Chats.Dtos;
+using EMS.Application.Features.ExtractedTransactions.Dtos;
 using EMS.Core.Enums;
 using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Queries.GetMessages
+namespace EMS.Application.Features.ExtractedTransactions.Queries.GetMessages
 {
     public record GetMessagesQuery(int ChatThreadId, ChatMessageSpecParams SpecParams) : IRequest<PaginatedList<ChatMessageDto>>;
 

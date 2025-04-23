@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace EMS.Application.Features.Chats.Commands.ProcessMessage
+namespace EMS.Application.Features.ExtractedTransactions.Commands.ProcessMessage
 {
     // Unused - Retained as a fallback method
     public record ProcessMessageCommand(string UserId, int WalletId, int MessageId) : IRequest<Unit>;

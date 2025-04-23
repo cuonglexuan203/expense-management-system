@@ -1,4 +1,4 @@
-﻿namespace EMS.Application.Features.Chats.Commands.UploadMessageFiles
+﻿namespace EMS.Application.Features.ExtractedTransactions.Commands.UploadMessageFiles
 {
     public class FileUploadDto : IDisposable
     {

@@ -14,7 +14,7 @@ using EMS.API.RealTime;
 using EMS.Infrastructure.Authentication;
 using EMS.Infrastructure.Common.Extensions;
 using System.Security.Claims;
-using EMS.Application.Features.Chats.Services;
+using EMS.Application.Features.ExtractedTransactions.Services;
 
 namespace EMS.API
 {

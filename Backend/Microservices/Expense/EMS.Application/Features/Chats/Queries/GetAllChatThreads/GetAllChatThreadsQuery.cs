@@ -2,12 +2,12 @@
 using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Features.Chats.Dtos;
+using EMS.Application.Features.ExtractedTransactions.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Queries.GetAllChatThreads
+namespace EMS.Application.Features.ExtractedTransactions.Queries.GetAllChatThreads
 {
     public record GetAllChatThreadsQuery : IRequest<List<ChatThreadDto>>;
 

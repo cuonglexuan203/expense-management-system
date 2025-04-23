@@ -1,6 +1,6 @@
-﻿using EMS.Application.Features.Chats.Dtos;
+﻿using EMS.Application.Features.ExtractedTransactions.Dtos;
 
-namespace EMS.Application.Features.Chats.Services
+namespace EMS.Application.Features.ExtractedTransactions.Services
 {
     public interface IChatThreadService
     {

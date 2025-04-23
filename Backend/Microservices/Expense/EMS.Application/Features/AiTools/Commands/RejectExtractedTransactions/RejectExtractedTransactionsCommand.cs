@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EMS.Application.Common.Interfaces.DbContext;
-using EMS.Application.Features.Chats.Dtos;
+using EMS.Application.Features.ExtractedTransactions.Dtos;
 using EMS.Core.Enums;
 using EMS.Core.Exceptions;
 using MediatR;

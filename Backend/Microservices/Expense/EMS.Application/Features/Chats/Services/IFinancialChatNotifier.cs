@@ -1,4 +1,4 @@
-﻿namespace EMS.Application.Features.Chats.Services
+﻿namespace EMS.Application.Features.ExtractedTransactions.Services
 {
     public interface IFinancialChatNotifier
     {

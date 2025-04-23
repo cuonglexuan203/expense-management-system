@@ -1,4 +1,4 @@
-﻿using EMS.Application.Features.Chats.Dtos;
+﻿using EMS.Application.Features.ExtractedTransactions.Dtos;
 
 namespace EMS.Application.Common.DTOs
 {

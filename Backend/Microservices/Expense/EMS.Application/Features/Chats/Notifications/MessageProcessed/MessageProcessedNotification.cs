@@ -1,9 +1,9 @@
-﻿using EMS.Application.Features.Chats.Dtos;
-using EMS.Application.Features.Chats.Services;
+﻿using EMS.Application.Features.ExtractedTransactions.Dtos;
+using EMS.Application.Features.ExtractedTransactions.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Notifications.MessageProcessed
+namespace EMS.Application.Features.ExtractedTransactions.Notifications.MessageProcessed
 {
     public class MessageProcessedNotification : INotification
     {

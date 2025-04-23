@@ -1,7 +1,7 @@
 ﻿using EMS.API.Common.Attributes;
 using EMS.API.Common.Models.ExtractedTransactionController;
-using EMS.Application.Features.Chats.Commands.ConfirmExtractedTransaction;
-using EMS.Application.Features.Chats.Commands.RejectExtractedTransaction;
+using EMS.Application.Features.ExtractedTransactions.Commands.ConfirmExtractedTransaction;
+using EMS.Application.Features.ExtractedTransactions.Commands.RejectExtractedTransaction;
 using EMS.Core.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

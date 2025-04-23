@@ -1,6 +1,6 @@
 ﻿using EMS.Application.Common.DTOs;
 
-namespace EMS.Application.Features.Chats.Commands.UploadMessageFiles
+namespace EMS.Application.Features.ExtractedTransactions.Commands.UploadMessageFiles
 {
     public class UploadMessageFilesVm
     {

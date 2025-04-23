@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Chats.Commands.RejectExtractedTransaction
+namespace EMS.Application.Features.ExtractedTransactions.Commands.RejectExtractedTransaction
 {
     public record RejectExtractedTransactionCommand(int ExtractedTransactionId, int WalletId) : IRequest<Unit>;
 
