@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.DeviceTokens.Queries
+namespace EMS.Application.Features.DeviceTokens.Queries.GetDeviceTokens
 {
     public record GetDeviceTokensQuery(string UserId) : IRequest<List<string>>;
 
