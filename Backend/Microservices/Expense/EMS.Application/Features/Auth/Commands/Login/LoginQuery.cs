@@ -3,7 +3,7 @@ using EMS.Application.Common.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Auth.Queries.Login
+namespace EMS.Application.Features.Auth.Commands.Login
 {
     public class LoginQuery : IRequest<TokenResponse>
     {

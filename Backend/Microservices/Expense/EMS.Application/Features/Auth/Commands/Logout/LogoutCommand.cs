@@ -3,7 +3,7 @@ using EMS.Application.Common.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Auth.Queries.Logout
+namespace EMS.Application.Features.Auth.Commands.Logout
 {
     public record LogoutCommand : IRequest<Result>;
 
@@ -24,7 +24,7 @@ namespace EMS.Application.Features.Auth.Queries.Logout
         {
             var userId = _currentUserService.Id;
 
-            if(userId == null)
+            if (userId == null)
             {
                 throw new UnauthorizedAccessException("Invalid token");
             }

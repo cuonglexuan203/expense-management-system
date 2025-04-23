@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace EMS.Application.Features.Auth.Queries.Login
+namespace EMS.Application.Features.Auth.Commands.Login
 {
     public class LoginQueryValidator : AbstractValidator<LoginQuery>
     {
