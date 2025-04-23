@@ -28,7 +28,6 @@
   <ItemGroup>
     <Folder Include="Features\AiTools\Services\" />
     <Folder Include="Features\ExtractedTransactions\Services\" />
-    <Folder Include="Features\ExtractedTransactions\Queries\" />
     <Folder Include="Features\Preferences\Services\" />
   </ItemGroup>
 

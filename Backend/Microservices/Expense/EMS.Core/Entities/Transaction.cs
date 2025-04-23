@@ -31,7 +31,7 @@ namespace EMS.Core.Entities
             ExtractedTransaction extractedTransaction,
             string userId,
             int walletId,
-            int messageId)
+            int? messageId = default)
         {
             if(!extractedTransaction.TryMapToTransaction(out Transaction transaction))
             {
@@ -41,6 +41,7 @@ namespace EMS.Core.Entities
             transaction.UserId = userId;
             transaction.WalletId = walletId;
             transaction.ChatMessageId = messageId;
+            transaction.ExtractedTransaction = extractedTransaction;
 
             return transaction;
         }

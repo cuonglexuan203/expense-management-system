@@ -231,7 +231,6 @@ namespace EMS.Infrastructure.BackgroundJobs
 
                             if (transaction != null)
                             {
-                                transaction.ExtractedTransaction = item;
                                 transactions.Add(transaction);
                             }
                         }

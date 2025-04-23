@@ -1,7 +1,6 @@
 ﻿using EMS.Application.Common.Interfaces.Messaging;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Interfaces.Services.HttpClients;
-using EMS.Application.Features.Categories.Services;
 using EMS.Application.Features.Notifications.Commands.AnalyzeNotification;
 using EMS.Core.Constants;
 using EMS.Core.Entities;
@@ -105,14 +104,16 @@ namespace EMS.Infrastructure.BackgroundJobs
                     return;
                 }
 
-                var extractedTransactions = result.Transactions;
+                var extractedTransactionDtoList = result.Transactions;
 
-                foreach (var item in extractedTransactions)
+                var extractedTransactionList = new List<ExtractedTransaction>();
+                foreach (var item in extractedTransactionDtoList)
                 {
                     try
                     {
                         var extractedTransaction = new ExtractedTransaction
                         {
+                            UserId = notificationMsg.UserId,
                             Name = item.Name,
                             Type = item.Type,
                             Amount = item.Amount,
@@ -143,24 +144,31 @@ namespace EMS.Infrastructure.BackgroundJobs
                         // NOTE: Pending for all confirmation modes, users have to confirm/reject manually
                         extractedTransaction.ConfirmationStatus = ConfirmationStatus.Pending;
 
-                        context.ExtractedTransactions.Add(extractedTransaction);
+                        extractedTransactionList.Add(extractedTransaction);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError("An error occurred while extracting the transaction {@ExtractedTransaction} from the notification {@Notification} - Error message: {Msg}",
+                        _logger.LogError("An error occurred while extracting a transaction {@ExtractedTransaction} from the notification {@Notification} - Error message: {Msg}",
                             item,
                             notificationMsg,
                             ex.Message);
                     }
                 }
 
+                context.ExtractedTransactions.AddRange(extractedTransactionList);
                 await context.SaveChangesAsync();
 
                 var pushNotification = result.Notification;
+                var customData = new Dictionary<string, string>
+                {
+                    ["extracted_transaction_ids"] = string.Join(',', extractedTransactionList.Select(e => e.Id)),
+                    ["created_at"] = DateTimeOffset.UtcNow.ToString(),
+                };
                 var pushResult = await dispatcherService.SendNotification(new(
                     notificationMsg.UserId,
                     pushNotification.Title,
-                    pushNotification.Body));
+                    pushNotification.Body,
+                    customData));
 
                 if (pushResult != null)
                 {

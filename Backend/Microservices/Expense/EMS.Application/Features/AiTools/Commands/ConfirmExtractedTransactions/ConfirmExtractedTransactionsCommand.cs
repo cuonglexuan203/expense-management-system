@@ -67,7 +67,6 @@ namespace EMS.Application.Features.AiTools.Commands.ConfirmExtractedTransactions
 
                     if (transaction != null)
                     {
-                        transaction.ExtractedTransaction = item;
                         transactions.Add(transaction);
                     }
                 }

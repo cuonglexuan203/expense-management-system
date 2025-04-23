@@ -56,14 +56,13 @@ namespace EMS.Application.Features.ExtractedTransactions.Commands.ConfirmExtract
                 }
 
                 extractedTransaction.ConfirmationStatus = ConfirmationStatus.Confirmed;
-                var transaction = Transaction.CreateFrom(extractedTransaction, userId, request.WalletId, extractedTransaction.ChatExtraction.ChatMessage.Id);
+                var transaction = Transaction.CreateFrom(extractedTransaction, userId, request.WalletId, extractedTransaction?.ChatExtraction?.ChatMessage.Id);
 
                 if (transaction == null)
                 {
                     throw new InvalidTransactionOperationException($"Cannot confirm the pending transaction with ID {request.ExtractedTransactionId}.");
                 }
 
-                transaction.ExtractedTransaction = extractedTransaction;
                 var transactionDto = await _transactionService.CreateTransactionAsync(userId, request.WalletId, transaction);
 
                 await _walletService.CacheWalletBalanceSummariesAsync(request.WalletId);

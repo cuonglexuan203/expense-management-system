@@ -45,7 +45,7 @@ namespace EMS.Infrastructure.Services.HttpClients.DispatcherService
 
             response.EnsureSuccessStatusCode();
 
-            var result = await response.Content.ReadFromJsonAsync<NotificationDispatchResponse>();
+            var result = await response.Content.ReadFromJsonAsync<NotificationDispatchResponse>(_serializerOptions);
 
             return result;
         }

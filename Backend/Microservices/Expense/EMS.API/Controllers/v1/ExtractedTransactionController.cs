@@ -2,7 +2,9 @@
 using EMS.API.Common.Models.ExtractedTransactionController;
 using EMS.Application.Features.ExtractedTransactions.Commands.ConfirmExtractedTransaction;
 using EMS.Application.Features.ExtractedTransactions.Commands.RejectExtractedTransaction;
+using EMS.Application.Features.ExtractedTransactions.Queries.GetExtractedTransactions;
 using EMS.Core.Enums;
+using EMS.Core.Specifications;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +61,14 @@ namespace EMS.API.Controllers.v1
             }
 
             return BadRequest();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetExtractedTransactions([FromQuery] ExtractedTransactionSpecParams specParams)
+        {
+            var result = await _sender.Send(new GetExtractedTransactionsQuery(specParams));
+
+            return Ok(result);
         }
     }
 }
