@@ -69,6 +69,12 @@ namespace EMS.Infrastructure.Persistence.Configurations
 
             builder.HasMany(e => e.RefreshTokens)
                 .WithOne(e => e.User as ApplicationUser)
+                .HasForeignKey(e => e.UserId)
+                .IsRequired();
+
+            builder.HasMany(e => e.ExtractedTransactions)
+                .WithOne(e => e.User as ApplicationUser)
+                .HasForeignKey(e => e.UserId)
                 .IsRequired();
         }
     }

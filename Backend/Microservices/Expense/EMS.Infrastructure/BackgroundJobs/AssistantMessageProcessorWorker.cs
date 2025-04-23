@@ -171,6 +171,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                             {
                                 var extractedTransaction = new ExtractedTransaction
                                 {
+                                    UserId = queuedMessage.UserId,
                                     Name = item.Name,
                                     Type = item.Type,
                                     Amount = item.Amount,

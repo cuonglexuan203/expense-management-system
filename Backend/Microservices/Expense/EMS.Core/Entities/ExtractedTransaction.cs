@@ -6,7 +6,8 @@ namespace EMS.Core.Entities
 {
     public class ExtractedTransaction : BaseAuditableEntity<int>
     {
-        public int? ChatExtractionId { get; set; }
+        public string UserId { get; set; } = default!;
+        public int? ChatExtractionId { get; set; } // NOTE: Null in case of notification extraction
         //public int ChatMessageId { get; set; }
         public int? CategoryId { get; set; }
         public int? TransactionId { get; set; }
@@ -18,12 +19,14 @@ namespace EMS.Core.Entities
         public ConfirmationMode ConfirmationMode { get; set; }
         public ConfirmationStatus ConfirmationStatus { get; set; }
 
-        // Navigations
+        #region Navigations
         //public ChatMessage ChatMessage { get; set; } = default!;
-        public ChatExtraction ChatExtraction { get; set; } = default!;
+        public virtual IUser<string> User { get; set; } = default!;
+        public ChatExtraction? ChatExtraction { get; set; } = default!;
         public Transaction? Transaction { get; set; }
         public Currency Currency { get; set; } = default!;
         public Category? Category { get; set; }
+        #endregion
 
         #region Behaviors
         public bool TryMapToTransaction()

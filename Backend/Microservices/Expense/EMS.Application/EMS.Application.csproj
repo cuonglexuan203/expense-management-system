@@ -27,8 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Features\AiTools\Services\" />
-    <Folder Include="Features\ExtractedTransactions\Commands\" />
-    <Folder Include="Features\ExtractedTransactions\Dtos\" />
     <Folder Include="Features\ExtractedTransactions\Services\" />
     <Folder Include="Features\ExtractedTransactions\Queries\" />
     <Folder Include="Features\Preferences\Services\" />
