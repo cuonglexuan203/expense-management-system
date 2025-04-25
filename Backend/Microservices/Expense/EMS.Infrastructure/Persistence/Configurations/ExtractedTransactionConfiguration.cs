@@ -32,6 +32,10 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .WithMany()
                 .HasForeignKey(e => e.CurrencyCode)
                 .IsRequired();
+
+            builder.HasOne(e => e.Notification)
+                .WithMany(e => e.ExtractedTransactions)
+                .IsRequired(false);
         }
     }
 }

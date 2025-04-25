@@ -10,6 +10,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
 func InitDatabase(cfg config.Config) (*gorm.DB, error) {
@@ -33,6 +34,9 @@ func InitDatabase(cfg config.Config) (*gorm.DB, error) {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: newLogger,
+		NamingStrategy: schema.NamingStrategy{
+			NoLowerCase: true,
+		},
 	})
 
 	if err != nil {

@@ -7,6 +7,7 @@ namespace EMS.Core.Specifications
     {
         public string? Name { get; set; } // Transaction name
         public int? CategoryId { get; set; } // Category id
+        public int? NotificationId { get; set; } // Extract from a notification
         public TransactionType? Type { get; set; }
     }
 }

@@ -54,6 +54,14 @@ namespace EMS.Application.Features.ExtractedTransactions.Queries.GetExtractedTra
                 query = query.Where(e => e.Category != null && !e.Category.IsDeleted && e.Category.Id == specParams.CategoryId);
             }
 
+            if (specParams.NotificationId != null)
+            {
+                query = query.Where(
+                    e => e.Notification != null 
+                        && !e.Notification.IsDeleted 
+                        && e.NotificationId == specParams.NotificationId);
+            }
+
             if (specParams.Type != null)
             {
                 query = query.Where(e => e.Type == specParams.Type);

@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace EMS.Infrastructure.BackgroundJobs
 {
@@ -104,6 +105,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                     return;
                 }
 
+                #region Persist notification & extracted transactions
                 var extractedTransactionDtoList = result.Transactions;
 
                 var extractedTransactionList = new List<ExtractedTransaction>();
@@ -155,15 +157,29 @@ namespace EMS.Infrastructure.BackgroundJobs
                     }
                 }
 
-                context.ExtractedTransactions.AddRange(extractedTransactionList);
+                var pushNotification = result.Notification;
+                var notification = new Notification
+                {
+                    UserId = notificationMsg.UserId,
+                    Type = NotificationType.NotificationAnalysis,
+                    Title = pushNotification.Title,
+                    Body = pushNotification.Body,
+                    Status = NotificationStatus.Queued,
+                    ExtractedTransactions = extractedTransactionList,
+                };
+                context.Notifications.Add(notification);
+                #endregion
+
                 await context.SaveChangesAsync();
 
-                var pushNotification = result.Notification;
+                // Save custom data
                 var customData = new Dictionary<string, string>
                 {
-                    ["extracted_transaction_ids"] = string.Join(',', extractedTransactionList.Select(e => e.Id)),
-                    ["created_at"] = DateTimeOffset.UtcNow.ToString(),
+                    ["notification_id"] = notification.Id.ToString(),
                 };
+                notification.DataPayload = JsonSerializer.Serialize(customData);
+                await context.SaveChangesAsync();
+
                 var pushResult = await dispatcherService.SendNotification(new(
                     notificationMsg.UserId,
                     pushNotification.Title,
@@ -173,9 +189,9 @@ namespace EMS.Infrastructure.BackgroundJobs
                 if (pushResult != null)
                 {
                     _logger.LogInformation("Push Notification completed: {Status}, {SuccessCount} succeeded, {FailureCount} failed",
-                        pushResult.Status,
-                        pushResult.SuccessCount,
-                        pushResult.FailureCount);
+                        pushResult.Data.Status,
+                        pushResult.Data.SuccessCount,
+                        pushResult.Data.FailureCount);
                 }
                 else
                 {

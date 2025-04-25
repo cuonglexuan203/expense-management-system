@@ -141,6 +141,11 @@ namespace EMS.API
                     policy.RequireAuthenticatedUser()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme))
 
+                .AddPolicy(Policies.FrontendAccess, policy =>
+                    policy.RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes(ApiKeyAuthenticationOptions.DefaultScheme)
+                        .RequireClaim("scope", "frontend:full"))
+
                 .AddPolicy(Policies.AiServiceAccess, policy =>
                     policy.RequireAuthenticatedUser()
                         .AddAuthenticationSchemes(ApiKeyAuthenticationOptions.DefaultScheme)

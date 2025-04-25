@@ -29,5 +29,6 @@ namespace EMS.Infrastructure.Identity.Models
         public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
         public ICollection<DeviceToken> DeviceTokens { get; set; } = [];
         public ICollection<ExtractedTransaction> ExtractedTransactions { get; set; } = [];
+        public ICollection<Notification> Notifications { get; set; } = [];
     }
 }

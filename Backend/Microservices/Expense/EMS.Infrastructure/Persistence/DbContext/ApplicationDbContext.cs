@@ -36,6 +36,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
         public DbSet<ApiKey> ApiKeys { get; set; }
         public DbSet<ApiKeyScope> ApiKeyScopes { get; set; }
         public DbSet<DeviceToken> DeviceTokens { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

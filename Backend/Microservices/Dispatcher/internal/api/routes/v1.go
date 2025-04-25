@@ -16,7 +16,7 @@ func SetupV1Routes(
 	db *gorm.DB,
 	backendClient *backend.BackendClient) {
 	// Init handlers
-	notificationHandler := handlers.NewNotificationHandler(fcmService, backendClient)
+	notificationHandler := handlers.NewNotificationHandler(fcmService, backendClient, db)
 	scheduleHandler := handlers.NewScheduleHandler(asynqClient, db, backendClient)
 
 	// --- Notification Routes ---
