@@ -1,6 +1,6 @@
 ﻿using EMS.API.Hubs;
 using EMS.API.Hubs.Interfaces;
-using EMS.Application.Features.Chats.Finance.Services;
+using EMS.Application.Features.ExtractedTransactions.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace EMS.API.RealTime

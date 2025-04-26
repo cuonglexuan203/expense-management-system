@@ -22,7 +22,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
             builder.HasMany(e => e.ExtractedTransactions)
                 .WithOne(e => e.ChatExtraction)
                 .HasForeignKey(e => e.ChatExtractionId)
-                .IsRequired();
+                .IsRequired(false);
         }
     }
 }

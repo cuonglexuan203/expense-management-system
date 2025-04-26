@@ -1,0 +1,33 @@
+# Corrected YAML structure
+APP_ENV: development
+APP_PORT: "8081" # Use quotes if the value should be treated as a string
+APP_API_KEY: your-secret-api-key
+LOG_LEVEL: debug
+LOG_FILENAME: ./logs/app.log
+LOG_MAX_SIZE_MB: 100
+LOG_MAX_BACKUPS: 3
+LOG_MAX_AGE_DAYS: 7
+DB_HOST: localhost
+DB_PORT: "5432"
+DB_USER: user
+DB_PASSWORD: password
+DB_NAME: mydatabase
+DB_SSLMODE: disable
+REDIS_ADDR: localhost:6379
+REDIS_PASSWORD: ""
+REDIS_DB: 0
+FIREBASE_SERVICE_ACCOUNT_KEY_PATH: /path/to/your/serviceAccountKey.json
+CORS_ALLOWED_ORIGINS:
+  - http://localhost:3000
+  - https://yourdomain.com
+CORS_ALLOWED_METHODS:
+  - GET
+  - POST
+  - PUT
+  - DELETE
+CORS_ALLOWED_HEADERS:
+  - Content-Type
+  - Authorization
+CORS_MAX_AGE: 3600 # Represents duration in seconds
+BACKEND_API_URL: http://your-backend-api.com
+BACKEND_API_KEY: your-backend-api-key

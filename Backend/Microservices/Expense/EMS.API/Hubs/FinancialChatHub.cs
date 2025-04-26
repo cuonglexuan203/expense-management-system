@@ -1,6 +1,6 @@
 ﻿using EMS.API.Hubs.Interfaces;
-using EMS.Application.Features.Chats.Common.Dtos;
-using EMS.Application.Features.Chats.Finance.Commands.SendMessage;
+using EMS.Application.Features.ExtractedTransactions.Commands.SendMessage;
+using EMS.Application.Features.ExtractedTransactions.Dtos;
 using EMS.Infrastructure.SignalR;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

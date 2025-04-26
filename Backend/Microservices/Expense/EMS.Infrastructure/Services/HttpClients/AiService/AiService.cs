@@ -41,7 +41,7 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
             httpClient.DefaultRequestHeaders.Add(CustomHeaders.ApiKey, _options.ApiKey);
         }
 
-        public async Task<MessageExtractionResponse> ExtractTransactionAsync(MessageExtractionRequest request)
+        public async Task<MessageAnalysisResponse> AnalyzeTextMessageAsync(MessageAnalysisRequest request)
         {
             try
             {
@@ -49,19 +49,19 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
 
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<MessageExtractionResponse>(_serializerOptions);
+                var result = await response.Content.ReadFromJsonAsync<MessageAnalysisResponse>(_serializerOptions);
 
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error calling AI service for transaction extraction");
+                _logger.LogError(ex, "Error calling AI service for text message analysis");
 
                 return GetFailedExtractionResponse();
             }
         }
 
-        public async Task<MessageExtractionResponse> ExtractTransactionFromImagesAsync(MessageWithFilesExtractionRequest request)
+        public async Task<MessageAnalysisResponse> AnalyzeImageMessageAsync(MessageWithFilesAnalysisRequest request)
         {
             try
             {
@@ -69,19 +69,19 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
 
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<MessageExtractionResponse>(_serializerOptions);
+                var result = await response.Content.ReadFromJsonAsync<MessageAnalysisResponse>(_serializerOptions);
 
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error calling AI service for transaction extraction");
+                _logger.LogError(ex, "Error calling AI service for image message analysis");
 
                 return GetFailedExtractionResponse();
             }
         }
 
-        public async Task<MessageExtractionResponse> ExtractTransactionFromAudiosAsync(MessageWithFilesExtractionRequest request)
+        public async Task<MessageAnalysisResponse> AnalyzeAudioMessageAsync(MessageWithFilesAnalysisRequest request)
         {
             try
             {
@@ -89,21 +89,21 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
 
                 response.EnsureSuccessStatusCode();
 
-                var result = await response.Content.ReadFromJsonAsync<MessageExtractionResponse>(_serializerOptions);
+                var result = await response.Content.ReadFromJsonAsync<MessageAnalysisResponse>(_serializerOptions);
 
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error calling AI service for transaction extraction");
+                _logger.LogError(ex, "Error calling AI service for audio message analysis");
 
                 return GetFailedExtractionResponse();
             }
         }
 
-        private MessageExtractionResponse GetFailedExtractionResponse()
+        private MessageAnalysisResponse GetFailedExtractionResponse()
         {
-            return new MessageExtractionResponse
+            return new MessageAnalysisResponse
             {
                 Introduction = "Sorry, I couldn't process that request. Could you try rephrasing your request?",
             };

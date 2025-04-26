@@ -241,10 +241,22 @@ namespace EMS.Infrastructure.Persistence.Seed
             {
                 (new()
                 {
+                    Name = "Frontend",
+                    Description = "Frontend API Key",
+                    Scopes = ["frontend:full"] // full privilege
+                }, "171993E71B38237FDA494CA8F2815"),
+                (new()
+                {
                     Name = "AI Service",
                     Description = "AI service API Key",
                     Scopes = ["ai:analyze"]
                 }, "E4164EFEA68EA6A9CAC2AB5761518"),
+                (new()
+                {
+                    Name = "Dispatcher Service",
+                    Description = "Dispatcher service API Key",
+                    Scopes = ["dispatcher:full"] // full privilege
+                }, "486A8FF68D88ED3ABFF717F84BFAD"),
                 (new()
                 {
                     Name = "Admin",

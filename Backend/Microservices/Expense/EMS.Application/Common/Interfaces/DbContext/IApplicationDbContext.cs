@@ -25,6 +25,8 @@ namespace EMS.Application.Common.Interfaces.DbContext
         DbSet<CurrencySlang> CurrencySlangs { get; set; }
         DbSet<ApiKey> ApiKeys { get; set; }
         DbSet<ApiKeyScope> ApiKeyScopes { get; set; }
+        DbSet<DeviceToken> DeviceTokens { get; set; }
+        DbSet<Notification> Notifications { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

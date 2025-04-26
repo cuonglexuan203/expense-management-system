@@ -68,7 +68,7 @@ namespace EMS.Infrastructure.Services
         /// <returns>Created API Keys</returns>
         public async Task<IEnumerable<ApiKeyCreationResultDto>> CreateApiKeysAsync(
             IEnumerable<(ApiKeyCreationDto ApiKeyCreationDto, string PlainTextKey)> requests,
-            string ownerId)
+            string? ownerId)
         {
             var result = new List<ApiKeyCreationResultDto>();
             foreach(var request in requests)

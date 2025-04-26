@@ -1,8 +1,8 @@
 ﻿using EMS.API.Common.Attributes;
+using EMS.Application.Features.Auth.Commands.Login;
+using EMS.Application.Features.Auth.Commands.Logout;
 using EMS.Application.Features.Auth.Commands.RefreshToken;
 using EMS.Application.Features.Auth.Commands.Register;
-using EMS.Application.Features.Auth.Queries.Login;
-using EMS.Application.Features.Auth.Queries.Logout;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

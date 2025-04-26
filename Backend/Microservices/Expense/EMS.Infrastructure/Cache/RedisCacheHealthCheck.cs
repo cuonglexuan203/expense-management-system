@@ -8,9 +8,9 @@ namespace EMS.Infrastructure.Cache
     public class RedisCacheHealthCheck : IHealthCheck
     {
         private readonly IConnectionMultiplexer _redis;
-        private readonly CacheOptions _cacheOptions;
+        private readonly RedisOptions _cacheOptions;
 
-        public RedisCacheHealthCheck(IConnectionMultiplexer redis, IOptions<CacheOptions> cacheOptions)
+        public RedisCacheHealthCheck(IConnectionMultiplexer redis, IOptions<RedisOptions> cacheOptions)
         {
             _redis = redis ?? throw new ArgumentNullException(nameof(redis));
             _cacheOptions = cacheOptions.Value;

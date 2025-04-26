@@ -563,6 +563,65 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.ToTable("CurrencySlangs");
                 });
 
+            modelBuilder.Entity("EMS.Core.Entities.DeviceToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LastUsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<string>("Platform")
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DeviceTokens");
+                });
+
             modelBuilder.Entity("EMS.Core.Entities.ExtractedTransaction", b =>
                 {
                     b.Property<int>("Id")
@@ -577,7 +636,7 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ChatExtractionId")
+                    b.Property<int?>("ChatExtractionId")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConfirmationMode")
@@ -623,6 +682,9 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<int?>("NotificationId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset>("OccurredAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -634,6 +696,11 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -642,8 +709,12 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CurrencyCode");
 
+                    b.HasIndex("NotificationId");
+
                     b.HasIndex("TransactionId")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ExtractedTransactions");
                 });
@@ -823,6 +894,74 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.HasIndex("ChatMessageId");
 
                     b.ToTable("Media");
+                });
+
+            modelBuilder.Entity("EMS.Core.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<string>("DataPayload")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTimeOffset?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(31)
+                        .HasColumnType("character varying(31)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("EMS.Core.Entities.NotificationPreference", b =>
@@ -1571,6 +1710,15 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Currency");
                 });
 
+            modelBuilder.Entity("EMS.Core.Entities.DeviceToken", b =>
+                {
+                    b.HasOne("EMS.Infrastructure.Identity.Models.ApplicationUser", null)
+                        .WithMany("DeviceTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EMS.Core.Entities.ExtractedTransaction", b =>
                 {
                     b.HasOne("EMS.Core.Entities.Category", "Category")
@@ -1579,9 +1727,7 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
                     b.HasOne("EMS.Core.Entities.ChatExtraction", "ChatExtraction")
                         .WithMany("ExtractedTransactions")
-                        .HasForeignKey("ChatExtractionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ChatExtractionId");
 
                     b.HasOne("EMS.Core.ValueObjects.Currency", "Currency")
                         .WithMany()
@@ -1589,9 +1735,19 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EMS.Core.Entities.Notification", "Notification")
+                        .WithMany("ExtractedTransactions")
+                        .HasForeignKey("NotificationId");
+
                     b.HasOne("EMS.Core.Entities.Transaction", "Transaction")
                         .WithOne("ExtractedTransaction")
                         .HasForeignKey("EMS.Core.Entities.ExtractedTransaction", "TransactionId");
+
+                    b.HasOne("EMS.Infrastructure.Identity.Models.ApplicationUser", "User")
+                        .WithMany("ExtractedTransactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
 
@@ -1599,7 +1755,11 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Currency");
 
+                    b.Navigation("Notification");
+
                     b.Navigation("Transaction");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EMS.Core.Entities.FinancialGoal", b =>
@@ -1626,6 +1786,17 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ChatMessageId");
 
                     b.Navigation("ChatMessage");
+                });
+
+            modelBuilder.Entity("EMS.Core.Entities.Notification", b =>
+                {
+                    b.HasOne("EMS.Infrastructure.Identity.Models.ApplicationUser", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EMS.Core.Entities.NotificationPreference", b =>
@@ -1804,6 +1975,11 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Categories");
                 });
 
+            modelBuilder.Entity("EMS.Core.Entities.Notification", b =>
+                {
+                    b.Navigation("ExtractedTransactions");
+                });
+
             modelBuilder.Entity("EMS.Core.Entities.Transaction", b =>
                 {
                     b.Navigation("ExtractedTransaction");
@@ -1828,9 +2004,15 @@ namespace EMS.Infrastructure.Persistence.Migrations
 
                     b.Navigation("ChatThreads");
 
+                    b.Navigation("DeviceTokens");
+
+                    b.Navigation("ExtractedTransactions");
+
                     b.Navigation("FinancialGoals");
 
                     b.Navigation("NotificationPreferences");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("RefreshTokens");
 

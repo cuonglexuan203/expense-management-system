@@ -10,11 +10,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using EMS.Infrastructure.Common.Options;
 using EMS.API.Common.Extensions;
-using EMS.Application.Features.Chats.Finance.Services;
 using EMS.API.RealTime;
 using EMS.Infrastructure.Authentication;
 using EMS.Infrastructure.Common.Extensions;
 using System.Security.Claims;
+using EMS.Application.Features.ExtractedTransactions.Services;
 
 namespace EMS.API
 {
@@ -141,10 +141,20 @@ namespace EMS.API
                     policy.RequireAuthenticatedUser()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme))
 
+                .AddPolicy(Policies.FrontendAccess, policy =>
+                    policy.RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes(ApiKeyAuthenticationOptions.DefaultScheme)
+                        .RequireClaim("scope", "frontend:full"))
+
                 .AddPolicy(Policies.AiServiceAccess, policy =>
                     policy.RequireAuthenticatedUser()
                         .AddAuthenticationSchemes(ApiKeyAuthenticationOptions.DefaultScheme)
                         .RequireClaim("scope", "ai:analyze"))
+
+                .AddPolicy(Policies.DispatcherServiceAccess, policy =>
+                    policy.RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes(ApiKeyAuthenticationOptions.DefaultScheme)
+                        .RequireClaim("scope", "dispatcher:full"))
 
                 .AddPolicy(Policies.AdminAccess, policy =>
                     policy.RequireAuthenticatedUser()

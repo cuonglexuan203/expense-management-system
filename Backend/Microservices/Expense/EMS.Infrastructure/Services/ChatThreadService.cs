@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EMS.Application.Common.Interfaces.DbContext;
-using EMS.Application.Features.Chats.Common.Dtos;
-using EMS.Application.Features.Chats.Common.Services;
+using EMS.Application.Features.ExtractedTransactions.Dtos;
+using EMS.Application.Features.ExtractedTransactions.Services;
 using EMS.Infrastructure.Persistence.Seed;
 using Microsoft.Extensions.Logging;
 

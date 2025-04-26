@@ -17,6 +17,9 @@ namespace EMS.Core.Enums
         MonthlyReport,
 
         [Description("AI Spending Insights")]
-        AiInsight
+        AiInsight,
+
+        [Description("Notification Analysis")]
+        NotificationAnalysis,
     }
 }
