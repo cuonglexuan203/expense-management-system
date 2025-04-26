@@ -48,10 +48,13 @@ services:
       - Redis__InstanceName=${REDIS_INSTANCE_NAME}
       - Redis__DefaultExpiryTimeInMinutes=${REDIS_DEFAULT_EXPIRY_TIME}
       - Redis__EnableLogging=${REDIS_ENABLE_LOGGING}
+      - Redis__MessageQueues__NotificationExtractionQueue=notification-extraction
   
       # Service URLs
       - Services__Ai__BaseUrl=http://ai-service:8000${AI_API_V1_STR}
       - Services__Ai__ApiKey=${AI_API_KEY}
+      - Services__Dispatcher__BaseUrl=http://go-dispatcher:8081
+      - Services__Dispatcher__ApiKey=${GO_DISPATCHER_API_KEY}
   
       # Logging Configuration
       - Serilog__MinimumLevel__Default=${BE_SERILOG_MINIMUM_LEVEL_DEFAULT}
