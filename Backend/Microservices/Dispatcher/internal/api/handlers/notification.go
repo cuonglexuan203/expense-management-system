@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	apimodels "github.com/cuonglexuan203/dispatcher/internal/api/models"
 	"github.com/cuonglexuan203/dispatcher/internal/clients/backend"
@@ -58,7 +59,7 @@ func (h *NotificationHandler) SendNotification(c *gin.Context) {
 		h.logger.Error("Failed to fetched device tokens from backend",
 			zap.String("user_id", req.UserID),
 			zap.Error(err))
-		updateFailedNotificationStatus(h.db, &notification)
+		updateFailedNotification(h.db, &notification)
 		c.JSON(http.StatusBadGateway, apimodels.ErrorResponse{Error: "Failed to communicate with backend service to get device tokens"})
 		return
 	}
@@ -66,7 +67,7 @@ func (h *NotificationHandler) SendNotification(c *gin.Context) {
 	if len(tokens) == 0 {
 		h.logger.Info("No active device tokens found for user, skipping notification send",
 			zap.String("user_id", req.UserID))
-		updateSentNotificationStatus(h.db, &notification)
+		updateSentNotification(h.db, &notification)
 		c.JSON(http.StatusOK, apimodels.SuccessResponse{
 			Message: "No active devices found for user.",
 			Data:    apimodels.SendNotificationResponse{Status: "No active devices found"},
@@ -79,13 +80,13 @@ func (h *NotificationHandler) SendNotification(c *gin.Context) {
 		h.logger.Error("Failed to send multicast notification via FCM (request level)",
 			zap.String("user_id", req.UserID),
 			zap.Error(err))
-		updateFailedNotificationStatus(h.db, &notification)
+		updateFailedNotification(h.db, &notification)
 		c.JSON(http.StatusInternalServerError, apimodels.ErrorResponse{
 			Error: "Failed to send notification due to FCM error",
 		})
 		return
 	}
-	updateSentNotificationStatus(h.db, &notification)
+	updateSentNotification(h.db, &notification)
 
 	statusMsg := "Notification sent."
 	if batchResponse.FailureCount > 0 {
@@ -107,10 +108,16 @@ func (h *NotificationHandler) SendNotification(c *gin.Context) {
 	})
 }
 
-func updateFailedNotificationStatus(db *gorm.DB, notification *models.Notification) {
-	db.Model(notification).Update("Status", "Failed")
+func updateFailedNotification(db *gorm.DB, notification *models.Notification) {
+	db.Model(notification).Updates(models.Notification{
+		Status:      "Failed",
+		ProcessedAt: time.Now().UTC(),
+	})
 }
 
-func updateSentNotificationStatus(db *gorm.DB, notification *models.Notification) {
-	db.Model(notification).Update("Status", "Sent")
+func updateSentNotification(db *gorm.DB, notification *models.Notification) {
+	db.Model(notification).Updates(models.Notification{
+		Status:      "Sent",
+		ProcessedAt: time.Now().UTC(),
+	})
 }
