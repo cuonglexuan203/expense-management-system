@@ -3,6 +3,7 @@ using EMS.Infrastructure.Common.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NRedisStack;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -36,7 +37,7 @@ namespace EMS.Infrastructure.Messaging
                 string fullQueueName = GetFullQueueName(queueName);
                 string serializedMessage = JsonSerializer.Serialize(message, _serializerOptions);
 
-                await _db.ListLeftPushAsync(fullQueueName, serializedMessage);
+                await _db.ListRightPushAsync(fullQueueName, serializedMessage);
 
                 if (_redisOptions.EnableLogging)
                 {
@@ -58,15 +59,16 @@ namespace EMS.Infrastructure.Messaging
             try
             {
                 var fullQueueName = GetFullQueueName(queueName);
+                var timeoutMilliseconds = timeout != null ? timeout.Value.Milliseconds : 0;
 
-                var result = await _db.ListRightPopAsync(fullQueueName);
+                var result = await _db.BLPopAsync(fullQueueName, timeoutMilliseconds);
 
-                if (result.IsNull)
+                if (result == null)
                 {
                     return default;
                 }
 
-                var serializedValue = result.ToString();
+                var serializedValue = result.Item2.ToString();
                 if(_redisOptions.EnableLogging)
                 {
                     _logger.LogInformation("Message dequeued from {QueueName}", fullQueueName);

@@ -45,8 +45,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 {
                     var notification = await _mqService.DequeueAsync<NotificationMessage>(
                         _redisOptions.MessageQueues.NotificationExtractionQueue,
-                        TimeSpan.FromSeconds(5),
-                        stoppingToken);
+                        cancellationToken: stoppingToken);
 
                     if (notification != null)
                     {
