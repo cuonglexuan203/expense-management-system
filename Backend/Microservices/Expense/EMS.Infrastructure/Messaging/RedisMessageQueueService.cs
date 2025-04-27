@@ -59,9 +59,12 @@ namespace EMS.Infrastructure.Messaging
             try
             {
                 var fullQueueName = GetFullQueueName(queueName);
-                var timeoutMilliseconds = timeout != null ? timeout.Value.Milliseconds : 0;
 
-                var result = await _db.BLPopAsync(fullQueueName, timeoutMilliseconds);
+                // NOTE: NRedisStack multiplexer does not support BLOCKING commands (e.g BLPop),
+                // using a timeout of 0 will block the connection for all callers
+                var timeoutSeconds = timeout != null ? timeout.Value.TotalSeconds : 5;
+                
+                var result = await _db.BLPopAsync(fullQueueName, timeoutSeconds);
 
                 if (result == null)
                 {
@@ -69,12 +72,16 @@ namespace EMS.Infrastructure.Messaging
                 }
 
                 var serializedValue = result.Item2.ToString();
-                if(_redisOptions.EnableLogging)
+                if (_redisOptions.EnableLogging)
                 {
                     _logger.LogInformation("Message dequeued from {QueueName}", fullQueueName);
                 }
 
                 return JsonSerializer.Deserialize<T>(serializedValue, _serializerOptions);
+            }
+            catch (RedisTimeoutException)
+            {
+                return default;
             }
             catch (Exception ex)
             {
