@@ -44,13 +44,15 @@ namespace EMS.Infrastructure.BackgroundJobs
                 try
                 {
                     var notification = await _mqService.DequeueAsync<NotificationMessage>(
-                        _redisOptions.MessageQueues.NotificationExtractionQueue,
-                        timeout: TimeSpan.FromSeconds(5),
-                        cancellationToken: stoppingToken);
+                        _redisOptions.MessageQueues.NotificationExtractionQueue);
 
                     if (notification != null)
                     {
                         await AnalyzeNotificationAsync(notification, stoppingToken);
+                    }
+                    else
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
                     }
                 }
                 catch (Exception ex)

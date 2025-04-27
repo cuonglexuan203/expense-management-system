@@ -60,18 +60,21 @@ namespace EMS.Infrastructure.Messaging
             {
                 var fullQueueName = GetFullQueueName(queueName);
 
+                #region Implement using blocking commands, problem: slowdown all other redis callers
                 // NOTE: NRedisStack multiplexer does not support BLOCKING commands (e.g BLPop),
                 // using a timeout of 0 will block the connection for all callers
-                var timeoutSeconds = timeout != null ? timeout.Value.TotalSeconds : 5;
-                
-                var result = await _db.BLPopAsync(fullQueueName, timeoutSeconds);
+                //var timeoutSeconds = timeout != null ? timeout.Value.TotalSeconds : 5;
 
-                if (result == null)
+                //var result = await _db.BLPopAsync(fullQueueName, timeoutSeconds);
+                #endregion
+
+                var result = await _db.ListLeftPopAsync(fullQueueName);
+                if (result.IsNull)
                 {
                     return default;
                 }
 
-                var serializedValue = result.Item2.ToString();
+                var serializedValue = result.ToString();
                 if (_redisOptions.EnableLogging)
                 {
                     _logger.LogInformation("Message dequeued from {QueueName}", fullQueueName);
