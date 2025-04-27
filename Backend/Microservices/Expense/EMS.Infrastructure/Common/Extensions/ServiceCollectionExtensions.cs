@@ -21,6 +21,7 @@ namespace EMS.Infrastructure.Common.Extensions
             {
                 var configOptions = ConfigurationOptions.Parse(redisConfig!.ConnectionString);
                 configOptions.AbortOnConnectFail = false;
+                configOptions.SyncTimeout = 120_000;
                 return ConnectionMultiplexer.Connect(configOptions);
             });
 
