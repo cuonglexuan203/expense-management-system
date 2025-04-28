@@ -33,6 +33,9 @@ type Config struct {
 	CorsMaxAge                    time.Duration `mapstructure:"CORS_MAX_AGE"`
 	BackendApiUrl                 string        `mapstructure:"BACKEND_API_URL"`
 	BackendApiKey                 string        `mapstructure:"BACKEND_API_KEY"`
+	EventPollingInterval          int           `mapstructure:"EVENT_POLLING_INTERVAL"`
+	EventProcessingQueue          string        `mapstructure:"EVENT_PROCESSING_QUEUE"`
+	EventBatchSize                int           `mapstructure:"EVENT_BATCH_SIZE"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
@@ -61,6 +64,9 @@ func LoadConfig(path string) (config Config, err error) {
 	viper.SetDefault("CORS_ALLOWED_HEADERS", []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "X-API-KEY"})
 	viper.SetDefault("CORS_MAX_AGE", 12*time.Hour)
 	viper.SetDefault("BACKEND_API_URL", "http://localhost:5000")
+	viper.SetDefault("EVENT_POLLING_INTERVAL", 30*time.Second)
+	viper.SetDefault("EVENT_PROCESSING_QUEUE", "event:processing")
+	viper.SetDefault("EVENT_BATCH_SIZE", 100)
 
 	if err = viper.ReadInConfig(); err != nil {
 		if _, ok := err.(v.ConfigFileNotFoundError); !ok {

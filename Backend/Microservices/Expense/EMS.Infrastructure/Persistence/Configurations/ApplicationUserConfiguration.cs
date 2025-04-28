@@ -81,6 +81,11 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .WithOne(e => e.User as ApplicationUser)
                 .HasForeignKey(e => e.UserId)
                 .IsRequired();
+
+            builder.HasMany(e => e.ScheduledEvents)
+                .WithOne(e => e.User as ApplicationUser)
+                .HasForeignKey(e => e.UserId)
+                .IsRequired();
         }
     }
 }

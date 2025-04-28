@@ -17,7 +17,6 @@ namespace EMS.Infrastructure.Persistence.DbContext
         }
 
         public DbSet<ActivityLog> ActivityLogs { get; set; }
-        public DbSet<CalendarEvent> CalendarEvents { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<ChatThread> ChatThreads { get; set; }
@@ -37,6 +36,9 @@ namespace EMS.Infrastructure.Persistence.DbContext
         public DbSet<ApiKeyScope> ApiKeyScopes { get; set; }
         public DbSet<DeviceToken> DeviceTokens { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<ScheduledEvent> ScheduledEvents { get; set; }
+        public DbSet<RecurrenceRule> RecurrenceRules { get; set; }
+        public DbSet<ScheduledEventExecution> ScheduledEventExecutions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

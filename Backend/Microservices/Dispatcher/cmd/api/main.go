@@ -15,6 +15,7 @@ import (
 	"github.com/cuonglexuan203/dispatcher/internal/clients/backend"
 	"github.com/cuonglexuan203/dispatcher/internal/firebase"
 	"github.com/cuonglexuan203/dispatcher/internal/persistence"
+	"github.com/cuonglexuan203/dispatcher/internal/persistence/repositories"
 	"github.com/cuonglexuan203/dispatcher/internal/scheduler"
 	applogger "github.com/cuonglexuan203/dispatcher/pkg/logger"
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,9 @@ func main() {
 	sqlDB, _ := db.DB()
 	defer sqlDB.Close()
 
+	// Repository
+	eventRepo := repositories.NewEventRepository(db)
+
 	// --- Firebase ---
 	fcmService, err := firebase.InitFCM(cfg)
 	if err != nil {
@@ -57,6 +61,9 @@ func main() {
 	// --- Asynq Client ---
 	asynqClient := scheduler.NewAsynqClient(cfg)
 	defer asynqClient.Close()
+
+	// Asynq Scheduler
+	// asynqScheduler := scheduler.RunAsynqScheduler(cfg)
 
 	// --- Asynq Server ---
 	asynqServer := scheduler.RunAsynqServer(cfg, fcmService, db, backendClient)
@@ -117,6 +124,11 @@ func main() {
 	asynqServer.Stop()
 	asynqServer.Shutdown()
 	logger.Info("Asynq server stopped.")
+
+	// Shutdown Asynq scheduler
+	// logger.Info("Stopping Asynq scheduler...")
+	// asynqScheduler.Shutdown()
+	// logger.Info("Asynq scheduler stopped.")
 
 	// Shutdown HTTP server
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

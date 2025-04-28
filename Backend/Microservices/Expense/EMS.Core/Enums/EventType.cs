@@ -2,7 +2,7 @@
 {
     public enum EventType
     {
-        Normal,
-        Periodic,
+        Transaction,
+        Reminder,
     }
 }

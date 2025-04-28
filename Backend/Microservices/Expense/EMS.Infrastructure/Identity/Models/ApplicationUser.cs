@@ -21,7 +21,7 @@ namespace EMS.Infrastructure.Identity.Models
         public ICollection<NotificationPreference> NotificationPreferences { get; set; } = [];
         public ICollection<ChatThread> ChatThreads { get; set; } = [];
         public ICollection<ActivityLog> ActivityLogs { get; set; } = [];
-        public ICollection<CalendarEvent> CalendarEvents { get; set; } = [];
+        public ICollection<ScheduledEvent> CalendarEvents { get; set; } = [];
         public ICollection<FinancialGoal> FinancialGoals { get; set; } = [];
         public ICollection<Category> Categories { get; set; } = [];
         public ICollection<Transaction> Transactions { get; set; } = [];
@@ -30,5 +30,6 @@ namespace EMS.Infrastructure.Identity.Models
         public ICollection<DeviceToken> DeviceTokens { get; set; } = [];
         public ICollection<ExtractedTransaction> ExtractedTransactions { get; set; } = [];
         public ICollection<Notification> Notifications { get; set; } = [];
+        public ICollection<ScheduledEvent> ScheduledEvents { get; set; } = [];
     }
 }

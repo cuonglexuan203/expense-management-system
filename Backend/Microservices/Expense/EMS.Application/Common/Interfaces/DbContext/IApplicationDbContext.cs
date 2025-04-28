@@ -7,7 +7,6 @@ namespace EMS.Application.Common.Interfaces.DbContext
     public interface IApplicationDbContext
     {
         DbSet<ActivityLog> ActivityLogs { get; set; }
-        DbSet<CalendarEvent> CalendarEvents { get; set; }
         DbSet<Category> Categories { get; set; }
         DbSet<ChatMessage> ChatMessages { get; set; }
         DbSet<ChatThread> ChatThreads { get; set; }
@@ -27,6 +26,9 @@ namespace EMS.Application.Common.Interfaces.DbContext
         DbSet<ApiKeyScope> ApiKeyScopes { get; set; }
         DbSet<DeviceToken> DeviceTokens { get; set; }
         DbSet<Notification> Notifications { get; set; }
+        DbSet<ScheduledEvent> ScheduledEvents { get; set; }
+        DbSet<RecurrenceRule> RecurrenceRules { get; set; }
+        DbSet<ScheduledEventExecution> ScheduledEventExecutions { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

@@ -17,10 +17,10 @@ namespace EMS.Infrastructure.Persistence.Configurations
 
         public override void ConfigureRelationships(EntityTypeBuilder<Wallet> builder)
         {
-            builder.HasMany(e => e.CalendarEvents)
-                .WithOne(e => e.Wallet)
-                .HasForeignKey(e => e.WalletId)
-                .IsRequired();
+            //builder.HasMany(e => e.CalendarEvents)
+            //    .WithOne(e => e.Wallet)
+            //    .HasForeignKey(e => e.WalletId)
+            //    .IsRequired();
 
             builder.HasMany(e => e.FinancialGoals)
                 .WithOne(e => e.Wallet)
