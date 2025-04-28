@@ -9,6 +9,7 @@ import (
 
 func NewAsynqClient(cfg config.Config) *asynq.Client {
 	logger := applogger.GetLogger()
+
 	redisOpt := asynq.RedisClientOpt{
 		Addr:     cfg.RedisAddr,
 		Password: cfg.RedisPassword,

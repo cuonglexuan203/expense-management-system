@@ -9,33 +9,48 @@ import (
 )
 
 type Config struct {
-	AppEnv                        string        `mapstructure:"APP_ENV"`
-	Port                          string        `mapstructure:"APP_PORT"`
-	ApiKey                        string        `mapstructure:"APP_API_KEY"`
-	LogLevel                      string        `mapstructure:"LOG_LEVEL"`
-	LogFileName                   string        `mapstructure:"LOG_FILENAME"`
-	LogMaxSizeMB                  int           `mapstructure:"LOG_MAX_SIZE_MB"`
-	LogMaxBackups                 int           `mapstructure:"LOG_MAX_BACKUPS"`
-	LogMaxAgeDays                 int           `mapstructure:"LOG_MAX_AGE_DAYS"`
-	DBHost                        string        `mapstructure:"DB_HOST"`
-	DBPort                        string        `mapstructure:"DB_PORT"`
-	DBUser                        string        `mapstructure:"DB_USER"`
-	DBPassword                    string        `mapstructure:"DB_PASSWORD"`
-	DBName                        string        `mapstructure:"DB_NAME"`
-	DBSSLMode                     string        `mapstructure:"DB_SSLMODE"`
-	RedisAddr                     string        `mapstructure:"REDIS_ADDR"`
-	RedisPassword                 string        `mapstructure:"REDIS_PASSWORD"`
-	RedisDB                       int           `mapstructure:"REDIS_DB"`
-	FirebaseServiceAccountKeyPath string        `mapstructure:"FIREBASE_SERVICE_ACCOUNT_KEY_PATH"`
-	CorsAllowedOrigins            []string      `mapstructure:"CORS_ALLOWED_ORIGINS"`
-	CorsAllowedMethods            []string      `mapstructure:"CORS_ALLOWED_METHODS"`
-	CorsAllowedHeaders            []string      `mapstructure:"CORS_ALLOWED_HEADERS"`
-	CorsMaxAge                    time.Duration `mapstructure:"CORS_MAX_AGE"`
-	BackendApiUrl                 string        `mapstructure:"BACKEND_API_URL"`
-	BackendApiKey                 string        `mapstructure:"BACKEND_API_KEY"`
-	EventPollingInterval          int           `mapstructure:"EVENT_POLLING_INTERVAL"`
-	EventProcessingQueue          string        `mapstructure:"EVENT_PROCESSING_QUEUE"`
-	EventBatchSize                int           `mapstructure:"EVENT_BATCH_SIZE"`
+	AppEnv        string `mapstructure:"APP_ENV"`
+	Port          string `mapstructure:"APP_PORT"`
+	ApiKey        string `mapstructure:"APP_API_KEY"`
+	LogLevel      string `mapstructure:"LOG_LEVEL"`
+	LogFileName   string `mapstructure:"LOG_FILENAME"`
+	LogMaxSizeMB  int    `mapstructure:"LOG_MAX_SIZE_MB"`
+	LogMaxBackups int    `mapstructure:"LOG_MAX_BACKUPS"`
+	LogMaxAgeDays int    `mapstructure:"LOG_MAX_AGE_DAYS"`
+
+	// Database
+	DBHost     string `mapstructure:"DB_HOST"`
+	DBPort     string `mapstructure:"DB_PORT"`
+	DBUser     string `mapstructure:"DB_USER"`
+	DBPassword string `mapstructure:"DB_PASSWORD"`
+	DBName     string `mapstructure:"DB_NAME"`
+	DBSSLMode  string `mapstructure:"DB_SSLMODE"`
+
+	// Redis
+	RedisAddr         string        `mapstructure:"REDIS_ADDR"`
+	RedisPassword     string        `mapstructure:"REDIS_PASSWORD"`
+	RedisDB           int           `mapstructure:"REDIS_DB"`
+	RedisPoolSize     int           `mapstructure:"REDIS_POOL_SIZE"`
+	RedisMinIdleConns int           `mapstructure:"REDIS_MIN_IDLE_CONNS"`
+	RedisPoolTimeout  time.Duration `mapstructure:"REDIS_POOL_TIMEOUT"`
+	RedisIdleTimeout  time.Duration `mapstructure:"REDIS_IDLE_TIMEOUT"`
+
+	// Firebase
+	FirebaseServiceAccountKeyPath string `mapstructure:"FIREBASE_SERVICE_ACCOUNT_KEY_PATH"`
+
+	CorsAllowedOrigins []string      `mapstructure:"CORS_ALLOWED_ORIGINS"`
+	CorsAllowedMethods []string      `mapstructure:"CORS_ALLOWED_METHODS"`
+	CorsAllowedHeaders []string      `mapstructure:"CORS_ALLOWED_HEADERS"`
+	CorsMaxAge         time.Duration `mapstructure:"CORS_MAX_AGE"`
+
+	// Backend API
+	BackendApiUrl string `mapstructure:"BACKEND_API_URL"`
+	BackendApiKey string `mapstructure:"BACKEND_API_KEY"`
+
+	// Event poller config
+	EventPollingInterval time.Duration `mapstructure:"EVENT_POLLING_INTERVAL"`
+	EventProcessingQueue string        `mapstructure:"EVENT_PROCESSING_QUEUE"`
+	EventBatchSize       int           `mapstructure:"EVENT_BATCH_SIZE"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
@@ -59,6 +74,10 @@ func LoadConfig(path string) (config Config, err error) {
 	viper.SetDefault("DB_SSLMODE", "disable")
 	viper.SetDefault("REDIS_ADDR", "localhost:6379")
 	viper.SetDefault("REDIS_DB", 0)
+	viper.SetDefault("REDIS_POOL_SIZE", 10)
+	viper.SetDefault("REDIS_MIN_IDLE_CONNS", 2)
+	viper.SetDefault("REDIS_POOL_TIMEOUT", "5s")
+	viper.SetDefault("REDIS_IDLE_TIMEOUT", "5m")
 	viper.SetDefault("CORS_ALLOWED_ORIGINS", []string{"*"})
 	viper.SetDefault("CORS_ALLOWED_METHODS", []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"})
 	viper.SetDefault("CORS_ALLOWED_HEADERS", []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "X-API-KEY"})

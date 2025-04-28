@@ -36,7 +36,7 @@ func RunAsynqScheduler(
 	// Register tasks
 	taskID := "event_poller_singleton"
 	entryID, err := scheduler.Register(
-		fmt.Sprintf("@every %ds", cfg.EventPollingInterval),
+		fmt.Sprintf("@every %s", cfg.EventPollingInterval.String()),
 		task,
 		asynq.TaskID(taskID),
 	)
@@ -48,7 +48,7 @@ func RunAsynqScheduler(
 			"Registered polling event task",
 			zap.String("task_id", taskID),
 			zap.String("entry_id", entryID),
-			zap.Int("interval", cfg.EventPollingInterval),
+			zap.Duration("interval", cfg.EventPollingInterval),
 			zap.String("queue_name", cfg.EventProcessingQueue))
 	}
 
