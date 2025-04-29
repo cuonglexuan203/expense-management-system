@@ -11,7 +11,6 @@ namespace EMS.Core.Entities
 
         // Navigations 
         public ICollection<FinancialGoal> FinancialGoals { get; set; } = [];
-        public ICollection<ScheduledEvent> CalendarEvents { get; set; } = [];
         public ICollection<Transaction> Transactions { get; set; } = [];
     }
 }

@@ -11,5 +11,6 @@ namespace EMS.Application.Features.Preferences.Dtos
         public CurrencyCode CurrencyCode { get; set; }
         public ConfirmationMode ConfirmationMode { get; set; }
         public bool IsOnboardingCompleted { get; set; }
+        public string? TimeZoneId { get; set; }
     }
 }

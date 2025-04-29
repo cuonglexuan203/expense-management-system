@@ -84,7 +84,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                     ?? throw new NotFoundException($"Message with Id {queuedMessage.MessageId} not found");
                 var chatThreadId = message.ChatThreadId;
 
-                var userPreferences = await userPreferenceService.GetUserPreferenceByIdAsync(queuedMessage.UserId);
+                var userPreferences = await userPreferenceService.GetUserPreferenceByUserIdAsync(queuedMessage.UserId);
                 var categories = await context.Categories
                     .Where(e => !e.IsDeleted && e.UserId == queuedMessage.UserId)
                     .ToListAsync();
@@ -189,10 +189,11 @@ namespace EMS.Infrastructure.BackgroundJobs
                                 {
                                     category = await context.Categories
                                         .Where(e => !e.IsDeleted &&
-                                                    e.Type == CategoryType.Default &&
+                                                    e.UserId == queuedMessage.UserId &&
+                                                    e.Type == CategoryType.Custom &&
                                                     e.FinancialFlowType == item.Type &&
                                                     e.Name == Categories.Unknown)
-                                        .FirstOrDefaultAsync() ?? throw new ServerException("The system unknown category not found.");
+                                        .FirstOrDefaultAsync() ?? throw new ServerException("The unknown category not found.");
                                 }
 
                                 //extractedTransaction.CategoryId = category.Id;

@@ -35,6 +35,8 @@ namespace EMS.Infrastructure.BackgroundJobs
             _serviceProvider = serviceProvider;
             _redisOptions = redisOptions.Value;
         }
+
+        // OPTIMIZE: Parallel processing, using TPL dataflow
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Notification analyzer starting");
@@ -82,7 +84,7 @@ namespace EMS.Infrastructure.BackgroundJobs
 
             try
             {
-                var userPreferences = await userPreferenceService.GetUserPreferenceByIdAsync(notificationMsg.UserId);
+                var userPreferences = await userPreferenceService.GetUserPreferenceByUserIdAsync(notificationMsg.UserId);
                 var categories = await context.Categories
                     .Where(e => !e.IsDeleted && e.UserId == notificationMsg.UserId)
                     .ToListAsync();

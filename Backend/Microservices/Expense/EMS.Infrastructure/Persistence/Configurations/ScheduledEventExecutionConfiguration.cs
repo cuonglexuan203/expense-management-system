@@ -25,7 +25,7 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.HasOne(e => e.Transaction)
-                .WithOne()
+                .WithOne(e => e.ScheduledEventExecution)
                 .HasForeignKey<ScheduledEventExecution>(e => e.TransactionId)
                 .IsRequired(false);
         }

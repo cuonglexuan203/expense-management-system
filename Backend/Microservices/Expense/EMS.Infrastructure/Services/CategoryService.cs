@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using EMS.Application.Common.Extensions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
@@ -11,6 +12,7 @@ using EMS.Core.Enums;
 using EMS.Core.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Index.HPRtree;
 
 namespace EMS.Infrastructure.Services
 {
@@ -45,6 +47,20 @@ namespace EMS.Infrastructure.Services
                             e.Name == Categories.Unknown)
                 .FirstOrDefaultAsync() ?? throw new ServerException("The system unknown category not found."),
                 TimeSpan.FromDays(1));
+        }
+
+        public async Task<CategoryDto> GetUnknownCategoryAsync(string userId, TransactionType type)
+        {
+            var categoryDto = await _context.Categories
+                .Where(e => !e.IsDeleted &&
+                    e.UserId == userId &&
+                    e.Type == CategoryType.Custom &&
+                    e.FinancialFlowType == type &&
+                    e.Name == Categories.Unknown)
+                .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync() ?? throw new ServerException("The unknown category not found.");
+
+            return categoryDto;
         }
 
         public async Task<List<CategoryDto>> GetDefaultCategoriesAsync()

@@ -12,33 +12,30 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
+namespace EMS.Application.Features.Transactions.Commands.CreateEventTransaction
 {
-    public class CreateTransactionCommand : IRequest<TransactionDto>
-    {
-        public string Name { get; set; } = default!;
-        public int WalletId { get; set; }
-        public int? CategoryId { get; set; }
-        public float Amount { get; set; }
-        public TransactionType Type { get; set; }
-        public DateTimeOffset? OccurredAt { get; set; } // Nullable because there are cases where the user may not remember the transaction time.
-    }
+    public record CreateEventTransactionCommand(
+        string UserId,
+        string Name,
+        int WalletId,
+        int? CategoryId,
+        float Amount,
+        TransactionType Type,
+        DateTimeOffset? OccurredAt) : IRequest<TransactionDto>;
 
-    public class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, TransactionDto>
+    public class CreateEventTransactionCommandHandler : IRequestHandler<CreateEventTransactionCommand, TransactionDto>
     {
-        private readonly ILogger<CreateTransactionCommandHandler> _logger;
+        private readonly ILogger<CreateEventTransactionCommandHandler> _logger;
         private readonly IApplicationDbContext _context;
-        private readonly ICurrentUserService _user;
         private readonly IMapper _mapper;
         private readonly IWalletService _walletService;
         private readonly ITransactionService _transactionService;
         private readonly ICategoryService _categoryService;
         private readonly IUserPreferenceService _userPreferenceService;
 
-        public CreateTransactionCommandHandler(
-            ILogger<CreateTransactionCommandHandler> logger,
+        public CreateEventTransactionCommandHandler(
+            ILogger<CreateEventTransactionCommandHandler> logger,
             IApplicationDbContext context,
-            ICurrentUserService user,
             IMapper mapper,
             IWalletService walletService,
             ITransactionService transactionService,
@@ -47,24 +44,22 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
         {
             _logger = logger;
             _context = context;
-            _user = user;
             _mapper = mapper;
             _walletService = walletService;
             _transactionService = transactionService;
             _categoryService = categoryService;
             _userPreferenceService = userPreferenceService;
         }
-
-        public async Task<TransactionDto> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<TransactionDto> Handle(CreateEventTransactionCommand request, CancellationToken cancellationToken)
         {
-            string userId = _user.Id!;
+            string userId = request.UserId;
 
             var wallet = await _context.Wallets
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == request.WalletId && e.UserId == userId && !e.IsDeleted)
                 ?? throw new NotFoundException($"Wallet with Id {request.WalletId} not found");
 
-            var userPreference = await _userPreferenceService.GetUserPreferenceAsync();
+            var userPreference = await _userPreferenceService.GetUserPreferenceByUserIdAsync(userId);
 
             var transaction = new Transaction
             {
@@ -77,7 +72,7 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
                 OccurredAt = request.OccurredAt,
             };
 
-            #region Add a new transaction into the category
+            #region Link transaction to category
             if (request.CategoryId != null)
             {
                 var category = await _context.Categories
@@ -102,7 +97,7 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
             _logger.LogInformation("Added a {Type} transaction: id {id}, wallet id {WalletId}, amount {Amount}, category id {Category}",
                 transaction.Type, transaction.Id, transaction.WalletId, transaction.Amount, transaction.CategoryId);
 
-            await _walletService.CacheWalletBalanceSummariesAsync(request.WalletId);
+            await _walletService.CacheWalletBalanceSummariesAsync(userId, request.WalletId);
 
             return _mapper.Map<TransactionDto>(transaction);
         }

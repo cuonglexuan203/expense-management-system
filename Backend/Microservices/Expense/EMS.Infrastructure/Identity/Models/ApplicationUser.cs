@@ -21,7 +21,6 @@ namespace EMS.Infrastructure.Identity.Models
         public ICollection<NotificationPreference> NotificationPreferences { get; set; } = [];
         public ICollection<ChatThread> ChatThreads { get; set; } = [];
         public ICollection<ActivityLog> ActivityLogs { get; set; } = [];
-        public ICollection<ScheduledEvent> CalendarEvents { get; set; } = [];
         public ICollection<FinancialGoal> FinancialGoals { get; set; } = [];
         public ICollection<Category> Categories { get; set; } = [];
         public ICollection<Transaction> Transactions { get; set; } = [];

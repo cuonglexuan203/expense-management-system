@@ -14,13 +14,12 @@ namespace EMS.Core.Entities
         public float Amount { get; set; }
         public TransactionType Type { get; set; }
         public DateTimeOffset? OccurredAt { get; set; }
-        public int? CalendarEventId { get; set; }
         //public string? Metadata { get; set; }
         public int? ChatMessageId { get; set; }
 
         // Navigations
         public ChatMessage? ChatMessage { get; set; }
-        public ScheduledEvent? CalendarEvent { get; set; }
+        public ScheduledEventExecution? ScheduledEventExecution { get; set; }
         public Category? Category { get; set; }
         public Wallet Wallet { get; set; } = default!;
         public Currency Currency { get; set; } = default!;

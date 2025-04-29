@@ -38,10 +38,10 @@ namespace EMS.Infrastructure.Services
         {
             var userId = _currentUserService.Id!;
 
-            return await GetUserPreferenceByIdAsync(userId);
+            return await GetUserPreferenceByUserIdAsync(userId);
         }
 
-        public async Task<UserPreferenceDto> GetUserPreferenceByIdAsync(string userId)
+        public async Task<UserPreferenceDto> GetUserPreferenceByUserIdAsync(string userId)
         {
             return await _cacheService.GetOrSetAsync(
                 CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.GeneralKeys.UserPreference, userId),
