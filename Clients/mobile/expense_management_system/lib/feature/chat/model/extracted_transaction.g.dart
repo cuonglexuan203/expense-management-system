@@ -10,7 +10,7 @@ _$ExtractedTransactionImpl _$$ExtractedTransactionImplFromJson(
         Map<String, dynamic> json) =>
     _$ExtractedTransactionImpl(
       id: (json['id'] as num).toInt(),
-      chatExtractionId: (json['chatExtractionId'] as num).toInt(),
+      chatExtractionId: json['chatExtractionId'] as String?,
       category: json['category'] as String?,
       transactionId: (json['transactionId'] as num).toInt(),
       name: json['name'] as String,

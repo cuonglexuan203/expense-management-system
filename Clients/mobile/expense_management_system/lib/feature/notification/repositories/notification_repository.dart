@@ -37,43 +37,41 @@ class NotificationRepository {
     }
   }
 
-  Future<Object?> confirmTransaction(int extractedTransactionId) async {
-    try {
-      final endpoint = ApiEndpoints.extractedTransaction
-          .confirmTransaction(extractedTransactionId);
+  // Future<Object?> confirmTransaction(int extractedTransactionId) async {
+  //   try {
+  //     final response = await _api.post(
+  //       ApiEndpoints.extractedTransaction
+  //           .confirmStatusTransaction(extractedTransactionId),
+  //       jsonEncode({"walletId": 0, "confirmationStatus": "Confirm"}),
+  //     );
 
-      final response = await _api.post(
-        endpoint,
-        jsonEncode({}),
-      );
+  //     return response.when(
+  //       success: (_) => debugPrint('Transaction confirmed successfully'),
+  //       error: (error) => throw error,
+  //     );
+  //   } catch (e) {
+  //     debugPrint('Error confirming transaction: $e');
+  //     rethrow;
+  //   }
+  // }
 
-      return response.when(
-        success: (_) => debugPrint('Transaction confirmed successfully'),
-        error: (error) => throw error,
-      );
-    } catch (e) {
-      debugPrint('Error confirming transaction: $e');
-      rethrow;
-    }
-  }
+  // Future<Object?> rejectTransaction(int extractedTransactionId) async {
+  //   try {
+  //     final endpoint =
+  //         '${ApiEndpoints.base}/extracted-transactions/$extractedTransactionId/reject';
 
-  Future<Object?> rejectTransaction(int extractedTransactionId) async {
-    try {
-      final endpoint =
-          '${ApiEndpoints.base}/extracted-transactions/$extractedTransactionId/reject';
+  //     final response = await _api.post(
+  //       endpoint,
+  //       jsonEncode({}),
+  //     );
 
-      final response = await _api.post(
-        endpoint,
-        jsonEncode({}),
-      );
-
-      return response.when(
-        success: (_) => debugPrint('Transaction rejected successfully'),
-        error: (error) => throw error,
-      );
-    } catch (e) {
-      debugPrint('Error rejecting transaction: $e');
-      rethrow;
-    }
-  }
+  //     return response.when(
+  //       success: (_) => debugPrint('Transaction rejected successfully'),
+  //       error: (error) => throw error,
+  //     );
+  //   } catch (e) {
+  //     debugPrint('Error rejecting transaction: $e');
+  //     rethrow;
+  //   }
+  // }
 }

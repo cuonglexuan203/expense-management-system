@@ -35,33 +35,40 @@ class CustomBottomNavBar extends StatelessWidget {
           children: [
             _buildNavItem(
               icon: Iconsax.home_2,
-              activeIcon: Iconsax.home_21,
+              activeIcon: Iconsax.home_2,
               label: 'Home',
               isSelected: currentIndex == 0,
               onTap: () => onTap(0),
             ),
             _buildNavItem(
               icon: Iconsax.transaction_minus,
-              activeIcon: Iconsax.transaction_minus5,
+              activeIcon: Iconsax.transaction_minus,
               label: 'Transaction',
               isSelected: currentIndex == 1,
               onTap: () => onTap(1),
             ),
-            // Empty space for FAB
-            const SizedBox(width: 40),
+            // // Empty space for FAB
+            // const SizedBox(width: 40),
             _buildNavItem(
               icon: Iconsax.calendar_1,
-              activeIcon: Iconsax.calendar5,
+              activeIcon: Iconsax.calendar_1,
               label: 'Schedule',
               isSelected: currentIndex == 2,
               onTap: () => onTap(2),
             ),
             _buildNavItem(
-              icon: Iconsax.user,
-              activeIcon: Iconsax.user4,
-              label: 'Profile',
+              icon: Iconsax.graph,
+              activeIcon: Iconsax.graph,
+              label: 'Statistics',
               isSelected: currentIndex == 3,
               onTap: () => onTap(3),
+            ),
+            _buildNavItem(
+              icon: Iconsax.user,
+              activeIcon: Iconsax.user,
+              label: 'Profile',
+              isSelected: currentIndex == 4,
+              onTap: () => onTap(4),
             ),
           ],
         ),

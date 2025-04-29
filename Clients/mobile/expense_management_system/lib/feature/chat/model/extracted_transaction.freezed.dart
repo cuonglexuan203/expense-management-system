@@ -21,7 +21,7 @@ ExtractedTransaction _$ExtractedTransactionFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ExtractedTransaction {
   int get id => throw _privateConstructorUsedError;
-  int get chatExtractionId => throw _privateConstructorUsedError;
+  String? get chatExtractionId => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
   int get transactionId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
@@ -50,7 +50,7 @@ abstract class $ExtractedTransactionCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
-      int chatExtractionId,
+      String? chatExtractionId,
       String? category,
       int transactionId,
       String name,
@@ -79,7 +79,7 @@ class _$ExtractedTransactionCopyWithImpl<$Res,
   @override
   $Res call({
     Object? id = null,
-    Object? chatExtractionId = null,
+    Object? chatExtractionId = freezed,
     Object? category = freezed,
     Object? transactionId = null,
     Object? name = null,
@@ -95,10 +95,10 @@ class _$ExtractedTransactionCopyWithImpl<$Res,
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      chatExtractionId: null == chatExtractionId
+      chatExtractionId: freezed == chatExtractionId
           ? _value.chatExtractionId
           : chatExtractionId // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String?,
       category: freezed == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
@@ -149,7 +149,7 @@ abstract class _$$ExtractedTransactionImplCopyWith<$Res>
   @useResult
   $Res call(
       {int id,
-      int chatExtractionId,
+      String? chatExtractionId,
       String? category,
       int transactionId,
       String name,
@@ -175,7 +175,7 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? chatExtractionId = null,
+    Object? chatExtractionId = freezed,
     Object? category = freezed,
     Object? transactionId = null,
     Object? name = null,
@@ -191,10 +191,10 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      chatExtractionId: null == chatExtractionId
+      chatExtractionId: freezed == chatExtractionId
           ? _value.chatExtractionId
           : chatExtractionId // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String?,
       category: freezed == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
@@ -240,7 +240,7 @@ class __$$ExtractedTransactionImplCopyWithImpl<$Res>
 class _$ExtractedTransactionImpl implements _ExtractedTransaction {
   const _$ExtractedTransactionImpl(
       {required this.id,
-      required this.chatExtractionId,
+      this.chatExtractionId,
       this.category,
       required this.transactionId,
       required this.name,
@@ -257,7 +257,7 @@ class _$ExtractedTransactionImpl implements _ExtractedTransaction {
   @override
   final int id;
   @override
-  final int chatExtractionId;
+  final String? chatExtractionId;
   @override
   final String? category;
   @override
@@ -344,7 +344,7 @@ class _$ExtractedTransactionImpl implements _ExtractedTransaction {
 abstract class _ExtractedTransaction implements ExtractedTransaction {
   const factory _ExtractedTransaction(
       {required final int id,
-      required final int chatExtractionId,
+      final String? chatExtractionId,
       final String? category,
       required final int transactionId,
       required final String name,
@@ -361,7 +361,7 @@ abstract class _ExtractedTransaction implements ExtractedTransaction {
   @override
   int get id;
   @override
-  int get chatExtractionId;
+  String? get chatExtractionId;
   @override
   String? get category;
   @override

@@ -1,28 +1,16 @@
-// lib/feature/notification/service/fcm_service.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
+import 'package:expense_management_system/app/app.dart';
 import 'package:expense_management_system/feature/notification/models/device_token.dart';
 import 'package:expense_management_system/feature/notification/repositories/device_token_repository.dart';
+import 'package:expense_management_system/shared/route/app_router.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final transactionSuggestionStreamProvider =
-    StreamProvider.autoDispose<Map<String, dynamic>>((ref) {
-  final controller = StreamController<Map<String, dynamic>>.broadcast();
-
-  ref.onDispose(() {
-    log("Disposing transactionSuggestionStreamProvider's controller");
-    controller.close();
-  });
-
-  return controller.stream;
-});
-// --- End Stream Provider ---
-
-// Provider cho FCMService
 final fcmServiceProvider = Provider.autoDispose((ref) {
   final deviceTokenRepository = ref.watch(deviceTokenRepositoryProvider);
   return FCMService(deviceTokenRepository, ref);
@@ -37,11 +25,6 @@ class FCMService {
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
-  final _suggestionController =
-      StreamController<Map<String, dynamic>>.broadcast();
-  Stream<Map<String, dynamic>> get transactionSuggestionStream =>
-      _suggestionController.stream;
-
   bool _isInitialized = false;
 
   Future<void> initialize() async {
@@ -52,9 +35,13 @@ class FCMService {
     log('Initializing FCM Service...');
 
     await _requestPermissions();
+
     await _setupLocalNotifications();
+
     _setupForegroundNotificationHandling();
+
     _setupBackgroundNotificationHandling();
+
     await _handleInitialNotification();
 
     _isInitialized = true;
@@ -117,7 +104,7 @@ class FCMService {
               enableVibration: true,
             ),
           );
-      log('Android Notification Channel created.');
+      log('Android Notification Channel (high_importance_channel) created.');
     } catch (e) {
       log('Error initializing FlutterLocalNotifications: $e');
     }
@@ -127,7 +114,9 @@ class FCMService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       log('Foreground Message Received!');
       log('Message data: ${message.data}');
-      log('Message notification: ${message.notification?.title} / ${message.notification?.body}');
+      if (message.notification != null) {
+        log('Message notification: ${message.notification?.title} / ${message.notification?.body}');
+      }
 
       if (message.notification != null || message.data.isNotEmpty) {
         _showLocalNotification(message);
@@ -173,6 +162,7 @@ class FCMService {
       importance: Importance.high,
       priority: Priority.high,
       ticker: 'ticker',
+      // icon: '@mipmap/ic_launcher',
     );
 
     const iosDetails = DarwinNotificationDetails(
@@ -207,12 +197,7 @@ class FCMService {
 
     switch (type) {
       case 'transaction_suggestion':
-        if (isForeground) {
-          log('Adding transaction suggestion to stream for UI handling.');
-          _suggestionController.add(data);
-        } else {
-          log('Received transaction suggestion in background handler (data only).');
-        }
+        log('Received transaction suggestion data (foreground: $isForeground).');
         break;
       case 'spending_reminder':
         log('Handling spending reminder data.');
@@ -234,12 +219,33 @@ class FCMService {
     try {
       final data = jsonDecode(payload) as Map<String, dynamic>;
       log('Handling notification tap with data: $data');
-      final type = data['type'] as String?;
+
+      String? type = data['type'] as String?;
+      final notificationIdRaw = data['notification_id'];
+
+      if (type == null && notificationIdRaw != null) {
+        type = 'transaction_suggestion';
+        log('Type missing, defaulted to transaction_suggestion.');
+      }
 
       switch (type) {
         case 'transaction_suggestion':
-          log('Notification tap type: transaction_suggestion. Triggering UI.');
-          _suggestionController.add(data);
+          log('Notification tap type: transaction_suggestion.');
+          int? notificationId;
+          if (notificationIdRaw is int) {
+            notificationId = notificationIdRaw;
+          } else if (notificationIdRaw is String) {
+            notificationId = int.tryParse(notificationIdRaw);
+          }
+
+          if (notificationId != null) {
+            final targetPath = TransactionSuggestionRoute.path
+                .replaceFirst(':notificationId', notificationId.toString());
+            log('[FCMService] Setting pending navigation to: $targetPath');
+            _ref.read(pendingNavigationProvider.notifier).state = targetPath;
+          } else {
+            log('Error: transaction_suggestion data missing or invalid notification_id');
+          }
           break;
         case 'spending_reminder':
           log('Notification tap type: spending_reminder.');
@@ -250,8 +256,9 @@ class FCMService {
         default:
           log('Notification tapped with unknown type: $type');
       }
-    } catch (e) {
-      log('Error decoding or handling notification tap payload: $e');
+    } catch (e, stackTrace) {
+      log('Error decoding or handling notification tap payload: $e',
+          stackTrace: stackTrace);
     }
   }
 
@@ -260,8 +267,7 @@ class FCMService {
       if (Platform.isIOS) {
         final apnsToken = await _firebaseMessaging.getAPNSToken();
         if (apnsToken == null) {
-          log('Failed to get APNS token for iOS.');
-          await Future.delayed(const Duration(seconds: 1));
+          log('Warning: Failed to get APNS token for iOS. FCM token might still work.');
         }
       }
       final fcmToken = await _firebaseMessaging.getToken();
@@ -277,7 +283,7 @@ class FCMService {
     try {
       final token = await getToken();
       if (token != null) {
-        log('Registering FCM token: $token');
+        log('Registering FCM token with backend: $token');
 
         final deviceToken = DeviceToken(
           token: token,
@@ -286,20 +292,12 @@ class FCMService {
         );
 
         await _deviceTokenRepository.registerToken(deviceToken);
-        log('FCM token registered successfully');
+        log('FCM token registered successfully with backend.');
       } else {
-        log('FCM token is null, cannot register');
+        log('FCM token is null, cannot register with backend.');
       }
     } catch (e) {
-      log('Error registering FCM token: $e');
+      log('Error registering FCM token with backend: $e');
     }
-  }
-
-  // TODO: Add unregisterDeviceToken method to remove token from backend
-  // Future<void> unregisterDeviceToken() async { ... }
-
-  void dispose() {
-    log('Disposing FCMService');
-    _suggestionController.close();
   }
 }

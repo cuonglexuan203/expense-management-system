@@ -12,7 +12,7 @@ import 'package:expense_management_system/shared/util/validator.dart';
 abstract class AuthRepositoryProtocol {
   Future<AuthState> login(String email, String password);
   Future<AuthState> signUp(String name, String email, String password);
-  Future<AuthState> logout();
+  Future<AuthState> logout(String? fcmToken);
 }
 
 final authRepositoryProvider = Provider(AuthRepository.new);
@@ -149,9 +149,10 @@ class AuthRepository implements AuthRepositoryProtocol {
   }
 
   @override
-  Future<AuthState> logout() async {
+  Future<AuthState> logout(String? fcmToken) async {
     try {
-      final logoutResponse = await _api.post(ApiEndpoints.auth.logout, {});
+      final logoutResponse =
+          await _api.post(ApiEndpoints.auth.logout, {'fcm': fcmToken});
 
       return logoutResponse.when(
         success: (_) async {

@@ -99,8 +99,9 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       // TODO: Call unregisterDeviceToken here if needed
       // await ref.read(fcmServiceProvider).unregisterDeviceToken();
+      String? fcmToken = await ref.read(fcmServiceProvider).getToken();
 
-      state = await loginRepository.logout();
+      state = await loginRepository.logout(fcmToken);
       log("Logout completed with state: $state");
     } catch (e) {
       log("Exception during logout: $e");
