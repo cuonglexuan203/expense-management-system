@@ -12,6 +12,8 @@ class ApiEndpoints {
   static final media = _MediaEndpoints();
   static final user = _UserEndpoints();
   static final devicesToken = _DevicesToken();
+  static final notification = _NotificationEndpoints();
+  static final schedule = _ScheduleEndpoints();
 }
 
 class _AuthEndpoints {
@@ -63,6 +65,7 @@ class _ChatThreadEndpoints {
 
 class _ExtractedTransactionEndpoints {
   final String base = '${ApiEndpoints.base}/extracted-transactions';
+  String getExtractedTransactions(String id) => '$base/$id';
   String confirmTransaction(int id) => '$base/$id/confirm';
   String confirmStatusTransaction(int id) => '$base/$id/status';
 }
@@ -77,13 +80,10 @@ class _MediaEndpoints {
   String uploadFile(int id) => '$base/messages/$id';
 }
 
-// class _NotificationEndpoints {
-//   final String base = '${ApiEndpoints.base}/notifications';
-//   String get getAll => base;
-//   String getById(String id) => '$base/$id';
-//   String markAsRead(String id) => '$base/$id/mark-as-read';
-//   String delete(String id) => '$base/$id';
-// }
+class _NotificationEndpoints {
+  final String base = '${ApiEndpoints.base}/notifications';
+  String get sendSystemNotification => '$base/analyze';
+}
 
 class _UserEndpoints {
   final String base = '${ApiEndpoints.base}/onboarding';
@@ -97,4 +97,14 @@ class _DevicesToken {
   final String base = '${ApiEndpoints.base}/device-tokens';
   String get registerToken => base;
   String getTokenByUserId(String userId) => '$base/users/$userId';
+}
+
+class _ScheduleEndpoints {
+  final String base =
+      '${ApiEndpoints.base}/scheduled-items'; // Example endpoint
+  String get getAll => base; // Likely needs query params for date range
+  String get create => base;
+  String getById(String id) => '$base/$id';
+  String update(String id) => '$base/$id';
+  String delete(String id) => '$base/$id';
 }
