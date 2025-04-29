@@ -25,6 +25,9 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
+  String _currentPeriod = 'AllTime';
+  DateTime? _fromDate; // Add this
+  DateTime? _toDate; // Add this
 
   @override
   void initState() {
@@ -58,11 +61,20 @@ class _HomePageState extends ConsumerState<HomePage> {
         loaded: (wallets, selectedIndex) {
           if (wallets.isNotEmpty) {
             final walletId = wallets[selectedIndex].id;
+
+            final filterParams = TransactionFilterParams(
+              walletId: walletId,
+              period: _currentPeriod,
+              fromDate: _fromDate,
+              toDate: _toDate,
+            );
+
             final paginatedState =
-                ref.read(paginatedTransactionsProvider(walletId));
+                ref.read(filteredTransactionsProvider(filterParams));
+
             if (!paginatedState.isLoading && !paginatedState.hasReachedEnd) {
               ref
-                  .read(paginatedTransactionsProvider(walletId).notifier)
+                  .read(filteredTransactionsProvider(filterParams).notifier)
                   .fetchNextPage();
             }
           }
@@ -228,33 +240,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _buildTransactions(HomeState homeState) {
-    return homeState.when(
-      loading: () => const Center(),
-      error: (_) => const Center(
-        child: SizedBox(
-          height: 200,
-          child: Text('Error loading transactions',
-              style: TextStyle(color: Colors.grey)),
-        ),
-      ),
-      loaded: (wallets, selectedIndex) {
-        if (wallets.isEmpty) {
-          return const Center(
-            child: SizedBox(
-              height: 200,
-              child: Text('No wallet selected',
-                  style: TextStyle(color: Colors.grey)),
-            ),
-          );
-        }
-
-        final walletId = wallets[selectedIndex].id;
-        return TransactionList(walletId: walletId);
-      },
-    );
-  }
-
   Widget _buildHeaderSection() {
     final greeting = ref.watch(greetingProvider);
 
@@ -360,12 +345,70 @@ class _HomePageState extends ConsumerState<HomePage> {
         final selectedWallet = wallets[selectedIndex];
         return WalletBalanceCard(
           walletId: selectedWallet.id,
-          onPeriodChanged: (period) {
+          onPeriodChanged: (period, {DateTime? fromDate, DateTime? toDate}) {
+            // Update local state
+            setState(() {
+              _currentPeriod = period;
+              _fromDate = fromDate;
+              _toDate = toDate;
+            });
+
+            // Update wallet summary with date range
             ref.invalidate(filteredWalletProvider(
-                FilterParams(walletId: selectedWallet.id, period: period)));
+              FilterParams(
+                walletId: selectedWallet.id,
+                period: period,
+                fromDate: fromDate,
+                toDate: toDate,
+              ),
+            ));
+
+            // Refresh transactions with date range
+            ref
+                .read(filteredTransactionsProvider(
+                  TransactionFilterParams(
+                    walletId: selectedWallet.id,
+                    period: period,
+                    fromDate: fromDate,
+                    toDate: toDate,
+                  ),
+                ).notifier)
+                .refresh();
           },
         );
       },
     );
+  }
+
+  Widget _buildTransactions(HomeState homeState) {
+    return homeState.when(
+        loading: () => const Center(),
+        error: (_) => const Center(
+              child: SizedBox(
+                height: 200,
+                child: Text('Error loading transactions',
+                    style: TextStyle(color: Colors.grey)),
+              ),
+            ),
+        loaded: (wallets, selectedIndex) {
+          if (wallets.isEmpty) {
+            return const Center(
+              child: SizedBox(
+                height: 200,
+                child: Text('No wallet selected',
+                    style: TextStyle(color: Colors.grey)),
+              ),
+            );
+          }
+
+          final walletId = wallets[selectedIndex].id;
+          // Use filteredTransactionsProvider with current period
+          return TransactionList(
+            walletId: walletId,
+            period: _currentPeriod,
+            fromDate: _fromDate,
+            toDate: _toDate,
+          );
+        });
   }
 }

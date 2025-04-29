@@ -4,11 +4,16 @@ using EMS.Application.Features.Wallets.Services;
 using EMS.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace EMS.Application.Features.Wallets.Queries.GetWalletSummary
 {
     [UserCacheableQuery(CacheKeyGenerator.QueryKeys.WalletByUser)]
-    public record GetWalletSummaryQuery(int WalletId, TimePeriod period = TimePeriod.AllTime) : IRequest<WalletBalanceSummary>;
+    public record GetWalletSummaryQuery(
+        int WalletId,
+        TimePeriod period = TimePeriod.AllTime,
+        DateTime? FromDate = null,
+        DateTime? ToDate = null) : IRequest<WalletBalanceSummary>;
 
     public class GetWalletSummaryQueryHandler : IRequestHandler<GetWalletSummaryQuery, WalletBalanceSummary>
     {
@@ -23,7 +28,12 @@ namespace EMS.Application.Features.Wallets.Queries.GetWalletSummary
 
         public async Task<WalletBalanceSummary> Handle(GetWalletSummaryQuery request, CancellationToken cancellationToken)
         {
-            var result = await _walletService.GetWalletBalanceSummaryAsync(request.WalletId, request.period, cancellationToken);
+            var result = await _walletService.GetWalletBalanceSummaryAsync(
+                request.WalletId,
+                request.period,
+                request.FromDate,
+                request.ToDate,
+                cancellationToken);
 
             return result;
         }

@@ -68,7 +68,12 @@ class HomeNotifier extends _$HomeNotifier {
     );
   }
 
-  Future<void> updateWalletWithFilter(int walletId, String period) async {
+  Future<void> updateWalletWithFilter(
+    int walletId,
+    String period, {
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
     await state.maybeWhen(
       loaded: (wallets, selectedIndex) async {
         final selectedWallet = wallets.firstWhere((w) => w.id == walletId,
@@ -78,6 +83,8 @@ class HomeNotifier extends _$HomeNotifier {
         final response = await walletRepository.getWalletSummary(
           selectedWallet.id,
           period,
+          fromDate: fromDate,
+          toDate: toDate,
         );
 
         response.when(

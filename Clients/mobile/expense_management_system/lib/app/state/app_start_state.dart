@@ -14,4 +14,7 @@ class AppStartState with _$AppStartState {
 
   const factory AppStartState.authenticatedAnonymous() =
       AppAuthenticatedAnonymous;
+  const factory AppStartState.requirePasscode() = _RequirePasscode;
+
+  const factory AppStartState.requireOnboarding() = _RequireOnboarding;
 }

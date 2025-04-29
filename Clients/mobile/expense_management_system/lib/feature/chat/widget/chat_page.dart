@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:developer';
 
 import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
@@ -195,7 +196,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
           id: tempId,
           chatThreadId: chatThreadId!,
           userId: 'current_user',
-          role: 'User',
+          role: 'Human',
           content: message,
           createdAt: DateTime.now(),
           medias: [],
@@ -203,12 +204,13 @@ class _ChatPageState extends ConsumerState<ChatPage>
         );
 
         ref.read(chatProvider.notifier).addReceivedMessage(tempUserMessage);
-
+        log('Temp message: $tempUserMessage');
         await ref.read(chatRepositoryProvider).sendMessage(
               widget.walletId,
               chatThreadId!,
               message,
             );
+        log('Message sent: $message');
         setState(() {
           isWaitingForResponse = true;
         });

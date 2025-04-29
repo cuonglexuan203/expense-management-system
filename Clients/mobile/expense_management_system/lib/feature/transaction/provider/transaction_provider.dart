@@ -13,6 +13,8 @@ class TransactionFilterParams {
   final String? type;
   final String sort;
   final String? search;
+  final DateTime? fromDate;
+  final DateTime? toDate;
 
   const TransactionFilterParams({
     required this.walletId,
@@ -20,6 +22,8 @@ class TransactionFilterParams {
     this.type,
     this.sort = 'DESC',
     this.search,
+    this.fromDate,
+    this.toDate,
   });
 
   @override
@@ -30,10 +34,13 @@ class TransactionFilterParams {
           period == other.period &&
           type == other.type &&
           sort == other.sort &&
-          search == other.search;
+          search == other.search &&
+          fromDate == other.fromDate &&
+          toDate == other.toDate;
 
   @override
-  int get hashCode => Object.hash(walletId, period, type, sort, search);
+  int get hashCode =>
+      Object.hash(walletId, period, type, sort, search, fromDate, toDate);
 }
 
 final filteredTransactionsProvider = StateNotifierProvider.family<

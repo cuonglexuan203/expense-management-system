@@ -7,7 +7,7 @@ part 'extracted_transaction.g.dart';
 class ExtractedTransaction with _$ExtractedTransaction {
   const factory ExtractedTransaction({
     required int id,
-    required int chatExtractionId,
+    String? chatExtractionId,
     String? category,
     required int transactionId,
     required String name,

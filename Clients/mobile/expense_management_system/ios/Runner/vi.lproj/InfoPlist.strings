@@ -1,0 +1,5 @@
+NSCameraUsageDescription = "Ứng dụng cần sử dụng camera để chụp ảnh hoặc quay video.";
+NSPhotoLibraryUsageDescription = "Ứng dụng cần truy cập thư viện ảnh để chọn hoặc tải lên hình ảnh.";
+NSMicrophoneUsageDescription = "Ứng dụng cần truy cập micro để ghi âm.";
+NSLocationWhenInUseUsageDescription = "Ứng dụng cần quyền truy cập vị trí khi sử dụng để hiển thị các thông tin liên quan.";
+NSFaceIDUsageDescription = "Ứng dụng sử dụng Face ID để xác thực nhanh và an toàn.";

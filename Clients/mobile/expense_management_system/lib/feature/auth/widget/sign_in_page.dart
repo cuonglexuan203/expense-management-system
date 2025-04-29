@@ -1,3 +1,4 @@
+import 'package:expense_management_system/app/provider/app_start_provider.dart';
 import 'package:expense_management_system/app/widget/app_snack_bar.dart';
 import 'package:expense_management_system/feature/auth/provider/auth_provider.dart';
 import 'package:expense_management_system/feature/auth/provider/password_visibility_provider.dart';
@@ -198,48 +199,36 @@ class SignInPage extends ConsumerWidget {
                                             .state = true;
 
                                         try {
-                                          // Wrap API call in a try block
                                           await ref
                                               .read(
                                                   authNotifierProvider.notifier)
                                               .login(_emailController.text,
                                                   _passwordController.text);
 
-                                          // No need for debug log here anymore
+                                          // Read auth state after login has been processed
+                                          final authState =
+                                              ref.read(authNotifierProvider);
 
-                                          if (context.mounted) {
-                                            // Read auth state after login has been processed
-                                            final authState =
-                                                ref.read(authNotifierProvider);
+                                          if (authState is AuthStateLoggedIn) {
+                                            // This is the critical addition - refresh app start state
+                                            ref
+                                                .read(
+                                                    isLoadingProvider.notifier)
+                                                .state = false;
+                                            await ref
+                                                .read(appStartNotifierProvider
+                                                    .notifier)
+                                                .refreshState();
 
-                                            // Handle different cases
-                                            if (authState
-                                                is AuthStateLoggedIn) {
+                                            if (context.mounted) {
                                               AppSnackBar.showSuccess(
                                                   context: context,
                                                   message:
                                                       'Log in successfully');
+
+                                              // Optional: the navigation may not be needed when using appStartNotifierProvider
+                                              // as it will automatically show HomePage when state is authenticated
                                               context.go('/');
-                                            } else if (authState.whenOrNull(
-                                                  error: (_) => true,
-                                                  loggedOut: () => true,
-                                                ) ??
-                                                false) {
-                                              // Handle login error
-                                              authState.whenOrNull(
-                                                error: (error) {
-                                                  AppSnackBar.showError(
-                                                      context: context,
-                                                      message:
-                                                          'Login failed. Please check your credentials.');
-                                                },
-                                                loggedOut: () {
-                                                  AppSnackBar.showError(
-                                                      context: context,
-                                                      message:
-                                                          'Logged out. Please try again.');
-                                                },
-                                              );
                                             }
                                           }
                                         } catch (e, stackTrace) {

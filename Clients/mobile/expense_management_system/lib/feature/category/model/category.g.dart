@@ -12,6 +12,8 @@ _$CategoryImpl _$$CategoryImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       isDefault: json['isDefault'] as bool? ?? false,
       financialFlowType: json['financialFlowType'] as String,
+      iconId: json['iconId'] as String?,
+      iconUrl: json['iconUrl'] as String?,
     );
 
 Map<String, dynamic> _$$CategoryImplToJson(_$CategoryImpl instance) =>
@@ -20,4 +22,6 @@ Map<String, dynamic> _$$CategoryImplToJson(_$CategoryImpl instance) =>
       'name': instance.name,
       'isDefault': instance.isDefault,
       'financialFlowType': instance.financialFlowType,
+      'iconId': instance.iconId,
+      'iconUrl': instance.iconUrl,
     };

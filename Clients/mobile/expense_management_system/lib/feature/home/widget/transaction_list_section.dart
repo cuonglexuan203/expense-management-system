@@ -5,11 +5,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TransactionList extends ConsumerWidget {
   final int walletId;
-  const TransactionList({required this.walletId});
+  final String period;
+  final DateTime? fromDate;
+  final DateTime? toDate;
+
+  const TransactionList({
+    required this.walletId,
+    this.period = 'AllTime',
+    this.fromDate,
+    this.toDate,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paginatedState = ref.watch(paginatedTransactionsProvider(walletId));
+    final paginatedState =
+        ref.watch(filteredTransactionsProvider(TransactionFilterParams(
+      walletId: walletId,
+      period: period,
+      fromDate: fromDate,
+      toDate: toDate,
+    )));
     final transactions = paginatedState.items;
     final isLoading = paginatedState.isLoading;
     final hasError = paginatedState.errorMessage != null;

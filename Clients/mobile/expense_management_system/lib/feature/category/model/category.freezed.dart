@@ -24,6 +24,8 @@ mixin _$Category {
   String get name => throw _privateConstructorUsedError;
   bool get isDefault => throw _privateConstructorUsedError;
   String get financialFlowType => throw _privateConstructorUsedError;
+  String? get iconId => throw _privateConstructorUsedError;
+  String? get iconUrl => throw _privateConstructorUsedError;
 
   /// Serializes this Category to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +42,13 @@ abstract class $CategoryCopyWith<$Res> {
   factory $CategoryCopyWith(Category value, $Res Function(Category) then) =
       _$CategoryCopyWithImpl<$Res, Category>;
   @useResult
-  $Res call({int id, String name, bool isDefault, String financialFlowType});
+  $Res call(
+      {int id,
+      String name,
+      bool isDefault,
+      String financialFlowType,
+      String? iconId,
+      String? iconUrl});
 }
 
 /// @nodoc
@@ -62,6 +70,8 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
     Object? name = null,
     Object? isDefault = null,
     Object? financialFlowType = null,
+    Object? iconId = freezed,
+    Object? iconUrl = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -80,6 +90,14 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
           ? _value.financialFlowType
           : financialFlowType // ignore: cast_nullable_to_non_nullable
               as String,
+      iconId: freezed == iconId
+          ? _value.iconId
+          : iconId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      iconUrl: freezed == iconUrl
+          ? _value.iconUrl
+          : iconUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -92,7 +110,13 @@ abstract class _$$CategoryImplCopyWith<$Res>
       __$$CategoryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, bool isDefault, String financialFlowType});
+  $Res call(
+      {int id,
+      String name,
+      bool isDefault,
+      String financialFlowType,
+      String? iconId,
+      String? iconUrl});
 }
 
 /// @nodoc
@@ -112,6 +136,8 @@ class __$$CategoryImplCopyWithImpl<$Res>
     Object? name = null,
     Object? isDefault = null,
     Object? financialFlowType = null,
+    Object? iconId = freezed,
+    Object? iconUrl = freezed,
   }) {
     return _then(_$CategoryImpl(
       id: null == id
@@ -130,6 +156,14 @@ class __$$CategoryImplCopyWithImpl<$Res>
           ? _value.financialFlowType
           : financialFlowType // ignore: cast_nullable_to_non_nullable
               as String,
+      iconId: freezed == iconId
+          ? _value.iconId
+          : iconId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      iconUrl: freezed == iconUrl
+          ? _value.iconUrl
+          : iconUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -141,7 +175,9 @@ class _$CategoryImpl implements _Category {
       {required this.id,
       required this.name,
       this.isDefault = false,
-      required this.financialFlowType});
+      required this.financialFlowType,
+      this.iconId,
+      this.iconUrl});
 
   factory _$CategoryImpl.fromJson(Map<String, dynamic> json) =>
       _$$CategoryImplFromJson(json);
@@ -155,10 +191,14 @@ class _$CategoryImpl implements _Category {
   final bool isDefault;
   @override
   final String financialFlowType;
+  @override
+  final String? iconId;
+  @override
+  final String? iconUrl;
 
   @override
   String toString() {
-    return 'Category(id: $id, name: $name, isDefault: $isDefault, financialFlowType: $financialFlowType)';
+    return 'Category(id: $id, name: $name, isDefault: $isDefault, financialFlowType: $financialFlowType, iconId: $iconId, iconUrl: $iconUrl)';
   }
 
   @override
@@ -171,13 +211,15 @@ class _$CategoryImpl implements _Category {
             (identical(other.isDefault, isDefault) ||
                 other.isDefault == isDefault) &&
             (identical(other.financialFlowType, financialFlowType) ||
-                other.financialFlowType == financialFlowType));
+                other.financialFlowType == financialFlowType) &&
+            (identical(other.iconId, iconId) || other.iconId == iconId) &&
+            (identical(other.iconUrl, iconUrl) || other.iconUrl == iconUrl));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, isDefault, financialFlowType);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, isDefault, financialFlowType, iconId, iconUrl);
 
   /// Create a copy of Category
   /// with the given fields replaced by the non-null parameter values.
@@ -200,7 +242,9 @@ abstract class _Category implements Category {
       {required final int id,
       required final String name,
       final bool isDefault,
-      required final String financialFlowType}) = _$CategoryImpl;
+      required final String financialFlowType,
+      final String? iconId,
+      final String? iconUrl}) = _$CategoryImpl;
 
   factory _Category.fromJson(Map<String, dynamic> json) =
       _$CategoryImpl.fromJson;
@@ -213,6 +257,10 @@ abstract class _Category implements Category {
   bool get isDefault;
   @override
   String get financialFlowType;
+  @override
+  String? get iconId;
+  @override
+  String? get iconUrl;
 
   /// Create a copy of Category
   /// with the given fields replaced by the non-null parameter values.

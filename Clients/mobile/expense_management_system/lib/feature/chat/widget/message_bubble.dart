@@ -10,8 +10,10 @@ import 'package:expense_management_system/gen/colors.gen.dart';
 import 'package:expense_management_system/shared/extensions/number_format_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MessageBubble extends StatefulWidget {
   const MessageBubble({
@@ -120,7 +122,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
   @override
   Widget build(BuildContext context) {
-    final isUserMessage = widget.message.role.toLowerCase() == "user";
+    final isUserMessage = widget.message.role.toLowerCase() == "human";
 
     return AnimatedBuilder(
       animation: _animationController!,
@@ -201,19 +203,71 @@ class _MessageBubbleState extends State<MessageBubble>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (widget.message.content.isNotEmpty)
-                            SelectableText(
-                              widget.message.content,
-                              style: TextStyle(
-                                color: isUserMessage
-                                    ? Colors.white
-                                    : Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black87,
-                                height: 1.4,
-                                fontSize: 15,
-                                fontFamily: 'Nunito',
+                            MarkdownBody(
+                              data: widget.message.content,
+                              selectable: true,
+                              styleSheet: MarkdownStyleSheet(
+                                p: TextStyle(
+                                  color: isUserMessage
+                                      ? Colors.white
+                                      : Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                  height: 1.4,
+                                  fontSize: 15,
+                                  fontFamily: 'Nunito',
+                                ),
+                                em: TextStyle(
+                                  // For italics (*text*)
+                                  color: isUserMessage
+                                      ? Colors.white
+                                      : Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                  height: 1.4,
+                                  fontSize: 15,
+                                  fontFamily: 'Nunito',
+                                  fontStyle: FontStyle.italic,
+                                ),
+                                strong: TextStyle(
+                                  // For bold (**text**)
+                                  color: isUserMessage
+                                      ? Colors.white
+                                      : Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                  height: 1.4,
+                                  fontSize: 15,
+                                  fontFamily: 'Nunito',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                listIndent: 20.0,
+                                orderedListAlign: WrapAlignment.start,
+                                listBullet: TextStyle(
+                                  color: isUserMessage
+                                      ? Colors.white
+                                      : Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                  fontSize: 15,
+                                  fontFamily: 'Nunito',
+                                ),
+                                a: TextStyle(
+                                  color: isUserMessage
+                                      ? Colors.lightBlue[100]
+                                      : Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
+                              onTapLink: (text, href, title) {
+                                if (href != null) {
+                                  launchUrl(Uri.parse(href));
+                                }
+                              },
                             ),
                           if (widget.message.medias.isNotEmpty)
                             _buildMediaContent(context),

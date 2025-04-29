@@ -45,5 +45,30 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>$(NSCameraUsageDescription)</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>$(NSPhotoLibraryUsageDescription)</string>
+
+	<key>NSMicrophoneUsageDescription</key>
+	<string>$(NSMicrophoneUsageDescription)</string>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>$(NSLocationWhenInUseUsageDescription)</string>
+
+	<key>NSFaceIDUsageDescription</key>
+	<string>$(NSFaceIDUsageDescription)</string>
+
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

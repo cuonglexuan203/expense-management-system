@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:expense_management_system/app/provider/connectivity_provider.dart';
 import 'package:expense_management_system/shared/constants/enum.dart';
 import 'package:expense_management_system/shared/http/api_response.dart';
 import 'package:expense_management_system/shared/http/app_exception.dart';
@@ -93,8 +94,7 @@ class ApiProvider {
 
   // Helper method to check connectivity
   Future<bool> _checkConnectivity() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    return connectivityResult != ConnectivityResult.none;
+    return _ref.read(connectivityProvider) == ConnectionState.online;
   }
 
   // Helper method to handle response

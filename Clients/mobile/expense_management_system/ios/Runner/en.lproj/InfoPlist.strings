@@ -1,0 +1,5 @@
+NSCameraUsageDescription = "The app needs access to the camera to take photos or record videos.";
+NSPhotoLibraryUsageDescription = "The app needs access to your photo library to pick or upload images.";
+NSMicrophoneUsageDescription = "The app needs access to the microphone for recording audio.";
+NSLocationWhenInUseUsageDescription = "The app needs access to your location to provide relevant information.";
+NSFaceIDUsageDescription = "The app uses Face ID for fast and secure authentication.";
