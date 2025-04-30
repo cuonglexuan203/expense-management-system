@@ -128,7 +128,7 @@ namespace EMS.Infrastructure.BackgroundJobs
 
                         var userPreference = await userPreferenceService.GetUserPreferenceByUserIdAsync(scheduledEvent.UserId);
 
-                        DateTimeOffset? nextOccurrence = eventSchedulerService.CalculateNextOccurrence(
+                        DateTimeOffset? nextOccurrence = await eventSchedulerService.CalculateNextOccurrence(
                             scheduledEvent,
                             scheduledEvent.NextOccurrence!.Value,
                             userPreference.TimeZoneId!);
