@@ -22,6 +22,9 @@ namespace EMS.Infrastructure.Persistence.Configurations
             builder.Property(e => e.ConfirmationMode)
                 .HasConversion<string>()
                 .HasMaxLength(15);
+
+            builder.Property(e => e.TimeZoneId)
+                .HasMaxLength(100);
         }
 
         public override void ConfigureRelationships(EntityTypeBuilder<UserPreference> builder)

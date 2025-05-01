@@ -92,7 +92,7 @@ namespace EMS.Application.Features.Transactions.Commands.CreateTransaction
             }
             else
             {
-                var defaultCategory = await _categoryService.GetUnknownCategoryAsync(request.Type);
+                var defaultCategory = await _categoryService.GetUnknownCategoryAsync(userId, request.Type);
                 transaction.CategoryId = defaultCategory.Id;
             }
             #endregion

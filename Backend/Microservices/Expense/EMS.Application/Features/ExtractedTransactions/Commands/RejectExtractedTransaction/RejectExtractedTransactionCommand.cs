@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.ExtractedTransactions.Commands.RejectExtractedTransaction
 {
-    public record RejectExtractedTransactionCommand(int ExtractedTransactionId, int WalletId) : IRequest<Unit>;
+    public record RejectExtractedTransactionCommand(int ExtractedTransactionId) : IRequest<Unit>;
 
     public class RejectExtractedTransactionCommandHandler : IRequestHandler<RejectExtractedTransactionCommand, Unit>
     {

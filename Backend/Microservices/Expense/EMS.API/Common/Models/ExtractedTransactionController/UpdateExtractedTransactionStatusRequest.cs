@@ -2,5 +2,5 @@
 
 namespace EMS.API.Common.Models.ExtractedTransactionController
 {
-    public record struct UpdateExtractedTransactionStatusRequest(int WalletId, ConfirmationStatus ConfirmationStatus);
+    public record struct UpdateExtractedTransactionStatusRequest(int? WalletId, ConfirmationStatus ConfirmationStatus);
 }

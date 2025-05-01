@@ -30,6 +30,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using EMS.Application.Features.Notifications.Services;
 
 namespace EMS.Infrastructure
 {
@@ -83,6 +84,8 @@ namespace EMS.Infrastructure
             services.TryAddScoped<IApiKeyService, ApiKeyService>();
             services.TryAddScoped<IOnboardingService, OnboardingService>();
             services.TryAddScoped<IDeviceTokenService, DeviceTokenService>();
+            services.TryAddScoped<IEventSchedulerService, EventSchedulerService>(); 
+            services.TryAddScoped<INotificationService, NotificationService>();
 
             // Storage
             services.TryAddScoped<IStorageProvider, CloudinaryStorageProvider>();
@@ -104,6 +107,7 @@ namespace EMS.Infrastructure
         {
             services.AddHostedService<AssistantMessageProcessorWorker>();
             services.AddHostedService<NotificationAnalyzerWorker>();
+            services.AddHostedService<EventProcessingWorker>();
         }
 
         private static void AddDbContexts(IServiceCollection services, IConfiguration configuration)

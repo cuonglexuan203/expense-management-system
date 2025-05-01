@@ -43,11 +43,6 @@ namespace EMS.Infrastructure.Persistence.Configurations
             //    .HasForeignKey(e => e.UserId)
             //    .IsRequired();
 
-            builder.HasMany(e => e.CalendarEvents)
-                .WithOne()
-                .HasForeignKey(e => e.UserId)
-                .IsRequired();
-
             builder.HasMany(e => e.FinancialGoals)
                 .WithOne()
                 .HasForeignKey(e => e.UserId)
@@ -78,6 +73,11 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.HasMany(e => e.Notifications)
+                .WithOne(e => e.User as ApplicationUser)
+                .HasForeignKey(e => e.UserId)
+                .IsRequired();
+
+            builder.HasMany(e => e.ScheduledEvents)
                 .WithOne(e => e.User as ApplicationUser)
                 .HasForeignKey(e => e.UserId)
                 .IsRequired();

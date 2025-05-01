@@ -3,7 +3,6 @@ using EMS.Infrastructure.Common.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NRedisStack;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -54,11 +53,15 @@ namespace EMS.Infrastructure.Messaging
             }
         }
 
-        public async Task<T?> DequeueAsync<T>(string queueName, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+        public async Task<T?> DequeueAsync<T>(string queueName, TimeSpan? timeout = null, bool isFullName = false, JsonSerializerOptions? jsonSerializerOptions = default, CancellationToken cancellationToken = default)
         {
             try
             {
-                var fullQueueName = GetFullQueueName(queueName);
+                var fullQueueName = queueName;
+                if (!isFullName)
+                {
+                    fullQueueName = GetFullQueueName(queueName);
+                }
 
                 #region Implement using blocking commands, problem: slowdown all other redis callers
                 // NOTE: NRedisStack multiplexer does not support BLOCKING commands (e.g BLPop),
@@ -80,7 +83,7 @@ namespace EMS.Infrastructure.Messaging
                     _logger.LogInformation("Message dequeued from {QueueName}", fullQueueName);
                 }
 
-                return JsonSerializer.Deserialize<T>(serializedValue, _serializerOptions);
+                return JsonSerializer.Deserialize<T>(serializedValue, jsonSerializerOptions ?? _serializerOptions);
             }
             catch (RedisTimeoutException)
             {

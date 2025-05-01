@@ -48,14 +48,19 @@ namespace EMS.API.Controllers.v1
             // Confirm
             if(request.ConfirmationStatus == ConfirmationStatus.Confirmed)
             {
-                var confirmationResult = await _sender.Send(new ConfirmExtractedTransactionCommand(id, request.WalletId));
+                if (!request.WalletId.HasValue)
+                {
+                    return BadRequest("Wallet ID is invalid.");
+                }
+
+                var confirmationResult = await _sender.Send(new ConfirmExtractedTransactionCommand(id, request.WalletId.Value));
                 return Ok(confirmationResult);
             }
 
             // Reject
             if(request.ConfirmationStatus == ConfirmationStatus.Rejected)
             {
-                await _sender.Send(new RejectExtractedTransactionCommand(id, request.WalletId));
+                await _sender.Send(new RejectExtractedTransactionCommand(id));
 
                 return NoContent();
             }

@@ -24,7 +24,7 @@ namespace EMS.Application.Features.Preferences.Queries.GetUserPreferences
         }
         public async Task<UserPreferenceDto> Handle(GetUserPreferencesQuery request, CancellationToken cancellationToken)
         {
-            var userPreferenceDto = await _userPreferenceService.GetUserPreferenceByIdAsync(_currentUserService.Id!);
+            var userPreferenceDto = await _userPreferenceService.GetUserPreferenceByUserIdAsync(_currentUserService.Id!);
 
             return userPreferenceDto;
         }

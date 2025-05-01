@@ -13,5 +13,6 @@
     public class MessageQueuesOptions
     {
         public string NotificationExtractionQueue { get; set; } = "notification-extraction";
+        public string EventProcessingQueueName { get; set; } = "event:processing";
     }
 }

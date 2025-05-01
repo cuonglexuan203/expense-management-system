@@ -16,6 +16,8 @@ import (
 
 func RunAsynqServer(
 	cfg config.Config,
+	// asynqClient *asynq.Client,
+	// eventRepo *repositories.EventRepository,
 	fcmService *firebase.FCMService,
 	db *gorm.DB,
 	backendClient *backend.BackendClient) *asynq.Server {
@@ -37,7 +39,7 @@ func RunAsynqServer(
 			},
 			ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
 				logger.Error("Asynq task processing error",
-					zap.String("task_id", task.Type()),
+					zap.String("task_type", task.Type()),
 					zap.ByteString("payload", task.Payload()),
 					zap.Error(err),
 				)
@@ -51,6 +53,10 @@ func RunAsynqServer(
 	// Register task handlers
 	notificationTaskHandler := tasks.NewNotificationTaskHandler(logger, fcmService, db, backendClient)
 	mux.HandleFunc(tasks.TypeNotificationSend, notificationTaskHandler.HandleSendNotificationTask)
+
+	// pollerHandler := tasks.NewEventPoller(cfg, eventRepo, asynqClient)
+	// mux.HandleFunc(tasks.TypeEventPoll, pollerHandler.HandlePoll)
+
 	// End of task handlers registration
 
 	logger.Info("Starting Asynq server...")

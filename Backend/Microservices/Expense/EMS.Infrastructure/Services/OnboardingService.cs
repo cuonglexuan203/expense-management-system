@@ -73,16 +73,8 @@ namespace EMS.Infrastructure.Services
                 var defaultExpenseUnknownCategory = await _categoryService.GetUnknownCategoryAsync(TransactionType.Expense);
 
                 var extendedCategorySet = categoryIds.ToHashSet();
-
-                if (!extendedCategorySet.Any(cId => cId == defaultIncomeUnknownCategory.Id))
-                {
-                    extendedCategorySet.Add(defaultIncomeUnknownCategory.Id);
-                }
-
-                if (!extendedCategorySet.Any(cId => cId == defaultExpenseUnknownCategory.Id))
-                {
-                    extendedCategorySet.Add(defaultExpenseUnknownCategory.Id);
-                }
+                extendedCategorySet.Add(defaultIncomeUnknownCategory.Id);
+                extendedCategorySet.Add(defaultExpenseUnknownCategory.Id);
 
                 var categories = new List<Category>();
                 foreach (var categoryId in extendedCategorySet)

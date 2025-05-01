@@ -2,15 +2,6 @@ package models
 
 import "time"
 
-type SuccessResponse struct {
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-}
-
-type ErrorResponse struct {
-	Error string `json:"error"`
-}
-
 // --- Notification Payloads ---
 type SendNotificationRequest struct {
 	UserID string            `json:"user_id" binding:"required"`

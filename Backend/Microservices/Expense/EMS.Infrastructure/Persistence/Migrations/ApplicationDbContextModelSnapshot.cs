@@ -201,85 +201,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.ToTable("ApiKeyScopes");
                 });
 
-            modelBuilder.Entity("EMS.Core.Entities.CalendarEvent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<float?>("EstimatedAmount")
-                        .HasColumnType("real");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
-
-                    b.Property<string>("RecurrenceType")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
-
-                    b.Property<DateTimeOffset>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("TransactionType")
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
-
-                    b.Property<int>("WalletId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("WalletId");
-
-                    b.ToTable("CalendarEvents");
-                });
-
             modelBuilder.Entity("EMS.Core.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -1021,6 +942,69 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.ToTable("NotificationPreferences");
                 });
 
+            modelBuilder.Entity("EMS.Core.Entities.RecurrenceRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string[]>("ByDayOfWeek")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<int[]>("ByMonth")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<int[]>("ByMonthDay")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTimeOffset?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Frequency")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("MaxOccurrences")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RecurrenceRules");
+                });
+
             modelBuilder.Entity("EMS.Core.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1072,6 +1056,151 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("EMS.Core.Entities.ScheduledEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("InitialTrigger")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LastOccurrence")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTimeOffset?>("NextOccurrence")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Payload")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int?>("RecurrenceRuleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecurrenceRuleId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ScheduledEvents");
+                });
+
+            modelBuilder.Entity("EMS.Core.Entities.ScheduledEventExecution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("ProcessingEndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ProcessingStartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ScheduledEventId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("ScheduledTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int?>("TransactionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduledEventId");
+
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
+
+                    b.ToTable("ScheduledEventExecutions");
                 });
 
             modelBuilder.Entity("EMS.Core.Entities.SystemSetting", b =>
@@ -1147,9 +1276,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<int?>("CalendarEventId")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("CategoryId")
                         .HasColumnType("integer");
 
@@ -1207,8 +1333,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CalendarEventId");
 
                     b.HasIndex("CategoryId");
 
@@ -1272,6 +1396,10 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(36)
                         .HasColumnType("character varying(36)");
+
+                    b.Property<string>("TimeZoneId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -1638,23 +1766,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ApplicationUserId");
                 });
 
-            modelBuilder.Entity("EMS.Core.Entities.CalendarEvent", b =>
-                {
-                    b.HasOne("EMS.Infrastructure.Identity.Models.ApplicationUser", null)
-                        .WithMany("CalendarEvents")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EMS.Core.Entities.Wallet", "Wallet")
-                        .WithMany("CalendarEvents")
-                        .HasForeignKey("WalletId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Wallet");
-                });
-
             modelBuilder.Entity("EMS.Core.Entities.Category", b =>
                 {
                     b.HasOne("EMS.Core.Entities.Media", "Icon")
@@ -1819,12 +1930,42 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("EMS.Core.Entities.ScheduledEvent", b =>
+                {
+                    b.HasOne("EMS.Core.Entities.RecurrenceRule", "RecurrenceRule")
+                        .WithOne()
+                        .HasForeignKey("EMS.Core.Entities.ScheduledEvent", "RecurrenceRuleId");
+
+                    b.HasOne("EMS.Infrastructure.Identity.Models.ApplicationUser", "User")
+                        .WithMany("ScheduledEvents")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RecurrenceRule");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EMS.Core.Entities.ScheduledEventExecution", b =>
+                {
+                    b.HasOne("EMS.Core.Entities.ScheduledEvent", "ScheduledEvent")
+                        .WithMany("ScheduledEventExecutions")
+                        .HasForeignKey("ScheduledEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EMS.Core.Entities.Transaction", "Transaction")
+                        .WithOne("ScheduledEventExecution")
+                        .HasForeignKey("EMS.Core.Entities.ScheduledEventExecution", "TransactionId");
+
+                    b.Navigation("ScheduledEvent");
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("EMS.Core.Entities.Transaction", b =>
                 {
-                    b.HasOne("EMS.Core.Entities.CalendarEvent", "CalendarEvent")
-                        .WithMany("Transactions")
-                        .HasForeignKey("CalendarEventId");
-
                     b.HasOne("EMS.Core.Entities.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId");
@@ -1850,8 +1991,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .HasForeignKey("WalletId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CalendarEvent");
 
                     b.Navigation("Category");
 
@@ -1939,11 +2078,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EMS.Core.Entities.CalendarEvent", b =>
-                {
-                    b.Navigation("Transactions");
-                });
-
             modelBuilder.Entity("EMS.Core.Entities.Category", b =>
                 {
                     b.Navigation("ExtractedTransactions");
@@ -1980,15 +2114,20 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Navigation("ExtractedTransactions");
                 });
 
+            modelBuilder.Entity("EMS.Core.Entities.ScheduledEvent", b =>
+                {
+                    b.Navigation("ScheduledEventExecutions");
+                });
+
             modelBuilder.Entity("EMS.Core.Entities.Transaction", b =>
                 {
                     b.Navigation("ExtractedTransaction");
+
+                    b.Navigation("ScheduledEventExecution");
                 });
 
             modelBuilder.Entity("EMS.Core.Entities.Wallet", b =>
                 {
-                    b.Navigation("CalendarEvents");
-
                     b.Navigation("FinancialGoals");
 
                     b.Navigation("Transactions");
@@ -1997,8 +2136,6 @@ namespace EMS.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("EMS.Infrastructure.Identity.Models.ApplicationUser", b =>
                 {
                     b.Navigation("ActivityLogs");
-
-                    b.Navigation("CalendarEvents");
 
                     b.Navigation("Categories");
 
@@ -2015,6 +2152,8 @@ namespace EMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("ScheduledEvents");
 
                     b.Navigation("Transactions");
 

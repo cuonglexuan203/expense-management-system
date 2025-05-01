@@ -12,6 +12,7 @@ namespace EMS.Core.Entities
         public bool IsOnboardingCompleted { get; set; }
         //public string? Metadata { get; set; }
         public ConfirmationMode ConfirmationMode { get; set; } // confirm the response message of the system
+        public string? TimeZoneId { get; set; } // IANA time zones
 
         // Navigations
         public Currency Currency { get; set; } = default!;
