@@ -1,5 +1,6 @@
 ﻿using EMS.Application.Common.Interfaces.Messaging;
 using EMS.Application.Common.Interfaces.Services;
+using EMS.Application.Features.Notifications.Services;
 using EMS.Core.Enums;
 using EMS.Infrastructure.Common.Options;
 using EMS.Infrastructure.Persistence.DbContext;
@@ -86,6 +87,7 @@ namespace EMS.Infrastructure.BackgroundJobs
             var context = sp.GetRequiredService<ApplicationDbContext>();
             var eventSchedulerService = sp.GetRequiredService<IEventSchedulerService>();
             var userPreferenceService = sp.GetRequiredService<IUserPreferenceService>();
+            var notificationService = sp.GetRequiredService<INotificationService>();
 
             var strategy = context.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () =>
@@ -158,6 +160,13 @@ namespace EMS.Infrastructure.BackgroundJobs
                     await context.SaveChangesAsync(stoppingToken);
 
                     await dbTransaction.CommitAsync(stoppingToken);
+
+                    // Push notification
+                    await notificationService.PushEventNotificationAsync(
+                        scheduledEvent.UserId,
+                        scheduledEvent,
+                        executionLog,
+                        stoppingToken);
                 }
                 catch (Exception ex)
                 {

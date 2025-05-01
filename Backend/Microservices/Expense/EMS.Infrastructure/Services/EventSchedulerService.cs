@@ -327,12 +327,12 @@ namespace EMS.Infrastructure.Services
                 FinancialEventPayload payload = default!;
                 try
                 {
-                    var a = new JsonSerializerOptions ()
+                    var jsOpts = new JsonSerializerOptions ()
                     {
                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                         Converters = { new JsonStringEnumConverter() }
                     };
-                    payload = JsonSerializer.Deserialize<FinancialEventPayload>(scheduledEvent.Payload, a)!;
+                    payload = JsonSerializer.Deserialize<FinancialEventPayload>(scheduledEvent.Payload, jsOpts)!;
                 }
                 catch (JsonException jsonEx)
                 {

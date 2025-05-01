@@ -7,8 +7,8 @@ namespace EMS.Core.Enums
         [Description("Notification for normal event")]
         EventReminder,
 
-        [Description("Notification for periodic event")]
-        PeriodicEventReminder,
+        //[Description("Notification for periodic event")]
+        //PeriodicEventReminder,
 
         [Description("Budget Limit Alerts")]
         BudgetAlert,
