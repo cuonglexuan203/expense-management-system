@@ -60,7 +60,7 @@ services:
       - Serilog__MinimumLevel__Default=${BE_SERILOG_MINIMUM_LEVEL_DEFAULT}
       - Serilog__WriteTo__0__Args__path=/app/${BE_LOG_PATH}
     volumes:
-      - ./Microservices/Expense/Log:/app/${BE_LOG_PATH}
+      - ./Microservices/Expense/logs:/app/${BE_LOG_PATH}
     networks:
       - app-network
     ports:
