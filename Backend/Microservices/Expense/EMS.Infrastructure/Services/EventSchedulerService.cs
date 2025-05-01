@@ -177,8 +177,12 @@ namespace EMS.Infrastructure.Services
 
                 if (rule.Frequency == RecurrenceType.Yearly && rule.ByMonth != null && rule.ByMonth.Any())
                 {
-                    candidateZoned = AdjustToNextValidMonth(candidateZoned, rule.ByMonth, currentZoned);
-                    if (candidateZoned.ToInstant() < currentZoned.ToInstant())
+                    if (TryAdjustToNextValidMonth(candidateZoned, rule.ByMonth, currentZoned, out var adjustedCandidateZoned) 
+                        && candidateZoned.ToInstant() > currentZoned.ToInstant())
+                    {
+                        candidateZoned = adjustedCandidateZoned;
+                    }
+                    else
                     {
                         skipCandidate = true;
                     }
@@ -188,8 +192,12 @@ namespace EMS.Infrastructure.Services
                     && (rule.Frequency == RecurrenceType.Monthly || rule.Frequency == RecurrenceType.Yearly) 
                     && rule.ByMonthDay != null && rule.ByMonthDay.Any())
                 {
-                    candidateZoned = AdjustToNextValidMonthDay(candidateZoned, rule.ByMonthDay, currentZoned);
-                    if (candidateZoned.ToInstant() < currentZoned.ToInstant())
+                    if (TryAdjustToNextValidMonthDay(candidateZoned, rule.ByMonthDay, currentZoned, out var adjustedCandidateZoned)
+                        && candidateZoned.ToInstant() > currentZoned.ToInstant())
+                    {
+                        candidateZoned = adjustedCandidateZoned;
+                    }
+                    else
                     {
                         skipCandidate = true;
                     }
@@ -204,15 +212,19 @@ namespace EMS.Infrastructure.Services
 
                     if (validDaysOfWeek.Any())
                     {
-                        candidateZoned = AdjustToNextValidDayOfWeek(candidateZoned, validDaysOfWeek, currentZoned, rule.Frequency);
-                        if (candidateZoned.ToInstant() < currentZoned.ToInstant())
+                        if (TryAdjustToNextValidDayOfWeek(candidateZoned, validDaysOfWeek, currentZoned, rule.Frequency, out var adjustedCandidateZoned)
+                            && candidateZoned.ToInstant() > currentZoned.ToInstant())
+                        {
+                            candidateZoned = adjustedCandidateZoned;
+                        }
+                        else
                         {
                             skipCandidate = true;
                         }
                     }
                 }
 
-                if (skipCandidate || candidateZoned.ToInstant() < currentZoned.ToInstant())
+                if (skipCandidate || candidateZoned.ToInstant() <= currentZoned.ToInstant())
                 {
                     _logger.LogDebug("Candidate {Candidate} skipped or invalid after BYxxx adjustments for Event {EventId}. Continuing loop.",
                         candidateZoned,
@@ -385,12 +397,15 @@ namespace EMS.Infrastructure.Services
             return current.Plus(period.ToDuration());
         }
 
-        private ZonedDateTime AdjustToNextValidMonth(ZonedDateTime candidate, int[] validMonths, ZonedDateTime floor)
+        private bool TryAdjustToNextValidMonth(ZonedDateTime candidate, int[] validMonths, ZonedDateTime floor, out ZonedDateTime result)
         {
+            result = default;
+
             var monthSet = validMonths.ToHashSet();
             if (monthSet.Contains(candidate.Month))
             {
-                return candidate;
+                result = candidate;
+                return true;
             }
 
             var adjusted = candidate;
@@ -415,21 +430,26 @@ namespace EMS.Infrastructure.Services
 
                 if (monthSet.Contains(adjusted.Month) && adjusted.ToInstant() > floor.ToInstant())
                 {
-                    return adjusted;
+                    result = adjusted;
+                    return true;
                 }
+
+                // NOTE: can directly return false, but it's safe to handle edge cases
 
                 if (adjusted.Minus(candidate).TotalDays > 366 * 5)
                 {
                     _logger.LogError("AdjustToNextValidMonth exceeded safety limit for Event starting from {Candidate}",
                         candidate);
 
-                    return floor.Plus(Period.FromYears(100).ToDuration()); // signal failure
+                    return false;
                 }
             }
         }
 
-        private ZonedDateTime AdjustToNextValidMonthDay(ZonedDateTime candidate, int[] validDays, ZonedDateTime floor)
+        private bool TryAdjustToNextValidMonthDay(ZonedDateTime candidate, int[] validDays, ZonedDateTime floor, out ZonedDateTime result)
         {
+            result = default;
+
             var daySet = validDays.ToHashSet();
 
             var resolvedDaySet = new HashSet<int>();
@@ -462,27 +482,30 @@ namespace EMS.Infrastructure.Services
                     .PlusMonths(1)
                     .With(DateAdjusters.StartOfMonth);
 
-                return candidate.Zone.ResolveLocal(startOfNextMonth, AmbiguityResolver);
+                result = candidate.Zone.ResolveLocal(startOfNextMonth, AmbiguityResolver);
+                return true;
             }
 
             if (resolvedDaySet.Contains(candidate.Day))
             {
-                return candidate;
+                result = candidate;
+                return true;
             }
 
             int nextDayInMonth = resolvedDaySet.Where(d => d > candidate.Day).DefaultIfEmpty(0).Min();
             if (nextDayInMonth > 0)
             {
                 var targetLtd = candidate.LocalDateTime.PlusDays(nextDayInMonth - candidate.Day);
-                
-                return candidate.Zone.ResolveLocal(targetLtd, AmbiguityResolver);
+
+                result = candidate.Zone.ResolveLocal(targetLtd, AmbiguityResolver);
+                return true;
             }
 
             // Advance to the next month
             var nextMonthCandidate = candidate;
             while (true)
             {
-                var startOfNextMonthLdt = candidate.LocalDateTime
+                var startOfNextMonthLdt = nextMonthCandidate.LocalDateTime
                     .PlusMonths(1)
                     .With(DateAdjusters.StartOfMonth);
 
@@ -520,19 +543,24 @@ namespace EMS.Infrastructure.Services
 
                 var targetLdt = nextMonthCandidate.LocalDateTime.PlusDays(firstDayNextMonth - 1);
 
-                return nextMonthCandidate.Zone.ResolveLocal(targetLdt, AmbiguityResolver);
+                result = nextMonthCandidate.Zone.ResolveLocal(targetLdt, AmbiguityResolver);
+                return true;
             }
         }
 
-        private ZonedDateTime AdjustToNextValidDayOfWeek(
+        private bool TryAdjustToNextValidDayOfWeek(
             ZonedDateTime candidate,
             HashSet<IsoDayOfWeek> validDays,
             ZonedDateTime floor,
-            RecurrenceType frequency)
+            RecurrenceType frequency,
+            out ZonedDateTime result)
         {
+            result = default;
+
             if (validDays.Contains(candidate.DayOfWeek))
             {
-                return candidate;
+                result = candidate;
+                return true;
             }
 
             var adjusted = candidate;
@@ -552,14 +580,15 @@ namespace EMS.Infrastructure.Services
 
                 if (validDays.Contains(adjusted.DayOfWeek) && adjusted.ToInstant() > floor.ToInstant())
                 {
-                    return adjusted;
+                    result = adjusted;
+                    return true;
                 }
             }
 
             _logger.LogWarning("Could not find next valid DayOfWeek within reasonable bounds for date {Candidate}",
                 candidate);
 
-            return floor.Plus(Period.FromYears(100).ToDuration());
+            return false;
         }
 
         private async Task<int> GetExecutionCount(int scheduledEventId)
