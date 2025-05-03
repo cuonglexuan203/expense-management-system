@@ -48,6 +48,7 @@ namespace EMS.Application.Features.Events.Queries.GetEventOccurrences
             var timeZoneId = (await _userPreferenceService.GetTimeZoneIdAsync(userId))!;
 
             var relevantEventQuery = _context.ScheduledEvents
+                .AsNoTracking()
                 .Include(e => e.RecurrenceRule)
                 .Where(e => !e.IsDeleted && e.UserId == userId)
                 .Where(e =>
@@ -84,6 +85,7 @@ namespace EMS.Application.Features.Events.Queries.GetEventOccurrences
         private async Task<EventOccurrenceDto> CreateOccurrence(ScheduledEvent scheduledEvent, DateTimeOffset startAt)
         {
             var executionLog = await _context.ScheduledEventExecutions
+                .AsNoTracking()
                 .Where(e => !e.IsDeleted && 
                     e.ScheduledEventId == scheduledEvent.Id &&
                     e.ScheduledTime == startAt)
