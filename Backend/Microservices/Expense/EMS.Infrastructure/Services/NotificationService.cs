@@ -27,7 +27,7 @@ namespace EMS.Infrastructure.Services
         {
             try
             {
-                var (title, body) = GetEventNotification(scheduledEvent.Type, scheduledEvent.Name, executionLog);
+                var (title, body) = GetEventNotification(scheduledEvent, executionLog);
 
                 var notification = new Notification
                 {
@@ -87,21 +87,26 @@ namespace EMS.Infrastructure.Services
             }
         }
 
-        private (string Title, string Body) GetEventNotification(EventType eventType, string eventName, ScheduledEventExecution executionLog)
+        private (string Title, string Body) GetEventNotification(ScheduledEvent scheduledEvent, ScheduledEventExecution executionLog)
         {
-            string status = executionLog.Status == ExecutionStatus.Success 
-                ? "succeeded" 
-                : "failed";
-
-            switch (eventType)
+            switch (scheduledEvent.Type)
             {
                 case EventType.Finance:
                     {
-                        return ("Financial Event Triggering",
-                            $"Event execution {status}: {eventName}");
+                        return ($"Finance Reminder: {scheduledEvent.Name}",
+                            $"Your financial event \"{scheduledEvent.Name}\" is approaching." +
+                            (!string.IsNullOrEmpty(scheduledEvent.Description) ? $" Note: {scheduledEvent.Description}" : ""));
+                    }
+                case EventType.Reminder:
+                    {
+                        return ($"Reminder: {scheduledEvent.Name}",
+                            $"Don't forget: \"{scheduledEvent.Name}\" is scheduled soon." +
+                            (!string.IsNullOrEmpty(scheduledEvent.Description) ? $" Details: {scheduledEvent.Description}" : ""));
                     }
                 default:
-                    return ("Event Triggering", $"Event execution {status}: {eventName}");
+                    return ($"Reminder: {scheduledEvent.Name}", 
+                        $"Event: {scheduledEvent.Name}." +
+                        (!string.IsNullOrEmpty(scheduledEvent.Description) ? $" Details: {scheduledEvent.Description}" : ""));
             }
         }
     }

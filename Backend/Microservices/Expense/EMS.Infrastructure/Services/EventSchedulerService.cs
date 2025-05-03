@@ -130,7 +130,7 @@ namespace EMS.Infrastructure.Services
         //}
         #endregion
 
-        public async Task<DateTimeOffset?> CalculateNextOccurrence(ScheduledEvent scheduledEvent, DateTimeOffset lastOccurrenceAt, string timeZoneId)
+        public async Task<DateTimeOffset?> CalculateNextOccurrenceAsync(ScheduledEvent scheduledEvent, DateTimeOffset lastOccurrenceAt, string timeZoneId)
         {
             if (scheduledEvent.RecurrenceRule == null)
             {
@@ -277,6 +277,32 @@ namespace EMS.Infrastructure.Services
             return null;
         }
 
+        public async Task<List<DateTimeOffset>> CalculateOccurrencesAsync(ScheduledEvent scheduledEvent, DateTimeOffset startingPoint, DateTimeOffset endPoint, string timeZoneId)
+        {
+            var result = new List<DateTimeOffset>();
+
+            if (scheduledEvent.InitialTrigger >= startingPoint && scheduledEvent.InitialTrigger <= endPoint)
+            {
+                result.Add(scheduledEvent.InitialTrigger);
+            }
+
+            var last = scheduledEvent.InitialTrigger;
+            while(last < endPoint)
+            {
+                var nextOcc = await CalculateNextOccurrenceAsync(scheduledEvent, last, timeZoneId);
+
+                if (nextOcc == null || nextOcc > endPoint)
+                {
+                    break;
+                }
+
+                result.Add((DateTimeOffset)nextOcc);
+                last = (DateTimeOffset)nextOcc;
+            }
+
+            return result;
+        }
+
         // NOTE: this trigger method only create and modify the scheduled event execution log, please keep the scheduled event intact 
         public async Task<ScheduledEventExecution> TriggerEventAsync(ScheduledEvent scheduledEvent, CancellationToken cancellationToken = default)
         {
@@ -294,6 +320,11 @@ namespace EMS.Infrastructure.Services
                     case EventType.Finance:
                         {
                             await ProcessFinancialEventAsync(scheduledEvent, executionLog, cancellationToken);
+                            break;
+                        }
+                    case EventType.Reminder:
+                        {
+                            ProcessReminderEventAsync(scheduledEvent, executionLog, cancellationToken);
                             break;
                         }
                 }
@@ -361,40 +392,52 @@ namespace EMS.Infrastructure.Services
             }
         }
 
+        private void ProcessReminderEventAsync(ScheduledEvent scheduledEvent, ScheduledEventExecution executionLog, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                executionLog.Status = ExecutionStatus.Success;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to process the reminder event {EventId}: {ErrorMsg}", scheduledEvent.Id, ex.Message);
+
+                throw;
+            }
+        }
 
         #region Helper methods
         private ZonedDateTime AdvanceByFrequency(ZonedDateTime current, RecurrenceType frequency, int interval)
         {
-            Period period;
             switch (frequency)
             {
                 case RecurrenceType.Daily:
                     {
-                        period = Period.FromDays(interval);
-                        break;
+                        var period = Period.FromDays(interval);
+                        return current.Plus(period.ToDuration());
                     }
                 case RecurrenceType.Weekly:
                     {
-                        period = Period.FromWeeks(interval);
-                        break;
+                        var period = Period.FromWeeks(interval);
+                        return current.Plus(period.ToDuration());
                     }
                 case RecurrenceType.Monthly:
                     {
-                        period = Period.FromMonths(interval);
-                        break;
+                        var localTime = current.LocalDateTime
+                            .PlusMonths(interval);
+                        return current.Zone.ResolveLocal(localTime, AmbiguityResolver);
                     }
                 case RecurrenceType.Yearly:
                     {
-                        period = Period.FromYears(interval);
-                        break;
+                        var localTime = current.LocalDateTime
+                            .PlusYears(interval);
+                        return current.Zone.ResolveLocal(localTime, AmbiguityResolver);
                     }
                 default:
                     _logger.LogError("Unsupported Frequency '{Frequency}'. Cannot advance time.",
                         frequency);
                     return current;
             }
-
-            return current.Plus(period.ToDuration());
         }
 
         private bool TryAdjustToNextValidMonth(ZonedDateTime candidate, int[] validMonths, ZonedDateTime floor, out ZonedDateTime result)

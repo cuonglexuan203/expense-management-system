@@ -4,8 +4,8 @@ namespace EMS.Core.Enums
 {
     public enum RecurrenceType
     {
-        [Description("No Recurrence")]
-        Once,
+        //[Description("No Recurrence")]
+        //Once,
 
         [Description("Daily")]
         Daily,

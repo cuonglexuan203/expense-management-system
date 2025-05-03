@@ -1,5 +1,6 @@
 ﻿using EMS.API.Common.Attributes;
 using EMS.Application.Features.Events.Commands.ScheduleEvent;
+using EMS.Application.Features.Events.Queries.GetEventOccurrences;
 using EMS.Application.Features.Events.Queries.GetScheduledEvents;
 using EMS.Core.Specifications;
 using MediatR;
@@ -32,6 +33,14 @@ namespace EMS.API.Controllers.v1
         public async Task<IActionResult> GetScheduledEvents([FromQuery] ScheduledEventSpecParams specParams)
         {
             var result = await _sender.Send(new GetScheduledEventsQuery(specParams));
+
+            return Ok(result);
+        }
+
+        [HttpGet("occurrences")]
+        public async Task<IActionResult> GetEventOccurrences([FromQuery] GetEventOccurrencesQuery query)
+        {
+            var result = await _sender.Send(query);
 
             return Ok(result);
         }
