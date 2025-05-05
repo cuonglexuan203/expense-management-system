@@ -8,6 +8,7 @@ class AssistantRequest(BaseModel):
     user_id: str = Field(description="Unique identifier of the user")
     wallet_id: int = Field(description="Unique identifier of the wallet")
     chat_thread_id: int = Field(description="Chat thread id")
+    time_zone_id: str = Field(description="IANA Timezone ID string")
     message: str | None = Field(
         default=None, description="Optional text message context"
     )

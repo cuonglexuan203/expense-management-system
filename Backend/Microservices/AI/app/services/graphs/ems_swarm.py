@@ -1,4 +1,3 @@
-# from langgraph.checkpoint.memory import InMemorySaver
 from app.schemas.llm_config import LLMConfig
 from app.services.agents.event_agent import EventAgent
 from app.services.agents.states.state import FinancialState
@@ -11,6 +10,10 @@ from app.services.agents.tools.financial_tools import (
     get_wallets,
     get_wallet_by_id,
     # update_extracted_transactions_status,
+)
+from app.services.agents.tools.event_tools import (
+    schedule_event,
+    get_event_occurrences,
 )
 from app.services.agents.financial_agent import FinancialAgent
 from app.services.llm.enums import LLMModel, LLMProvider
@@ -40,7 +43,9 @@ class EMSSwarm:
                 get_wallets,
                 get_wallet_by_id,
                 # update_extracted_transactions_status,
-                create_handoff_tool(agent_name=EventAgent.name),
+                create_handoff_tool(
+                    agent_name=EventAgent.name,
+                    description=f"Transfer to {EventAgent.name}, they can help with event-related problems (event scheduling feature)",),
             ],
         ).get_agent()
 
@@ -51,7 +56,8 @@ class EMSSwarm:
                 temperature=0,
             ),
             tools=[
-                extract_from_text,
+                schedule_event,
+                get_event_occurrences,
                 create_handoff_tool(
                     agent_name=FinancialAgent.name,
                     description=f"Transfer to {FinancialAgent.name}, they can help with financial-related problems",

@@ -85,6 +85,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                 var chatThreadId = message.ChatThreadId;
 
                 var userPreferences = await userPreferenceService.GetUserPreferenceByUserIdAsync(queuedMessage.UserId);
+                var timeZoneId = userPreferences.TimeZoneId!;
                 var categories = await context.Categories
                     .Where(e => !e.IsDeleted && e.UserId == queuedMessage.UserId)
                     .ToListAsync();
@@ -133,6 +134,7 @@ namespace EMS.Infrastructure.BackgroundJobs
                     queuedMessage.UserId,
                     queuedMessage.WalletId,
                     chatThreadId,
+                    timeZoneId,
                     message.Content,
                     message.Medias?.Where(e => !string.IsNullOrEmpty(e.Url)).Select(e => e.Url!).ToArray(),
                     categories.Select(e => e.Name).ToArray(),

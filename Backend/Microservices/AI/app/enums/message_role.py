@@ -2,5 +2,5 @@ from enum import Enum
 
 
 class MessageRole(str, Enum):
-    User = "User"
-    System = "System"
+    HUMAN = "Human"
+    SYSTEM = "System"

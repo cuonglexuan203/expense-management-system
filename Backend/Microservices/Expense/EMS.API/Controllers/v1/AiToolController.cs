@@ -2,6 +2,8 @@
 using EMS.API.Common.Models.AiToolController;
 using EMS.Application.Features.AiTools.Commands.ConfirmExtractedTransactions;
 using EMS.Application.Features.AiTools.Commands.RejectExtractedTransactions;
+using EMS.Application.Features.AiTools.Commands.ScheduleEvent;
+using EMS.Application.Features.AiTools.Queries.GetEventOccurrences;
 using EMS.Application.Features.AiTools.Queries.GetMessages;
 using EMS.Application.Features.AiTools.Queries.GetTransactions;
 using EMS.Application.Features.AiTools.Queries.GetWalletById;
@@ -80,6 +82,32 @@ namespace EMS.API.Controllers.v1
             }
 
             return BadRequest();
+        }
+
+        [HttpPost("users/{userId}/events")]
+        public async Task<IActionResult> ScheduleEvent(string userId, ScheduleEventRequest request)
+        {
+            var result = await _sender.Send(new ScheduleEventCommand(
+                userId,
+                request.Name,
+                request.Description,
+                request.Type,
+                request.Payload,
+                request.InitialTriggerDateTime,
+                request.Rule));
+
+            return Ok(result);
+        }
+
+        [HttpGet("users/{userId}/events/occurrences")]
+        public async Task<IActionResult> GetEventOccurrences(string userId, [FromQuery]GetEventOccurrencesRequest request)
+        {
+            var result = await _sender.Send(new GetEventOccurrencesQuery(
+                userId,
+                request.FromUtc,
+                request.ToUtc));
+
+            return Ok(result);
         }
     }
 }
