@@ -1,3 +1,5 @@
+from datetime import datetime
+import json
 from typing import Any
 import httpx
 from app.core.logging import get_logger
@@ -5,6 +7,10 @@ from app.core.config import settings
 from app.core.security import API_KEY_NAME
 from urllib.parse import urljoin
 from app.enums import ConfirmationStatus
+from app.enums.event_type import EventType
+from app.schemas.event_occurrence import EventOccurrence
+from app.schemas.recurrence_rule import RecurrenceRule
+from app.schemas.scheduled_event import ScheduledEvent
 from app.services.backend.endpoints import BackendEndpoints
 
 logger = get_logger(__name__)
@@ -93,6 +99,44 @@ class BackendClient:
                 "walletId": wallet_id,
                 "messageId": message_id,
                 "confirmationStatus": confirmation_status,
+            },
+        )
+
+    async def schedule_event(
+        self,
+        user_id: str,
+        name: str,
+        description: str | None,
+        type: EventType,
+        payload: dict[str, Any] | None,
+        initialTriggerDateTime: datetime,
+        rule: RecurrenceRule | None,
+    ) -> ScheduledEvent:
+        return await self.post(
+            BackendEndpoints.EVENTS,
+            user_id=user_id,
+            data={
+                "name": name,
+                "description": description,
+                "type": type.value,
+                "payload": json.dumps(payload) if payload else None,
+                "initialTriggerDateTime": initialTriggerDateTime.isoformat(),
+                "rule": rule.model_dump() if rule else None,
+            },
+        )
+
+    async def get_event_occurrences(
+        self,
+        user_id: str,
+        fromUtc: datetime,
+        toUtc: datetime,
+    ) -> list[EventOccurrence]:
+        return await self.get(
+            BackendEndpoints.EVENT_OCCURRENCES,
+            user_id=user_id,
+            params={
+                "fromUtc": fromUtc,
+                "toUtc": toUtc,
             },
         )
 

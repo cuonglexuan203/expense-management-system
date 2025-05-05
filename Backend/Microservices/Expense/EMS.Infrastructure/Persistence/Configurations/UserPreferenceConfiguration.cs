@@ -1,5 +1,7 @@
-﻿using EMS.Core.Entities;
+﻿using EMS.Core.Constants;
+using EMS.Core.Entities;
 using EMS.Infrastructure.Persistence.Configurations.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EMS.Infrastructure.Persistence.Configurations
@@ -24,7 +26,8 @@ namespace EMS.Infrastructure.Persistence.Configurations
                 .HasMaxLength(15);
 
             builder.Property(e => e.TimeZoneId)
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .HasDefaultValue(TimeZoneIds.Asia_Ho_Chi_Minh);
         }
 
         public override void ConfigureRelationships(EntityTypeBuilder<UserPreference> builder)

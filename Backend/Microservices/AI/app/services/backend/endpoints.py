@@ -21,3 +21,8 @@ class BackendEndpoints:
     EXTRACTED_TRANSACTIONS_STATUS = (
         "/api/v1/ai-tools/users/{user_id}/extracted-transactions/status"
     )
+
+    # Event
+    EVENTS = "/api/v1/ai-tools/users/{user_id}/events"
+    EVENT_OCCURRENCES = "/api/v1/ai-tools/users/{user_id}/events/occurrences"
+    EVENT_BY_ID = "/api/v1/ai-tools/users/{user_id}/events/{event_id}"

@@ -130,5 +130,15 @@ namespace EMS.Infrastructure.Services
 
             return defaultValue;
         }
+
+        public async Task<string?> GetTimeZoneIdAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            var timeZoneId = await _context.UserPreferences
+                .Where(e => !e.IsDeleted && e.UserId == userId)
+                .Select(e => e.TimeZoneId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return timeZoneId;
+        }
     }
 }

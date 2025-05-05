@@ -6,6 +6,7 @@ namespace EMS.Application.Common.DTOs
         string UserId,
         int WalletId,
         int ChatThreadId,
+        string timeZoneId,
         string? Message,
         string[]? FileUrls,
         string[] Categories,
