@@ -112,14 +112,6 @@ class BackendClient:
         initialTriggerDateTime: datetime,
         rule: RecurrenceRule | None,
     ) -> ScheduledEvent:
-        print({
-                "name": name,
-                "description": description,
-                "type": type.value,
-                "payload": json.dumps(payload) if payload else None,
-                "initialTriggerDateTime": str(initialTriggerDateTime),
-                "rule": rule.model_dump() if rule else None,
-            })
         return await self.post(
             BackendEndpoints.EVENTS,
             user_id=user_id,

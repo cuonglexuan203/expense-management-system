@@ -59,12 +59,12 @@ async def swarm(request: AssistantRequest, _: str = Depends(get_api_key)):
     messages = [
         HumanMessage(
             content=(
-                f"User ID: {request.user_id}\n"
-                f"User's preferences: {request.user_preferences}\n"
-                f"User's categories: {request.categories}\n"
-                f"Chat theard id: {request.chat_thread_id}\n"
-                f"Current time: {datetime.now(timezone.utc)}\n"
-                f"Time zone: {request.time_zone_id}\n"
+                # f"User ID: {request.user_id}\n"
+                # f"User's preferences: {request.user_preferences}\n"
+                # f"User's categories: {request.categories}\n"
+                # f"Chat theard id: {request.chat_thread_id}\n"
+                # f"Current time: {datetime.now(timezone.utc)}\n"
+                # f"Time zone: {request.time_zone_id}\n"
                 f"Query: {request.message}\n"
                 f"File urls: {request.file_urls}"
             )
