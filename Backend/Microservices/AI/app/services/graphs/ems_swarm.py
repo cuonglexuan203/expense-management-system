@@ -45,7 +45,7 @@ class EMSSwarm:
                 # update_extracted_transactions_status,
                 create_handoff_tool(
                     agent_name=EventAgent.name,
-                    description=f"Transfer to {EventAgent.name} agent, they can help with event-related problems (event scheduling feature)",),
+                    description=f"Transfer to {EventAgent.name} assistant, they can help with event-related problems (event scheduling feature)",),
             ],
         ).get_agent()
 
@@ -60,7 +60,7 @@ class EMSSwarm:
                 get_event_occurrences,
                 create_handoff_tool(
                     agent_name=FinancialAgent.name,
-                    description=f"Transfer to {FinancialAgent.name} agent, they can help with financial-related problems",
+                    description=f"Transfer to {FinancialAgent.name} assistant, they can help with financial-related problems",
                 ),
             ],
         ).get_agent()
