@@ -49,5 +49,26 @@ namespace EMS.Infrastructure.Services.HttpClients.DispatcherService
 
             return result;
         }
+
+        public async Task SendEmailAsync(EmailDispatchRequest msg)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync(DispatcherServiceEndpoints.SendEmail, msg, _serializerOptions);
+
+                response.EnsureSuccessStatusCode();
+
+                _logger.LogInformation("Email successfully dispatched for {Email}",
+                    msg.To);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error calling Dispatcher service to send email for {Email}: {ErrorMsg}",
+                    msg.To,
+                    ex.Message);
+
+                throw;
+            }
+        }
     }
 }

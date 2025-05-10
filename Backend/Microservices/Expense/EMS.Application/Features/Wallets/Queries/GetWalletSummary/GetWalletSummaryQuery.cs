@@ -4,7 +4,6 @@ using EMS.Application.Features.Wallets.Services;
 using EMS.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace EMS.Application.Features.Wallets.Queries.GetWalletSummary
 {

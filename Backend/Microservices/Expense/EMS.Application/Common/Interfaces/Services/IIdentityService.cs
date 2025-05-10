@@ -1,4 +1,5 @@
-﻿using EMS.Application.Common.Models;
+﻿using EMS.Application.Common.DTOs.Dispatcher;
+using EMS.Application.Common.Models;
 
 namespace EMS.Application.Common.Interfaces.Services
 {
@@ -15,5 +16,11 @@ namespace EMS.Application.Common.Interfaces.Services
         Task<(Result result, string? userId)> ValidateUserAsync(string userName, string password, CancellationToken cancellationToken = default);
         Task<string?> GetUserNameAsync(string userId, CancellationToken cancellationToken = default);
         Task<Result> CreateRoleAsync(string roleName, CancellationToken cancellationToken = default);
+
+        //
+        Task<(Result<EmailDispatchRequest> Result, string? PasswordResetToken)> GeneratePasswordResetEmailAsync(
+            string email,
+            CancellationToken cancellationToken = default);
+        Task<Result> ResetPasswordAsync(string email, string token, string newPassword, CancellationToken cancellationToken = default);
     }
 }

@@ -59,6 +59,11 @@ services:
       # Logging Configuration
       - Serilog__MinimumLevel__Default=${BE_SERILOG_MINIMUM_LEVEL_DEFAULT}
       - Serilog__WriteTo__0__Args__path=/app/${BE_LOG_PATH}
+
+      # App configs
+      - AppSettings__PasswordResetTokenExpiryMinutes=${BE_PasswordResetTokenExpiryMinutes:-5}
+      - AppSettings__MobileResetPasswordUrl=${BE_MobileResetPasswordUrl}
+      - AppSettings__GoogleLoginSuccessRedirect=${BE_GoogleLoginSuccessRedirect}
     volumes:
       - ./Microservices/Expense/logs:/app/${BE_LOG_PATH}
     networks:
@@ -87,7 +92,7 @@ services:
       - ALLOWED_HOSTS=${AI_ALLOWED_HOSTS}
       - API_KEY=${AI_API_KEY}
       - BACKEND_BASE_URL=http://ems-api:8080
-      - BACKEND_API_KEY=${BE_API_KEY}
+      - BACKEND_API_KEY=${AI_BE_API_KEY}
 
       # Redis
       - REDIS_URL=redis://redis:6379
@@ -166,6 +171,14 @@ services:
       # - CORS_ALLOWED_METHODS=["GET","POST","PUT","PATCH","DELETE","OPTIONS"]
       # - CORS_ALLOWED_HEADERS=["Accept","Authorization","Content-Type","X-CSRF-Token","X-API-KEY"]
       # - CORS_MAX_AGE=43200 # 12 hours in seconds
+
+      # SMTP Configs
+      - SMTP_HOST=${GO_DISPATCHER_SMTP_HOST}
+      - SMTP_PORT=${GO_DISPATCHER_SMTP_PORT}
+      - SMTP_USERNAME=${GO_DISPATCHER_SMTP_USERNAME}
+      - SMTP_PASSWORD=${GO_DISPATCHER_SMTP_PASSWORD}
+      - SMTP_SENDER_EMAIL=${GO_DISPATCHER_SMTP_SENDER_EMAIL}
+      - SMTP_INSECURE_SKIP_VERIFY=${GO_DISPATCHER_SMTP_INSECURE_SKIP_VERIFY:-false}
     volumes:
       - ./Microservices/Dispatcher/logs:/app/logs
     networks:

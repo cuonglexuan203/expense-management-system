@@ -61,6 +61,7 @@ namespace EMS.Infrastructure
             services.Configure<AiServiceOptions>(configuration.GetSection(AiServiceOptions.AiService));
             services.Configure<CloudinaryOptions>(configuration.GetSection(CloudinaryOptions.Cloudinary));
             services.Configure<DispatcherServiceOptions>(configuration.GetSection(DispatcherServiceOptions.DispatcherService));
+            services.Configure<AppSettingOptions>(configuration.GetSection(AppSettingOptions.AppSettings));
         }
 
         private static void AddHttpClients(IServiceCollection services)
@@ -137,10 +138,20 @@ namespace EMS.Infrastructure
                     options.Password.RequireNonAlphanumeric = false;
 
                     options.SignIn.RequireConfirmedEmail = false;
+
+                    options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
                 })
                 .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            // Configure password reset token lifespan
+            var appSettings = configuration.GetSection(AppSettingOptions.AppSettings).Get<AppSettingOptions>()
+                ?? throw new InvalidOperationException("App Settings not configured");
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromMinutes(appSettings.PasswordResetTokenExpiryMinutes);
+            });
         }
     }
 }
