@@ -51,6 +51,14 @@ type Config struct {
 	EventPollingInterval time.Duration `mapstructure:"EVENT_POLLING_INTERVAL"`
 	EventProcessingQueue string        `mapstructure:"EVENT_PROCESSING_QUEUE"`
 	EventBatchSize       int           `mapstructure:"EVENT_BATCH_SIZE"`
+
+	// Email config
+	SMTPHost           string `mapstructure:"SMTP_HOST"`
+	SMTPPort           int    `mapstructure:"SMTP_PORT"`
+	SMTPUserName       string `mapstructure:"SMTP_USERNAME"`
+	SMTPPassword       string `mapstructure:"SMTP_PASSWORD"`
+	SenderEmail        string `mapstructure:"SMTP_SENDER_EMAIL"`
+	InsecureSkipVerify bool   `mapstructure:"SMTP_INSECURE_SKIP_VERIFY"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
@@ -86,6 +94,10 @@ func LoadConfig(path string) (config Config, err error) {
 	viper.SetDefault("EVENT_POLLING_INTERVAL", 30*time.Second)
 	viper.SetDefault("EVENT_PROCESSING_QUEUE", "event:processing")
 	viper.SetDefault("EVENT_BATCH_SIZE", 100)
+	viper.SetDefault("SMTP_HOST", "smtp.gmail.com")
+	viper.SetDefault("SMTP_PORT", 587)
+	viper.SetDefault("SMTP_SENDER_EMAIL", "EMS")
+	viper.SetDefault("SMTP_INSECURE_SKIP_VERIFY", true)
 
 	if err = viper.ReadInConfig(); err != nil {
 		if _, ok := err.(v.ConfigFileNotFoundError); !ok {

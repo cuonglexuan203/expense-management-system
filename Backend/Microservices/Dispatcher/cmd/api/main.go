@@ -117,7 +117,7 @@ func main() {
 	// API Versioning & Routes
 	v1Group := apiGroup.Group("/v1")
 	{
-		routes.SetupV1Routes(v1Group, fcmService, asynqClient, db, backendClient)
+		routes.SetupV1Routes(v1Group, cfg, fcmService, asynqClient, db, backendClient)
 	}
 
 	// --- Health Check ---

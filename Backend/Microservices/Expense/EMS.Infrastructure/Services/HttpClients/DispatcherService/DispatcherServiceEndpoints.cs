@@ -4,5 +4,6 @@
     {
         private const string _apiVersion = "/api/v1";
         public const string SendNotification = $"{_apiVersion}/notifications/send";
+        public const string SendEmail = $"{_apiVersion}/emails/send";
     }
 }

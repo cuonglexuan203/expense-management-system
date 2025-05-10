@@ -2,7 +2,7 @@
 
 namespace EMS.Application.Features.Auth.Commands.Login
 {
-    public class LoginQueryValidator : AbstractValidator<LoginQuery>
+    public class LoginQueryValidator : AbstractValidator<LoginCommand>
     {
         public LoginQueryValidator()
         {

@@ -1,8 +1,10 @@
 ﻿using EMS.API.Common.Attributes;
+using EMS.Application.Features.Auth.Commands.ForgotPassword;
 using EMS.Application.Features.Auth.Commands.Login;
 using EMS.Application.Features.Auth.Commands.Logout;
 using EMS.Application.Features.Auth.Commands.RefreshToken;
 using EMS.Application.Features.Auth.Commands.Register;
+using EMS.Application.Features.Auth.Commands.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +30,7 @@ namespace EMS.API.Controllers.v1
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginQuery query)
+        public async Task<IActionResult> Login(LoginCommand query)
         {
             var result = await _sender.Send(query);
 
@@ -46,6 +48,22 @@ namespace EMS.API.Controllers.v1
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(LogoutCommand command)
+        {
+            var result = await _sender.Send(command);
+
+            return Ok(result);
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
+        {
+            var result = await _sender.Send(command);
+
+            return Ok(result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
         {
             var result = await _sender.Send(command);
 
