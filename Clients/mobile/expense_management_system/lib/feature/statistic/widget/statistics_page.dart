@@ -21,7 +21,7 @@ class StatisticsPage extends ConsumerStatefulWidget {
 class _StatisticsPageState extends ConsumerState<StatisticsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  TransactionPeriod _selectedPeriod = TransactionPeriod.currentMonth;
+  TransactionPeriod _selectedPeriod = TransactionPeriod.allTime;
   final List<TransactionPeriod> _periods = TransactionPeriod.values;
 
   final _scrollController = ScrollController();
@@ -83,10 +83,11 @@ class _StatisticsPageState extends ConsumerState<StatisticsPage>
                   title: const Text(
                     'Financial Analytics',
                     style: TextStyle(
-                      color: Color(0xFF2D3142),
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
                       fontFamily: 'Nunito',
+                      color: Color(0xFF2D3142),
+                      letterSpacing: -0.5,
                     ),
                   ),
                   bottom: PreferredSize(
@@ -99,12 +100,22 @@ class _StatisticsPageState extends ConsumerState<StatisticsPage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Text(
+                              //   'Track your financial performance',
+                              //   style: TextStyle(
+                              //     color: Colors.grey[600],
+                              //     fontSize: 14,
+                              //     fontFamily: 'Nunito',
+                              //   ),
+                              // ),
                               Text(
                                 'Track your financial performance',
                                 style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                   fontFamily: 'Nunito',
+                                  color:
+                                      const Color(0xFF2D3142).withOpacity(0.6),
                                 ),
                               ),
                               const SizedBox(height: 12),
