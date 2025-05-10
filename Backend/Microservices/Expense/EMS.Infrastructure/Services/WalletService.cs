@@ -143,7 +143,7 @@ namespace EMS.Infrastructure.Services
             {
                 var walletSummary = await GetWalletBalanceSummaryAsync(userId, walletId, period);
                 await _distributedCacheService.SetAsync(
-                    CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.QueryKeys.WalletByUser, userId, walletId, period),
+                    CacheKeyGenerator.GenerateForUser(CacheKeyGenerator.QueryKeys.WalletByUser, userId, walletId, period, "null", "null"), // FromDate: null, ToDate: null
                     walletSummary);
             }
         }
