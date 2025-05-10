@@ -7,8 +7,11 @@ import 'package:expense_management_system/feature/auth/widget/passcode_verificat
 import 'package:expense_management_system/feature/auth/widget/sign_in_page.dart';
 import 'package:expense_management_system/feature/auth/widget/sign_up_page.dart';
 import 'package:expense_management_system/feature/chat/widget/chat_page.dart';
+import 'package:expense_management_system/feature/notification/widget/transaction_suggestion_page.dart';
 import 'package:expense_management_system/feature/onboarding/widget/onboarding_page.dart';
 import 'package:expense_management_system/feature/profile/widget/profile_page.dart';
+import 'package:expense_management_system/feature/schedule/widget/schedule_page.dart';
+import 'package:expense_management_system/feature/statistic/widget/statistics_page.dart';
 import 'package:expense_management_system/feature/transaction/widget/transaction_page.dart';
 import 'package:expense_management_system/feature/wallet/widget/create_wallet_page.dart';
 import 'package:expense_management_system/feature/wallet/widget/wallet_detail_page.dart';
@@ -141,6 +144,30 @@ class TransactionRoute extends GoRouteData {
   }
 }
 
+@TypedGoRoute<ScheduleRoute>(path: ScheduleRoute.path)
+class ScheduleRoute extends GoRouteData {
+  const ScheduleRoute();
+
+  static const path = '/schedule';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const SchedulePage();
+  }
+}
+
+@TypedGoRoute<StatisticRoute>(path: StatisticRoute.path)
+class StatisticRoute extends GoRouteData {
+  const StatisticRoute();
+
+  static const path = '/statistics';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const StatisticsPage();
+  }
+}
+
 @TypedGoRoute<ProfileRoute>(path: ProfileRoute.path)
 class ProfileRoute extends GoRouteData {
   const ProfileRoute();
@@ -174,6 +201,19 @@ class OnboardingRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const OnboardingPage();
+  }
+}
+
+@TypedGoRoute<TransactionSuggestionRoute>(path: TransactionSuggestionRoute.path)
+class TransactionSuggestionRoute extends GoRouteData {
+  const TransactionSuggestionRoute({required this.notificationId});
+
+  final int notificationId;
+  static const path = '/transaction-suggestion/:notificationId';
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return TransactionSuggestionPage(notificationId: notificationId);
   }
 }
 
