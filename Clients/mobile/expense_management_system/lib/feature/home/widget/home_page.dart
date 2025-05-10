@@ -7,6 +7,7 @@ import 'package:expense_management_system/feature/home/widget/empty_balance_card
 import 'package:expense_management_system/feature/home/widget/transaction_list_section.dart';
 import 'package:expense_management_system/feature/home/widget/wallet_balance_card.dart';
 import 'package:expense_management_system/feature/home/widget/wallet_list.dart';
+import 'package:expense_management_system/feature/notification/widget/notifications_page.dart';
 import 'package:expense_management_system/feature/transaction/provider/transaction_provider.dart';
 import 'package:expense_management_system/feature/wallet/provider/wallet_provider.dart';
 import 'package:expense_management_system/shared/route/app_router.dart';
@@ -111,7 +112,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         backgroundColor: const Color(0xFF386BF6),
         child: const Icon(Iconsax.add, color: Colors.white),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
     );
   }
 
@@ -277,7 +279,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               Iconsax.notification,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NotificationsPage()),
+              );
+            },
           ),
         ],
       ),
