@@ -2,6 +2,7 @@
 using EMS.Application.Common.Utils;
 using EMS.Application.Features.Profiles.Dtos;
 using EMS.Application.Features.Profiles.Services;
+using EMS.Core.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +13,9 @@ namespace EMS.Application.Features.Profiles.Commands.UpdateProfile
         string? FullName,
         string? Email,
         string? Avatar,
-        string? TimeZoneId) : IRequest<ProfileVm>;
+        string? TimeZoneId,
+        CurrencyCode? CurrencyCode,
+        LanguageCode? LanguageCode) : IRequest<ProfileVm>;
 
     public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand, ProfileVm>
     {

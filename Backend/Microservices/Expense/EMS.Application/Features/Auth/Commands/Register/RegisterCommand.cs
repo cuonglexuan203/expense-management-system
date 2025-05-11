@@ -51,7 +51,14 @@ namespace EMS.Application.Features.Auth.Commands.Register
                 throw new Exception(string.Join(", ", roleResult.Errors!));
             }
 
-            await _userPreferenceService.CreateDefaultUserPreferencesAsync(userId, cancellationToken);
+            if (string.IsNullOrEmpty(request.TimeZoneId))
+            {
+                await _userPreferenceService.CreateDefaultUserPreferencesAsync(userId);
+            }
+            else
+            {
+                await _userPreferenceService.CreateDefaultUserPreferencesAsync(userId, request.TimeZoneId);
+            }
             //await _chatThreadService.CreateDefaultChatThreadsAsync(userId);
 
             _logger.LogInformation("User {0} registered", request.Email);

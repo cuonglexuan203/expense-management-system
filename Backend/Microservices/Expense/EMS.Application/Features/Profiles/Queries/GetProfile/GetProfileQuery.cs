@@ -4,7 +4,7 @@ using EMS.Application.Features.Profiles.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace EMS.Application.Features.Profiles.Queries
+namespace EMS.Application.Features.Profiles.Queries.GetProfile
 {
     public record GetProfileQuery : IRequest<ProfileVm>;
 

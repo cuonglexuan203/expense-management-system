@@ -60,10 +60,26 @@ namespace EMS.Infrastructure.Services
                         throw new ServerException($"An error occurred while updating user {userId}");
                     }
 
+                    var userPreference = await _context.UserPreferences
+                        .FirstOrDefaultAsync(e => !e.IsDeleted && e.UserId == userId)
+                        ?? throw new NotFoundException($"User preference of user {userId} not found");
+
                     if (!string.IsNullOrEmpty(values.TimeZoneId))
                     {
-                        var timeZoneId = await _userPreferenceService.UpdateTimeZoneIdAsync(userId, values.TimeZoneId);
+                        userPreference.TimeZoneId = values.TimeZoneId;
                     }
+
+                    if (values.LanguageCode.HasValue)
+                    {
+                        userPreference.LanguageCode = values.LanguageCode.Value;
+                    }
+
+                    if (values.CurrencyCode.HasValue)
+                    {
+                        userPreference.CurrencyCode = values.CurrencyCode.Value;
+                    }
+
+                    await _context.SaveChangesAsync();
 
                     await dbTransaction.CommitAsync(cancellationToken);
                 }
