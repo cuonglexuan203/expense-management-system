@@ -5,6 +5,7 @@ using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Utils;
 using EMS.Application.Features.Preferences.Dtos;
+using EMS.Core.Constants;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
 using EMS.Core.Exceptions;
@@ -53,7 +54,7 @@ namespace EMS.Infrastructure.Services
                 .FirstOrDefaultAsync() ?? throw new ServerException($"User preference of user id {userId} not found."));
         }
 
-        public async Task CreateDefaultUserPreferencesAsync(string userId, CancellationToken cancellationToken = default)
+        public async Task CreateDefaultUserPreferencesAsync(string userId, string timeZoneId = TimeZoneIds.Asia_Ho_Chi_Minh, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -65,7 +66,8 @@ namespace EMS.Infrastructure.Services
                     UserId = userId,
                     LanguageCode = MapSystemSettingValue(systemSettings, nameof(UserPreference.LanguageCode), LanguageCode.EN),
                     CurrencyCode = MapSystemSettingValue(systemSettings, nameof(UserPreference.CurrencyCode), CurrencyCode.USD),
-                    ConfirmationMode = MapSystemSettingValue(systemSettings, nameof(UserPreference.ConfirmationMode), ConfirmationMode.Manual)
+                    ConfirmationMode = MapSystemSettingValue(systemSettings, nameof(UserPreference.ConfirmationMode), ConfirmationMode.Manual),
+                    TimeZoneId = timeZoneId,
                 };
 
                 _context.UserPreferences.Add(userPreference);

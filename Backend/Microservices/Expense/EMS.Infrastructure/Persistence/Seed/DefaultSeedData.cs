@@ -44,7 +44,7 @@ namespace EMS.Infrastructure.Persistence.Seed
             {
                 new SystemSetting
                 {
-                    SettingKey = "Currency",
+                    SettingKey = nameof(UserPreference.Currency),
                     SettingValue = CurrencyCode.USD.ToString(),
                     DataType = DataType.String,
                     Description = "Default currency used in transactions",
@@ -53,7 +53,7 @@ namespace EMS.Infrastructure.Persistence.Seed
                 },
                 new SystemSetting
                 {
-                    SettingKey = "Language",
+                    SettingKey = nameof(UserPreference.LanguageCode),
                     SettingValue = LanguageCode.EN.ToString(),
                     DataType = DataType.String,
                     Description = "Default application language",
@@ -62,13 +62,22 @@ namespace EMS.Infrastructure.Persistence.Seed
                 },
                 new SystemSetting
                 {
-                    SettingKey = "RequiresConfirmation",
-                    SettingValue = "true",
-                    DataType = DataType.Boolean,
+                    SettingKey = nameof(UserPreference.ConfirmationMode),
+                    SettingValue = ConfirmationMode.Manual.ToString(),
+                    DataType = DataType.Enum,
                     Description = "Indicates whether user actions require confirmation",
                     Type = SettingType.General,
                     UserConfigurable = true
-                }
+                },
+                new SystemSetting
+                {
+                    SettingKey = nameof(UserPreference.TimeZoneId),
+                    SettingValue = TimeZoneIds.Asia_Ho_Chi_Minh,
+                    DataType = DataType.String,
+                    Description = "Default time zone ID",
+                    Type = SettingType.General,
+                    UserConfigurable = true
+                },
             };
 
             return systemSettings;

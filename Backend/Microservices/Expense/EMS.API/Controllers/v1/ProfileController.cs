@@ -2,7 +2,7 @@
 using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Features.Profiles.Commands.UpdateProfile;
-using EMS.Application.Features.Profiles.Queries;
+using EMS.Application.Features.Profiles.Queries.GetProfile;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
