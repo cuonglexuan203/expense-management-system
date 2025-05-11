@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using EMS.Application.Common.Exceptions;
 using EMS.Application.Common.Interfaces.DbContext;
 using EMS.Application.Common.Interfaces.Services;
 using EMS.Application.Common.Utils;
@@ -134,9 +135,24 @@ namespace EMS.Infrastructure.Services
         public async Task<string?> GetTimeZoneIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             var timeZoneId = await _context.UserPreferences
+                .AsNoTracking()
                 .Where(e => !e.IsDeleted && e.UserId == userId)
                 .Select(e => e.TimeZoneId)
                 .FirstOrDefaultAsync(cancellationToken);
+
+            return timeZoneId;
+        }
+
+        public async Task<string?> UpdateTimeZoneIdAsync(string userId, string timeZoneId, CancellationToken cancellationToken = default)
+        {
+            var userPreference = await _context.UserPreferences
+                .Where(e => !e.IsDeleted && e.UserId == userId)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new NotFoundException($"User preference of user {userId} not found");
+
+            userPreference.TimeZoneId = timeZoneId;
+
+            await _context.SaveChangesAsync();
 
             return timeZoneId;
         }

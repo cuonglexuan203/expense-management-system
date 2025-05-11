@@ -8,5 +8,6 @@ namespace EMS.Application.Common.Interfaces.Services
         Task<UserPreferenceDto> GetUserPreferenceByUserIdAsync(string userId);
         Task CreateDefaultUserPreferencesAsync(string userId, CancellationToken cancellationToken = default);
         Task<string?> GetTimeZoneIdAsync (string userId, CancellationToken cancellationToken = default);
+        Task<string?> UpdateTimeZoneIdAsync(string userId, string timeZoneId, CancellationToken cancellationToken = default);
     }
 }

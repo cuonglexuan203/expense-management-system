@@ -31,6 +31,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using EMS.Application.Features.Notifications.Services;
+using EMS.Application.Features.Profiles.Services;
 
 namespace EMS.Infrastructure
 {
@@ -87,6 +88,7 @@ namespace EMS.Infrastructure
             services.TryAddScoped<IDeviceTokenService, DeviceTokenService>();
             services.TryAddScoped<IEventSchedulerService, EventSchedulerService>(); 
             services.TryAddScoped<INotificationService, NotificationService>();
+            services.TryAddScoped<IProfileService, ProfileService>();
 
             // Storage
             services.TryAddScoped<IStorageProvider, CloudinaryStorageProvider>();

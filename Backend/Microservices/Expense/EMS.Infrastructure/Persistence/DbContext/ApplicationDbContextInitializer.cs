@@ -129,7 +129,7 @@ namespace EMS.Infrastructure.Persistence.DbContext
                 #region Add default users
                 foreach (var user in DefaultSeedData.GetDefaultUsers())
                 {
-                    var (result, userId) = await _identityService.CreateUserAsync(user.UserName, user.Pwd);
+                    var (result, userId) = await _identityService.CreateUserAsync(user.UserName, user.Pwd, user.User);
 
                     if (!result.Succeeded)
                     {

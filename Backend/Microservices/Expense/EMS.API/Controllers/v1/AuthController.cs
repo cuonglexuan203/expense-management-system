@@ -1,4 +1,5 @@
 ﻿using EMS.API.Common.Attributes;
+using EMS.Application.Features.Auth.Commands.ChangePassword;
 using EMS.Application.Features.Auth.Commands.ForgotPassword;
 using EMS.Application.Features.Auth.Commands.Login;
 using EMS.Application.Features.Auth.Commands.Logout;
@@ -64,6 +65,15 @@ namespace EMS.API.Controllers.v1
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
+        {
+            var result = await _sender.Send(command);
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPatch("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand command)
         {
             var result = await _sender.Send(command);
 

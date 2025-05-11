@@ -1,4 +1,5 @@
 ﻿using EMS.Application.Common.DTOs;
+using EMS.Application.Features.Profiles.Dtos;
 using EMS.Core.Constants;
 using EMS.Core.Entities;
 using EMS.Core.Enums;
@@ -20,18 +21,18 @@ namespace EMS.Infrastructure.Persistence.Seed
             return roles;
         }
 
-        public static (string UserName, string Pwd, string Role)[] GetDefaultUsers()
+        public static (string UserName, string Pwd, UserDto User, string Role)[] GetDefaultUsers()
         {
-            var admins = new (string UserName, string Pwd, string Role)[]
+            var admins = new (string UserName, string Pwd, UserDto User, string Role)[]
             {
-                ("admin1@gmail.com", "123456", Roles.Administrator),
-                ("admin2@gmail.com", "123456", Roles.Administrator)
+                ("admin1", "123456", new(){FullName = "Admin1", Email = "admin1@gmail.com"}, Roles.Administrator),
+                ("admin2", "123456", new(){FullName = "Admin2", Email = "admin2@gmail.com"}, Roles.Administrator)
             };
 
-            var users = new (string UserName, string Pwd, string Role)[]
+            var users = new (string UserName, string Pwd, UserDto User, string Role)[]
             {
-                ("user1@gmail.com", "123456", Roles.User),
-                ("user2@gmail.com", "123456", Roles.User)
+                ("user1", "123456", new(){FullName = "User1", Email = "user1@gmail.com"}, Roles.User),
+                ("user2", "123456", new(){FullName = "User2", Email = "user2@gmail.com"}, Roles.User)
             };
 
             return [.. admins, .. users];
