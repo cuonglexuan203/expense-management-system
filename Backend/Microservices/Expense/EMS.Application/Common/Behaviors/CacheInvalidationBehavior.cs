@@ -9,10 +9,14 @@ namespace EMS.Application.Common.Behaviors
         where TRequest : IRequest<TResponse>
     {
         private readonly IDistributedCacheService _cacheService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public CacheInvalidationBehavior(IDistributedCacheService cacheService)
+        public CacheInvalidationBehavior(
+            IDistributedCacheService cacheService,
+            ICurrentUserService currentUserService)
         {
             _cacheService = cacheService;
+            _currentUserService = currentUserService;
         }
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
@@ -23,7 +27,20 @@ namespace EMS.Application.Common.Behaviors
 
             foreach (var attribute in invalidationCacheAttributes)
             {
-                var pattern = $"{_cacheService.GetFullKey(attribute.KeyPrefix)}:*";
+                var keyPrefix = attribute.KeyPrefix;
+
+                if (attribute is UserInvalidateCacheAttribute userInvalidateCacheAttribute)
+                {
+                    if (string.IsNullOrEmpty(userInvalidateCacheAttribute.UserId))
+                    {
+                        userInvalidateCacheAttribute.UserId = _currentUserService.Id;
+                    }
+
+                    keyPrefix = userInvalidateCacheAttribute.GetUserKeyPrefix();
+                }
+
+                var pattern = $"{_cacheService.GetFullKey(keyPrefix)}:*";
+
                 var keys = await _cacheService.GetKeysByPatternAsync(pattern);
 
                 foreach (var key in keys)

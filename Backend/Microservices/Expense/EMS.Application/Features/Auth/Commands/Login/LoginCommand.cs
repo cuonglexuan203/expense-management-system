@@ -7,7 +7,7 @@ namespace EMS.Application.Features.Auth.Commands.Login
 {
     public class LoginCommand : IRequest<TokenResponse>
     {
-        public string Email { get; set; } = default!;
+        public string UserName { get; set; } = default!;
         public string Password { get; set; } = default!;
     }
 
@@ -26,7 +26,7 @@ namespace EMS.Application.Features.Auth.Commands.Login
 
         public async Task<TokenResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var (result, userId) = await _identityService.ValidateUserAsync(request.Email, request.Password);
+            var (result, userId) = await _identityService.ValidateUserAsync(request.UserName, request.Password);
 
             if (!result.Succeeded)
             {

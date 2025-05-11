@@ -6,10 +6,9 @@ namespace EMS.Application.Features.Auth.Commands.Login
     {
         public LoginQueryValidator()
         {
-            RuleFor(e => e.Email)
+            RuleFor(e => e.UserName)
                 .NotNull()
                 .NotEmpty()
-                .EmailAddress()
                 .WithMessage("Invalid {PropertyName}");
         }
     }
