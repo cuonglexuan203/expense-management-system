@@ -31,7 +31,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
     with TickerProviderStateMixin {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  bool isAddTransaction = true;
+  // bool isAddTransaction = true;
   int? chatThreadId;
   bool isLoading = true;
   bool isWaitingForResponse = false;
@@ -438,22 +438,29 @@ class _ChatPageState extends ConsumerState<ChatPage>
 
       print('Chat-threads: $chatThreads');
 
-      if (isAddTransaction) {
-        final financeThread = chatThreads.firstWhere(
-          (thread) => thread['title'] == 'Finance',
-          orElse: () => {'id': null},
-        );
-        chatThreadId =
-            financeThread['id'] != null ? financeThread['id'] as int : null;
-        print('chatThreadId: $chatThreadId');
-      } else {
-        final assistantThread = chatThreads.firstWhere(
-          (thread) => thread['title'] == 'Assistant',
-          orElse: () => {'id': null},
-        );
-        chatThreadId =
-            assistantThread['id'] != null ? assistantThread['id'] as int : null;
-      }
+      // if (isAddTransaction) {
+      //   final financeThread = chatThreads.firstWhere(
+      //     (thread) => thread['title'] == 'Assistant',
+      //     orElse: () => {'id': null},
+      //   );
+      //   chatThreadId =
+      //       financeThread['id'] != null ? financeThread['id'] as int : null;
+      //   print('chatThreadId: $chatThreadId');
+      // } else {
+      //   final assistantThread = chatThreads.firstWhere(
+      //     (thread) => thread['title'] == 'Assistant',
+      //     orElse: () => {'id': null},
+      //   );
+      //   chatThreadId =
+      //       assistantThread['id'] != null ? assistantThread['id'] as int : null;
+      // }
+      final financeThread = chatThreads.firstWhere(
+        (thread) => thread['title'] == 'Assistant',
+        orElse: () => {'id': null},
+      );
+      chatThreadId =
+          financeThread['id'] != null ? financeThread['id'] as int : null;
+      print('chatThreadId: $chatThreadId');
 
       if (chatThreadId != null) {
         await ref.read(chatProvider.notifier).fetchMessages(chatThreadId!);
@@ -500,16 +507,16 @@ class _ChatPageState extends ConsumerState<ChatPage>
     }
   }
 
-  Future<void> _changeTab(bool isAddTransactionTab) async {
-    if (isAddTransaction == isAddTransactionTab) return;
+  // Future<void> _changeTab(bool isAddTransactionTab) async {
+  //   if (isAddTransaction == isAddTransactionTab) return;
 
-    setState(() {
-      isAddTransaction = isAddTransactionTab;
-      isLoading = true;
-    });
+  //   setState(() {
+  //     isAddTransaction = isAddTransactionTab;
+  //     isLoading = true;
+  //   });
 
-    await _initializeChat();
-  }
+  //   await _initializeChat();
+  // }
 
   Future<void> _confirmTransaction(int transactionId, String status) async {
     try {
@@ -882,9 +889,7 @@ class _ChatPageState extends ConsumerState<ChatPage>
                                         _selectedImages!.isNotEmpty) ||
                                     _recordedAudioPath != null
                                 ? 'Enter message with media...'
-                                : isAddTransaction
-                                    ? 'Aa'
-                                    : 'Ask Mosa...',
+                                : 'Aa',
                             hintStyle: TextStyle(
                               color: Colors.grey[400],
                               fontFamily: 'Nunito',
@@ -972,29 +977,29 @@ class _ChatPageState extends ConsumerState<ChatPage>
       body: Column(
         children: [
           // Toggle buttons
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildToggleButton(
-                    'Add Transaction',
-                    isAddTransaction,
-                    () => _changeTab(true),
-                    Iconsax.receipt_add,
-                  ),
-                ),
-                Expanded(
-                  child: _buildToggleButton(
-                    'Ask Mosa',
-                    !isAddTransaction,
-                    () => _changeTab(false),
-                    Iconsax.message_2,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: Row(
+          //     children: [
+          //       Expanded(
+          //         child: _buildToggleButton(
+          //           'Add Transaction',
+          //           isAddTransaction,
+          //           () => _changeTab(true),
+          //           Iconsax.receipt_add,
+          //         ),
+          //       ),
+          //       Expanded(
+          //         child: _buildToggleButton(
+          //           'Ask Mosa',
+          //           !isAddTransaction,
+          //           () => _changeTab(false),
+          //           Iconsax.message_2,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           // Messages list
           Expanded(

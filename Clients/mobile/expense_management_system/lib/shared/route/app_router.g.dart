@@ -13,9 +13,12 @@ List<RouteBase> get $appRoutes => [
       $chatRoute,
       $walletRoute,
       $transactionRoute,
+      $scheduleRoute,
+      $statisticRoute,
       $profileRoute,
       $passcodeVerificationRoute,
       $onboardingRoute,
+      $transactionSuggestionRoute,
     ];
 
 RouteBase get $appRoute => GoRouteData.$route(
@@ -201,6 +204,51 @@ extension $TransactionRouteExtension on TransactionRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
+RouteBase get $scheduleRoute => GoRouteData.$route(
+      path: '/schedule',
+      factory: $ScheduleRouteExtension._fromState,
+    );
+
+extension $ScheduleRouteExtension on ScheduleRoute {
+  static ScheduleRoute _fromState(GoRouterState state) => const ScheduleRoute();
+
+  String get location => GoRouteData.$location(
+        '/schedule',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $statisticRoute => GoRouteData.$route(
+      path: '/statistics',
+      factory: $StatisticRouteExtension._fromState,
+    );
+
+extension $StatisticRouteExtension on StatisticRoute {
+  static StatisticRoute _fromState(GoRouterState state) =>
+      const StatisticRoute();
+
+  String get location => GoRouteData.$location(
+        '/statistics',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
 RouteBase get $profileRoute => GoRouteData.$route(
       path: '/profile',
       factory: $ProfileRouteExtension._fromState,
@@ -257,6 +305,31 @@ extension $OnboardingRouteExtension on OnboardingRoute {
 
   String get location => GoRouteData.$location(
         '/onboarding',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $transactionSuggestionRoute => GoRouteData.$route(
+      path: '/transaction-suggestion/:notificationId',
+      factory: $TransactionSuggestionRouteExtension._fromState,
+    );
+
+extension $TransactionSuggestionRouteExtension on TransactionSuggestionRoute {
+  static TransactionSuggestionRoute _fromState(GoRouterState state) =>
+      TransactionSuggestionRoute(
+        notificationId: int.parse(state.pathParameters['notificationId']!)!,
+      );
+
+  String get location => GoRouteData.$location(
+        '/transaction-suggestion/${Uri.encodeComponent(notificationId.toString())}',
       );
 
   void go(BuildContext context) => context.go(location);
