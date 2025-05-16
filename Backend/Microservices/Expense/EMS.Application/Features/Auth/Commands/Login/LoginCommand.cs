@@ -41,6 +41,7 @@ namespace EMS.Application.Features.Auth.Commands.Login
                 user.FullName,
                 user.Email,
                 user.Avatar,
+                false,
                 tokenResponse.AccessToken,
                 tokenResponse.RefreshToken,
                 tokenResponse.AccessTokenExpiration,

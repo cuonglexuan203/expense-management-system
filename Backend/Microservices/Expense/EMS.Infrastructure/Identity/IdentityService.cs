@@ -10,6 +10,11 @@ using Microsoft.Extensions.Logging;
 using System.Web;
 using AutoMapper;
 using EMS.Application.Features.Profiles.Dtos;
+using EMS.Application.Features.Auth.Commands.Login;
+using System.Security.Claims;
+using EMS.Core.Constants;
+using EMS.Infrastructure.Persistence.DbContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace EMS.Infrastructure.Identity
 {
@@ -17,16 +22,21 @@ namespace EMS.Infrastructure.Identity
     {
         private readonly ILogger<IdentityService> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ITokenService _tokenService;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDistributedCacheService _cacheService;
         private readonly IMapper _mapper;
+        private readonly IUserPreferenceService _userPreferenceService;
+        private readonly ApplicationDbContext _context;
         private readonly AppSettingOptions _appSettings;
 
         public IdentityService(
             ILogger<IdentityService> logger,
             UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             ITokenService tokenService,
             IOptions<JwtSettings> jwtSettings,
             RoleManager<ApplicationRole> roleManager,
@@ -34,15 +44,21 @@ namespace EMS.Infrastructure.Identity
             IAuthorizationService authorizationService,
             IDistributedCacheService cacheService,
             IOptions<AppSettingOptions> appSettings,
-            IMapper mapper)
+            IMapper mapper,
+            IUserPreferenceService userPreferenceService,
+            ApplicationDbContext context)
         {
             _logger = logger;
             _userManager = userManager;
+            _signInManager = signInManager;
+            _tokenService = tokenService;
             _roleManager = roleManager;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
             _authorizationService = authorizationService;
             _cacheService = cacheService;
             _mapper = mapper;
+            _userPreferenceService = userPreferenceService;
+            _context = context;
             _appSettings = appSettings.Value;
         }
 
@@ -217,6 +233,140 @@ namespace EMS.Infrastructure.Identity
 
             return roleResult.ToApplicationResult();
         }
+
+        #region External auth
+        public async Task<Result<LoginDto?>> ExternalLoginAsync(string? returnUrl = default, CancellationToken cancellationToken = default)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+            var result = await strategy.ExecuteAsync(async () =>
+            {
+                await using var dbTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+                try
+                {
+                    var info = await _signInManager.GetExternalLoginInfoAsync();
+
+                    if (info == null)
+                    {
+                        _logger.LogError("Error loading external login information.");
+
+                        return Result.Failure<LoginDto?>(["Error loading external login information."]);
+                    }
+
+                    _logger.LogInformation("External login info obtained for provider {LoginProvider}. ProviderKey: {ProviderKey}",
+                        info.LoginProvider,
+                        info.ProviderKey);
+
+                    var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                    bool isNewUser = false;
+                    ApplicationUser? user;
+
+                    if (signInResult.Succeeded)
+                    {
+                        _logger.LogInformation("User {Email} logged in successfully with {LoginProvider}.",
+                            info.Principal.FindFirstValue(ClaimTypes.Email),
+                            info.LoginProvider);
+
+                        user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                    }
+                    else
+                    {
+                        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                        if (string.IsNullOrEmpty(email))
+                        {
+                            _logger.LogError("Email claim not found from external provider {LoginProvider}.", info.LoginProvider);
+
+                            return Result.Failure<LoginDto?>(["Email claim not received from provider."]);
+                        }
+
+                        user = await _userManager.FindByEmailAsync(email);
+                        if (user == null)
+                        {
+                            isNewUser = true;
+                            var givenName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+                            var surname = info.Principal.FindFirstValue(ClaimTypes.Surname);
+                            var nameIdentifier = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                            user = new ApplicationUser
+                            {
+                                UserName = email,
+                                Email = email,
+                                FullName = info.Principal.FindFirstValue(ClaimTypes.Name) ?? $"{givenName} {surname}".Trim(),
+                                EmailConfirmed = true,
+                                Avatar = info.Principal.FindFirstValue("urn:google:picture") ??
+                                    info.Principal.FindFirstValue("picture"),
+                            };
+
+                            var createUserResult = await _userManager.CreateAsync(user);
+                            if (!createUserResult.Succeeded)
+                            {
+                                _logger.LogError("Failed to create new user {Email}. Errors: {Errors}",
+                                    email,
+                                    string.Join(", ", createUserResult.Errors.Select(e => e.Description)));
+
+                                await dbTransaction.RollbackAsync(cancellationToken);
+
+                                return Result.Failure<LoginDto?>([$"Failed to create user: {string.Join(", ", createUserResult.Errors.Select(e => e.Description))}"]);
+                            }
+
+                            _logger.LogInformation("New user {Email} created.", email);
+
+                            var roleResult = await AddToRoleAsync(user.Id, Roles.User);
+
+                            if (!roleResult.Succeeded)
+                            {
+                                _logger.LogError("Failed to add user ID {0} to role {1}", user.Id, Roles.User);
+
+                                await dbTransaction.RollbackAsync(cancellationToken);
+
+                                return Result.Failure<LoginDto?>([$"Failed to add user ID {user.Id} to role {Roles.User}"]);
+                            }
+
+                            await _userPreferenceService.CreateDefaultUserPreferencesAsync(user.Id);
+                        }
+
+                        var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                        if (!addLoginResult.Succeeded)
+                        {
+                            _logger.LogError("Failed to add external login for user {Email}. Errors: {Errors}", email, string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
+
+                            await dbTransaction.RollbackAsync(cancellationToken);
+
+                            return Result.Failure<LoginDto?>([$"Failed to associate external login: {string.Join(", ", addLoginResult.Errors.Select(e => e.Description))}"]);
+                        }
+
+                        await dbTransaction.CommitAsync(cancellationToken);
+
+                        _logger.LogInformation("External login for {LoginProvider} added to user {Email}.", info.LoginProvider, email);
+                    }
+
+                    var token = await _tokenService.GenerateTokensAsync(user!.Id);
+
+                    return Result.Success<LoginDto?>(new(
+                        user.Id,
+                        user.UserName,
+                        user.FullName,
+                        user.Email,
+                        user.Avatar,
+                        isNewUser,
+                        token.AccessToken,
+                        token.RefreshToken,
+                        token.AccessTokenExpiration,
+                        token.RefreshTokenExpiration));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("An error occurred while adding the external log in: {ErrorMsg}", ex.Message);
+                    _logger.LogInformation("Rolling back");
+
+                    await dbTransaction.RollbackAsync(cancellationToken);
+
+                    throw;
+                }
+            });
+
+            return result;
+        }
+        #endregion
 
         public async Task<(Result<EmailDispatchRequest> Result, string? PasswordResetToken)> GeneratePasswordResetEmailAsync(
             string email,
