@@ -29,7 +29,11 @@ services:
 
       # Database Configuration
       - DatabaseSettings__ConnectionString=Host=postgres;Port=5432;Database=${POSTGRES_DBNAME};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
-  
+        
+      # External Authentication
+      - Authentication__Google__ClientId=${BE_GOOGLE_CLIENTID}
+      - Authentication__Google__ClientSecret=${BE_GOOGLE_CLIENTSECRET}
+
       # JWT Authentication
       - JwtSettings__SecretKey=${BE_JWT_SECRET_KEY}
       - JwtSettings__Issuer=${BE_JWT_ISSUER}
