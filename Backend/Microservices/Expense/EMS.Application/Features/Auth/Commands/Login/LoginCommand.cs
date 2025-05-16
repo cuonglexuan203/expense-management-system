@@ -1,17 +1,16 @@
 ﻿using EMS.Application.Common.Interfaces.Services;
-using EMS.Application.Common.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.Auth.Commands.Login
 {
-    public class LoginCommand : IRequest<TokenResponse>
+    public class LoginCommand : IRequest<LoginDto>
     {
         public string UserName { get; set; } = default!;
         public string Password { get; set; } = default!;
     }
 
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, TokenResponse>
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginDto>
     {
         private readonly ILogger<LoginCommand> _logger;
         private readonly IIdentityService _identityService;
@@ -24,7 +23,7 @@ namespace EMS.Application.Features.Auth.Commands.Login
             _tokenService = tokenService;
         }
 
-        public async Task<TokenResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<LoginDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var (result, userId) = await _identityService.ValidateUserAsync(request.UserName, request.Password);
 
@@ -34,8 +33,18 @@ namespace EMS.Application.Features.Auth.Commands.Login
             }
 
             var tokenResponse = await _tokenService.GenerateTokensAsync(userId!);
+            var user = await _identityService.GetUserAsync(userId!);
 
-            return tokenResponse;
+            return new(
+                user!.Id,
+                user.UserName,
+                user.FullName,
+                user.Email,
+                user.Avatar,
+                tokenResponse.AccessToken,
+                tokenResponse.RefreshToken,
+                tokenResponse.AccessTokenExpiration,
+                tokenResponse.RefreshTokenExpiration);
         }
     }
 }
