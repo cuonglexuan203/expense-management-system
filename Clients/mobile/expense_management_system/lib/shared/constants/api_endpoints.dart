@@ -14,6 +14,7 @@ class ApiEndpoints {
   static final devicesToken = _DevicesToken();
   static final notification = _NotificationEndpoints();
   static final schedule = _ScheduleEndpoints();
+  static final event = _EventEndpoints();
 }
 
 class _AuthEndpoints {
@@ -107,4 +108,11 @@ class _ScheduleEndpoints {
   String getById(String id) => '$base/$id';
   String update(String id) => '$base/$id';
   String delete(String id) => '$base/$id';
+}
+
+class _EventEndpoints {
+  final String base = '${ApiEndpoints.base}/events';
+  String get getAll => base;
+  String get create => base;
+  String get getOccurrences => '$base/occurrences';
 }

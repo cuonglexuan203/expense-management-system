@@ -1,3 +1,4 @@
+import 'package:expense_management_system/feature/schedule/model/event.dart';
 import 'package:expense_management_system/shared/util/email_validator.dart';
 
 class Validator {
@@ -31,5 +32,12 @@ class Validator {
     //return passValid;
 
     return true;
+  }
+
+  static bool isEventInPast(Event event) {
+    // Compare event date with current date
+    // Use UTC comparison since event dates are stored in UTC
+    final now = DateTime.now().toUtc();
+    return event.initialTriggerDateTime.isBefore(now);
   }
 }

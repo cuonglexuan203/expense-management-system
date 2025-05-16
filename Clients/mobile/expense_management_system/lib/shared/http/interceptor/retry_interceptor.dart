@@ -14,14 +14,23 @@ class RetryOnConnectionChangeInterceptor extends Interceptor {
   void onError(DioError err, ErrorInterceptorHandler handler) {
     if (_shouldRetry(err)) {
       try {
-        requestRetrier.scheduleRequestRetry(err.requestOptions);
-      } catch (e) {}
+        requestRetrier.scheduleRequestRetry(err.requestOptions).then(
+              (value) => handler.resolve(value),
+              onError: (error) => handler.next(err),
+            );
+      } catch (e) {
+        handler.next(err);
+      }
+    } else {
+      handler.next(err);
     }
   }
 
   bool _shouldRetry(DioError err) {
-    return err.type == DioErrorType.connectionTimeout &&
-        err.error != null &&
-        err.error is SocketException;
+    return (err.type == DioErrorType.connectionTimeout ||
+            err.type == DioErrorType.receiveTimeout ||
+            err.type == DioErrorType.sendTimeout ||
+            err.error is SocketException) &&
+        err.type != DioErrorType.badResponse;
   }
 }
