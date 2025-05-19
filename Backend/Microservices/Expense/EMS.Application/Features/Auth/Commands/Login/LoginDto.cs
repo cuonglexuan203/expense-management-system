@@ -6,6 +6,7 @@
         string? FullName,
         string? Email,
         string? Avatar,
+        bool IsNewUser,
         string AccessToken,
         string RefreshToken,
         DateTime AccessTokenExpiration,

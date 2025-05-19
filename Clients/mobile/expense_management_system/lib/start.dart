@@ -122,7 +122,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:expense_management_system/feature/notification/service/notification_background_service.dart';
 import 'package:expense_management_system/feature/notification/service/fcm_service.dart';
 import 'package:expense_management_system/firebase_options.dart';
 import 'package:expense_management_system/gen/assets.gen.dart';

@@ -15,6 +15,7 @@ using EMS.Infrastructure.Authentication;
 using EMS.Infrastructure.Common.Extensions;
 using System.Security.Claims;
 using EMS.Application.Features.ExtractedTransactions.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace EMS.API
 {
@@ -70,14 +71,41 @@ namespace EMS.API
         private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Jwt));
-            var jwtSettings = configuration.GetSection(JwtSettings.Jwt).Get<JwtSettings>() ?? throw new InvalidOperationException("Jwt Settings not configured");
+            services.Configure<AuthenticationOptions>(configuration.GetSection(AuthenticationOptions.Authentication));
+            var jwtSettings = configuration.GetSection(JwtSettings.Jwt).Get<JwtSettings>()
+                ?? throw new InvalidOperationException("Jwt Settings not configured");
+            var authOptions = configuration.GetSection(AuthenticationOptions.Authentication).Get<AuthenticationOptions>()
+                ?? throw new InvalidOperationException("Authentication options not configured");
 
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = AuthenticationSchemes.MultiScheme;
                 options.DefaultAuthenticateScheme = AuthenticationSchemes.MultiScheme;
                 options.DefaultChallengeScheme = AuthenticationSchemes.MultiScheme;
+
+                options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme;
             })
+                .AddCookie(IdentityConstants.ApplicationScheme, o =>
+                {
+                    o.LoginPath = new PathString("/api/auth/login");
+                    o.Events.OnRedirectToLogin = (context) =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    };
+                    o.Cookie.HttpOnly = true;
+                    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    o.Cookie.SameSite = SameSiteMode.Lax;
+                })
+                .AddCookie(IdentityConstants.ExternalScheme, o =>
+                {
+                    o.Cookie.Name = "Identity.External";
+                    o.Cookie.HttpOnly = true;
+                    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    o.Cookie.SameSite = SameSiteMode.Lax;
+                    o.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+                })
                 .AddPolicyScheme(AuthenticationSchemes.MultiScheme, "JWT or API Key", options =>
                 {
                     options.ForwardDefaultSelector = context =>
@@ -128,6 +156,12 @@ namespace EMS.API
                 {
                     options.AuthorizationHeaderName = CustomHeaders.ApiKey;
                     options.QueryStringParameterName = QueryStringParameters.ApiKey;
+                })
+                .AddGoogle(gOpt =>
+                {
+                    gOpt.ClientId = authOptions.Google.ClientId;
+                    gOpt.ClientSecret = authOptions.Google.ClientSecret;
+                    gOpt.SignInScheme = IdentityConstants.ExternalScheme;
                 });
         }
 

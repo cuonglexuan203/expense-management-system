@@ -121,7 +121,8 @@ class ApiProvider {
     if (statusCode == 401) {
       return APIResponse.error(AppException.unauthorized());
     } else if (statusCode == 404) {
-      return const APIResponse.error(AppException.connectivity());
+      return APIResponse.error(
+          AppException.errorWithMessage('Resource not found'));
     } else if (statusCode == 502) {
       return const APIResponse.error(AppException.error());
     } else {

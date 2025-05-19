@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:expense_management_system/feature/auth/model/token.dart';
 import 'package:expense_management_system/feature/auth/repository/token_repository.dart';
@@ -475,23 +476,50 @@ class ChatRepository {
     try {
       final body = {'walletId': walletId, 'confirmationStatus': status};
 
-      final response = await _api.patch(
+      // Assume _api.patch returns APIResponse<dynamic>
+      final APIResponse<dynamic> apiResponse = await _api.patch(
         ApiEndpoints.extractedTransaction
             .confirmStatusTransaction(transactionId),
         jsonEncode(body),
       );
 
-      debugPrint('Confirm transaction response: $response');
+      debugPrint(
+          'Confirm transaction API response object: $apiResponse'); // Log the APIResponse
 
-      if (response is Map) {
-        return Map<String, dynamic>.from(response as Map);
-      } else {
-        throw AppException.errorWithMessage(
-            "Invalid response format from server");
-      }
+      // Use .when to handle the APIResponse correctly
+      return apiResponse.when(
+        success: (data) {
+          // Now 'data' is the actual value inside APIResponse.success
+          // Check if the data is the expected Map format
+          if (data is Map) {
+            log('Confirm transaction successful, returning data map.');
+            // Return the map after ensuring correct type
+            return Map<String, dynamic>.from(data);
+          } else {
+            // This case should ideally not happen if the API returns JSON object on success
+            log('Confirm transaction success, but data is not a Map: $data');
+            throw AppException.errorWithMessage(
+                "Invalid data format within successful API response");
+          }
+        },
+        error: (error) {
+          // The API call itself resulted in an error (e.g., 4xx, 5xx handled by ApiProvider)
+          log('Confirm transaction failed at API level: $error');
+          // Propagate the error received from the APIResponse wrapper
+          throw error;
+        },
+      );
     } catch (e) {
-      debugPrint('Error confirming transaction: $e');
-      throw AppException.errorWithMessage("Failed to confirm transaction: $e");
+      // Catch errors from the await call itself or re-thrown errors from .when
+      log('Error during confirm transaction process: $e');
+      // Ensure we always throw an AppException
+      if (e is AppException) {
+        rethrow; // Re-throw if it's already an AppException
+      } else {
+        // Wrap other types of errors
+        throw AppException.errorWithMessage(
+            "Failed to confirm transaction: ${e.toString()}");
+      }
     }
   }
 
@@ -555,6 +583,46 @@ class ChatRepository {
     } catch (e) {
       debugPrint('Error uploading media: $e');
       throw AppException.errorWithMessage('Failed to upload media: $e');
+    }
+  }
+
+  Future<APIResponse<List<ExtractedTransaction>>>
+      getExtractedTransactionsByNotificationId(int notificationId) async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.extractedTransaction.base,
+        query: {'NotificationId': notificationId.toString()},
+      );
+
+      return response.when(
+        success: (data) {
+          if (data is Map<String, dynamic> &&
+              data.containsKey('items') &&
+              data['items'] is List) {
+            final items = data['items'] as List;
+            final transactions = items
+                .map((item) {
+                  if (item is Map<String, dynamic>) {
+                    return ExtractedTransaction.fromJson(item);
+                  }
+                  print('Skipping invalid extracted transaction item: $item');
+                  return null;
+                })
+                .whereType<ExtractedTransaction>()
+                .toList();
+            return APIResponse.success(transactions);
+          } else {
+            return const APIResponse.error(
+              AppException.errorWithMessage(
+                'Invalid response format: Missing or invalid "items" list',
+              ),
+            );
+          }
+        },
+        error: APIResponse.error,
+      );
+    } catch (e) {
+      return APIResponse.error(AppException.errorWithMessage(e.toString()));
     }
   }
 }

@@ -130,6 +130,7 @@ class MyNotificationListener : NotificationListenerService() {
 
         val apiKey = "E4164EFEA68EA6A9CAC2AB5761518"
         val backendUrl = "http://103.116.104.20:9002/api/v1/notifications/analyze"
+        // val backendUrl = "https://wzwmrgk9-5284.asse.devtunnels.ms/api/v1/notifications/analyze"
 
         if (backendUrl.isNullOrEmpty()) {
              return

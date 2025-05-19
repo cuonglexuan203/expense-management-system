@@ -65,3 +65,5 @@ enum ConnectionState {
   online,
   offline,
 }
+
+enum EndType { never, onDate, afterOccurrences }

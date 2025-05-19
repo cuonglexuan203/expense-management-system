@@ -192,24 +192,24 @@ class _TransactionPageState extends ConsumerState<TransactionPage>
         onTap: (index) =>
             BottomNavigationManager.handleNavigation(context, ref, index),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final selectedWalletId = ref.read(homeNotifierProvider).maybeWhen(
-                loaded: (wallets, selectedIndex) => wallets[selectedIndex].id,
-                orElse: () => null,
-              );
-          if (selectedWalletId != null) {
-            ChatRoute(walletId: selectedWalletId).push(context);
-          } else {
-            AppSnackBar.showWarning(
-                context: context, message: 'Please select a wallet first');
-          }
-        },
-        shape: const CircleBorder(),
-        backgroundColor: const Color(0xFF386BF6),
-        child: const Icon(Iconsax.add, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     final selectedWalletId = ref.read(homeNotifierProvider).maybeWhen(
+      //           loaded: (wallets, selectedIndex) => wallets[selectedIndex].id,
+      //           orElse: () => null,
+      //         );
+      //     if (selectedWalletId != null) {
+      //       ChatRoute(walletId: selectedWalletId).push(context);
+      //     } else {
+      //       AppSnackBar.showWarning(
+      //           context: context, message: 'Please select a wallet first');
+      //     }
+      //   },
+      //   shape: const CircleBorder(),
+      //   backgroundColor: const Color(0xFF386BF6),
+      //   child: const Icon(Iconsax.add, color: Colors.white),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 

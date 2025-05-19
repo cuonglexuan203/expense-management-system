@@ -26,34 +26,37 @@ class BottomNavigationManager {
         context.go('/');
         break;
 
-      case 1: // Transactions
-        // Get wallet ID from the current selected wallet
-        final walletId = ref.read(homeNotifierProvider).maybeWhen(
-              loaded: (wallets, selectedIndex) {
-                if (wallets.isNotEmpty) {
-                  return wallets[selectedIndex].id;
-                }
-                return null;
-              },
-              orElse: () => null,
-            );
+      // case 1: // Transactions
+      //   // Get wallet ID from the current selected wallet
+      //   final walletId = ref.read(homeNotifierProvider).maybeWhen(
+      //         loaded: (wallets, selectedIndex) {
+      //           if (wallets.isNotEmpty) {
+      //             return wallets[selectedIndex].id;
+      //           }
+      //           return null;
+      //         },
+      //         orElse: () => null,
+      //       );
 
-        if (walletId != null) {
-          context.push('/transactions/$walletId');
-        } else {
-          AppSnackBar.showWarning(
-              context: context, message: 'Please select a wallet first');
-          // Reset to home tab if no wallet is selected
-          ref.read(currentNavIndexProvider.notifier).state = 0;
-        }
+      //   if (walletId != null) {
+      //     context.push('/transactions/$walletId');
+      //   } else {
+      //     AppSnackBar.showWarning(
+      //         context: context, message: 'Please select a wallet first');
+      //     // Reset to home tab if no wallet is selected
+      //     ref.read(currentNavIndexProvider.notifier).state = 0;
+      //   }
+      //   break;
+      case 1:
+        context.go('/statistics');
+
+      case 2:
+        context.go('/schedule');
         break;
 
-      case 2: // Schedule - placeholder for future implementation
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Schedule feature coming soon')),
-        );
-        // Keep the current tab as selected, don't navigate
-        break;
+      // case 3: // Profile
+      //   context.go('/');
+      //   break;
 
       case 3: // Profile
         context.go('/profile');
