@@ -113,7 +113,7 @@ namespace EMS.Infrastructure.Services.HttpClients.AiService
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync(AiServiceEndpoints.SwarmAssistant, request, _serializerOptions);
+                var response = await _httpClient.PostAsJsonAsync(AiServiceEndpoints.SupervisorAssistant, request, _serializerOptions);
 
                 response.EnsureSuccessStatusCode();
 
