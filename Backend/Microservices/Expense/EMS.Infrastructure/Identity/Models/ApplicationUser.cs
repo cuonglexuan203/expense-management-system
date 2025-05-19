@@ -7,7 +7,7 @@ namespace EMS.Infrastructure.Identity.Models
     public class ApplicationUser : IdentityUser, IUser<string>, IAuditableEntity
     {
         public string FullName { get; set; } = default!;
-        public string Avatar { get; set; } = default!;
+        public string? Avatar { get; set; }
         public DateTimeOffset? CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTimeOffset? ModifiedAt { get; set; }

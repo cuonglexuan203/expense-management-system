@@ -73,6 +73,8 @@ namespace EMS.Infrastructure
 
         private static void AddScopedServices(IServiceCollection services)
         {
+            services.TryAddScoped<SignInManager<ApplicationUser>>();
+
             services.TryAddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
             services.TryAddScoped<ITokenService, TokenService>();
             services.TryAddScoped<IIdentityService, IdentityService>();
@@ -145,6 +147,7 @@ namespace EMS.Infrastructure
                 })
                 .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddSignInManager<SignInManager<ApplicationUser>>()
                 .AddDefaultTokenProviders();
 
             // Configure password reset token lifespan

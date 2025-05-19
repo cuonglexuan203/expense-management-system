@@ -1,5 +1,6 @@
 ﻿using EMS.Application.Common.DTOs.Dispatcher;
 using EMS.Application.Common.Models;
+using EMS.Application.Features.Auth.Commands.Login;
 using EMS.Application.Features.Profiles.Dtos;
 
 namespace EMS.Application.Common.Interfaces.Services
@@ -18,6 +19,9 @@ namespace EMS.Application.Common.Interfaces.Services
         Task<string?> GetUserNameAsync(string userId, CancellationToken cancellationToken = default);
         Task<Result> CreateRoleAsync(string roleName, CancellationToken cancellationToken = default);
         Task<UserDto?> GetUserAsync(string userId, CancellationToken cancellationToken = default);
+
+        // External Auth
+        Task<Result<LoginDto?>> ExternalLoginAsync(string? returnUrl = default, CancellationToken cancellationToken = default);
 
         // Reset password
         Task<(Result<EmailDispatchRequest> Result, string? PasswordResetToken)> GeneratePasswordResetEmailAsync(
