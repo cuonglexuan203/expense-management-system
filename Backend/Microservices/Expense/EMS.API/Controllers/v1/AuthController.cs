@@ -1,4 +1,5 @@
-﻿using EMS.API.Common.Attributes;
+﻿using CloudinaryDotNet;
+using EMS.API.Common.Attributes;
 using EMS.Application.Features.Auth.Commands.ChangePassword;
 using EMS.Application.Features.Auth.Commands.ExternalLogin;
 using EMS.Application.Features.Auth.Commands.ForgotPassword;
@@ -12,6 +13,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Web;
 
 namespace EMS.API.Controllers.v1
 {
@@ -89,7 +91,7 @@ namespace EMS.API.Controllers.v1
 
         [HttpGet("externallogin")]
         [AllowAnonymous]
-        public IActionResult ExternalLogin([FromQuery] string provider, [FromQuery] string? returnUrl = null)
+        public IActionResult ExternalLogin([FromQuery] string provider, [FromQuery] string? returnUrl = "emsauth://")
         {
             if (string.IsNullOrEmpty(provider))
             {
@@ -105,11 +107,44 @@ namespace EMS.API.Controllers.v1
 
         [HttpGet("externallogincallback")]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = default, string? remoteError = default)
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = "emsauth://", string? remoteError = default)
         {
-            var result = await _sender.Send(new ExternalLoginCommand(returnUrl, remoteError));
+            var loginDto = await _sender.Send(new ExternalLoginCommand(returnUrl, remoteError));
 
-            return Ok(result);
+            var uriBuilder = new UrlBuilder(returnUrl);
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+
+            if (!string.IsNullOrEmpty(loginDto.UserId))
+            {
+                query["userId"] = loginDto.UserId;
+            }
+            if (!string.IsNullOrEmpty(loginDto.Username))
+            {
+                query["username"] = loginDto.Username;
+            }
+            if (!string.IsNullOrEmpty(loginDto.FullName))
+            {
+                query["fullName"] = loginDto.FullName;
+            }
+            if (!string.IsNullOrEmpty(loginDto.Email))
+            {
+                query["email"] = loginDto.Email;
+            }
+            if (!string.IsNullOrEmpty(loginDto.Avatar))
+            {
+                query["avatar"] = loginDto.Avatar;
+            }
+
+            query["isNewUser"] = loginDto.IsNewUser.ToString().ToLowerInvariant();
+            query["accessToken"] = loginDto.AccessToken;
+            query["refreshToken"] = loginDto.RefreshToken;
+
+            query["accessTokenExpiration"] = loginDto.AccessTokenExpiration.ToString("o");
+            query["refreshTokenExpiration"] = loginDto.RefreshTokenExpiration.ToString("o");
+
+            uriBuilder.Query = query.ToString();
+
+            return new RedirectResult(returnUrl + '?' + query.ToString());
         }
     }
 }

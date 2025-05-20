@@ -88,7 +88,7 @@ namespace EMS.API
             })
                 .AddCookie(IdentityConstants.ApplicationScheme, o =>
                 {
-                    o.LoginPath = new PathString("/api/auth/login");
+                    o.LoginPath = new PathString("/api/v1/auth/login");
                     o.Events.OnRedirectToLogin = (context) =>
                     {
                         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
