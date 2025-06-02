@@ -23,9 +23,9 @@ namespace EMS.Application.Common.Extensions
             var now = DateTimeOffset.UtcNow;
             return period switch
             {
-                TimePeriod.CurrentWeek => query.Where(e => e.CreatedAt > DateTimeUtil.GetStartDateOfWeek(now)),
-                TimePeriod.CurrentMonth => query.Where(e => e.CreatedAt > new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, TimeSpan.Zero)),
-                TimePeriod.CurrentYear => query.Where(e => e.CreatedAt > new DateTimeOffset(now.Year, 1, 1, 0, 0, 0, TimeSpan.Zero)),
+                TimePeriod.CurrentWeek => query.Where(e => e.OccurredAt > DateTimeUtil.GetStartDateOfWeek(now)),
+                TimePeriod.CurrentMonth => query.Where(e => e.OccurredAt > new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, TimeSpan.Zero)),
+                TimePeriod.CurrentYear => query.Where(e => e.OccurredAt > new DateTimeOffset(now.Year, 1, 1, 0, 0, 0, TimeSpan.Zero)),
                 TimePeriod.AllTime => query,
                 _ => throw new ArgumentOutOfRangeException(nameof(period), period, null),
             };
