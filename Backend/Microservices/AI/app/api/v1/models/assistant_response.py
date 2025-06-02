@@ -1,7 +1,5 @@
 from typing import Any
 from pydantic import BaseModel, Field
-from app.services.agents.financial_agent import FinancialAgent
-from app.services.agents.event_agent import EventAgent
 from app.services.agents.responses.event_response import EventResponse
 
 # from app.services.agents.responses.financial_response import FinancialResponse
@@ -34,16 +32,13 @@ class AssitantResponse(BaseModel):
             init_data["name"] = agent_msg.name
 
         structured_response_data = response.get("structured_response")
-        name = init_data.get("name")
 
-        if name == FinancialAgent.name:
-            init_data["financial_response"] = {
-                # "structured_response_data": structured_response_data,
-                "text_extractions": response.get("text_extractions"),
-                "image_extractions": response.get("image_extractions"),
-                "audio_extractions": response.get("audio_extractions"),
-            }
-        elif name == EventAgent.name:
-            init_data["event_response"] = structured_response_data
+        init_data["financial_response"] = {
+            # "structured_response_data": structured_response_data,
+            "text_extractions": response.get("text_extractions"),
+            "image_extractions": response.get("image_extractions"),
+            "audio_extractions": response.get("audio_extractions"),
+        }
+        init_data["event_response"] = structured_response_data
 
         return cls(**init_data)

@@ -7,5 +7,6 @@
         public const string ExtractTransactionFromImages = $"{_apiVersion}/extractions/image";
         public const string ExtractTransactionFromAudios = $"{_apiVersion}/extractions/audio";
         public const string SwarmAssistant = $"{_apiVersion}/assistant/swarm";
+        public const string SupervisorAssistant = $"{_apiVersion}/assistant/supervisor";
     }
 }

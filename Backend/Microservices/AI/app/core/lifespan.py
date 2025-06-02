@@ -6,6 +6,7 @@ from app.core.logging import configure_logging
 from app.services.cache import cache_manager
 from app.services.memories.postgres_db import db
 from app.services.graphs.ems_swarm import ems_swarm
+from app.services.graphs.ems_supervisor import ems_supervisor
 
 
 @asynccontextmanager
@@ -18,6 +19,7 @@ async def lifespan(app: FastAPI):
 
     await db.connect()
     await ems_swarm.initialize()
+    await ems_supervisor.initialize()
 
     yield
 
