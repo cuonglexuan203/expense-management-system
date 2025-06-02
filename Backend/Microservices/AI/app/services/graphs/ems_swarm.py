@@ -28,6 +28,25 @@ class EMSSwarm:
     name: str = "ems_swarm"
 
     def __init__(self):
+
+        financial_to_event_handoff_desc = (
+            f"Handoff to the {EventAgent.name} to manage tasks involving scheduling events "
+            f"(e.g., 'schedule a meeting for my kid's school fee', 'birthday dinner reminder'), setting up reminders, "
+            f"or creating/managing recurring or periodic expenses and income "
+            f"(e.g., 'set up monthly rent payment', 'add weekly allowance', 'yearly Netflix subscription'). "
+            f"Use this when the user's primary intent is to create, modify, or inquire about a scheduled or recurring item."
+        )
+
+        # Optimized description for EventAgent to handoff to FinancialAgent
+        event_to_financial_handoff_desc = (
+            f"Handoff to the {FinancialAgent.name} for all other financial management tasks. "
+            f"This includes adding individual, non-recurring expense/income transactions (from text, image, or audio) (e.g., 'Breakfast 10 dollar', 'Bread 2 dollar') "
+            f"requesting financial history or summaries, seeking financial advice or analysis, "
+            f"setting or tracking financial goals (e.g., 'how am I doing on my car savings goal?'), "
+            f"or asking general questions about their finances. "
+            f"Use this if the user's request is NOT primarily about scheduling or managing recurring/periodic items."
+        )
+
         financial_agent = FinancialAgent(
             llm_config=LLMConfig(
                 provider=LLMProvider.OPENAI,
@@ -45,7 +64,8 @@ class EMSSwarm:
                 # update_extracted_transactions_status,
                 create_handoff_tool(
                     agent_name=EventAgent.name,
-                    description=f"Transfer to {EventAgent.name} agent, they can help with event-related problems (event scheduling feature)",),
+                    description=financial_to_event_handoff_desc,
+                ),
             ],
         ).get_agent()
 
@@ -60,7 +80,7 @@ class EMSSwarm:
                 get_event_occurrences,
                 create_handoff_tool(
                     agent_name=FinancialAgent.name,
-                    description=f"Transfer to {FinancialAgent.name} agent, they can help with financial-related problems",
+                    description=event_to_financial_handoff_desc,
                 ),
             ],
         ).get_agent()
