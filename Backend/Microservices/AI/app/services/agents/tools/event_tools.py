@@ -8,7 +8,8 @@ from app.schemas.scheduled_event import ScheduledEvent
 from app.services.backend import backend_client
 from app.schemas.recurrence_rule import RecurrenceRule
 from langchain_core.runnables import RunnableConfig
-
+from langgraph.prebuilt import InjectedState
+from typing import Annotated
 
 logger = get_logger(__name__)
 
@@ -18,10 +19,11 @@ async def schedule_event(
     name: str,
     type: EventType,
     initialTriggerDateTime: datetime,
-    description: Optional[str] = None,
-    payload: Optional[Dict[str, Any]] = None,
-    rule: Optional[RecurrenceRule] = None,
-    config: RunnableConfig = None,
+    description: Optional[str],
+    payload: Optional[Dict[str, Any]],
+    rule: Optional[RecurrenceRule],
+    state: Annotated[dict, InjectedState],
+    config: RunnableConfig,
 ) -> ScheduledEvent:
     """Schedules a new one-time or recurring event based on user request.
 
@@ -57,6 +59,10 @@ Includes the event ID and potentially the next calculated occurrence time.
         if config and "configurable" in config
         else None
     )
+
+    if not user_id:
+        user_id = state["user_id"]
+
     if not user_id:
         logger.error("Error: user_id not found in config.")
         raise ValueError("User ID not found, cannot schedule event.")
